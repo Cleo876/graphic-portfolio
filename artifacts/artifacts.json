@@ -1,19 +1,10 @@
 [
-{
-"id": "1",
-"title": "House with Lines",
-"tools": "Adobe Illustrator",
-"skills": "Vector paths, Line weight hierarchy",
-"image": "../artifacts/house-lines.jpg",
-"message": "This artifact demonstrates the fundamental use of the line tool to convey structure and perspective."
-},
-{
-"_comment": "--- BLANK TEMPLATE LEGEND ---",
-"id": "UNIQUE_NUMBER",
-"title": "YOUR_PROJECT_TITLE",
-"tools": "SOFTWARE_USED",
-"skills": "SKILLS_DEMONSTRATED",
-"image": "../artifacts/YOUR_IMAGE_NAME.jpg",
-"message": "YOUR_RATIONALE_PARAGRAPH"
-}
+  {
+  "id": "1",
+  "title": "House with Lines",
+  "tools": "Adobe Illustrator",
+  "skills": "Vector paths, Line weight hierarchy",
+  "image": "../artifacts/house-lines.jpg",
+  "message": "This artifact demonstrates the fundamental use of the line tool to convey structure and perspective."
+  }
 ]
