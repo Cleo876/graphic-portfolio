@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="text-xs uppercase tracking-[0.2em] font-semibold text-oxford/60">Artifact</span>
                 </div>
                 
-                <div class="artifact-image-container aspect-[4/3] w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden">
-                    <img src="${artifact.image}" alt="${artifact.title}" class="artifact-image w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
+                <div class="w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden max-h-[250px] md:max-h-[320px] transition-[max-height] duration-[1000ms] ease-[cubic-bezier(0.25,1,0.22,1)] group-hover:max-h-[2500px] relative">
+                    <img src="${artifact.image}" alt="${artifact.title}" class="w-full h-auto object-cover object-top" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
                 </div>
 
                 <div class="p-6 md:p-8 flex-grow flex flex-col">
