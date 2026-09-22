@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const galleryContainer = document.getElementById('gallery-container');
 
-    // Fallback data in case local viewing blocks the fetch request
     const fallbackData = [
         {
             "id": "1",
@@ -23,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="text-xs uppercase tracking-[0.2em] font-semibold text-oxford/60">Artifact</span>
                 </div>
                 
-                <div class="artifact-image-container aspect-[4/3] w-full border-b border-oxford/10 bg-oxford/5 flex items-center justify-center p-4">
-                    <img src="${artifact.image}" alt="${artifact.title}" class="artifact-image object-contain shadow-sm" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
+                <div class="artifact-image-container aspect-[4/3] w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden">
+                    <img src="${artifact.image}" alt="${artifact.title}" class="artifact-image object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
                 </div>
 
                 <div class="p-6 md:p-8 flex-grow flex flex-col">
@@ -57,29 +56,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Network response was not ok');
             }
             
-            const text = await response.text();
-            
-            // DEBUGGING: Print exactly what is coming from the JSON file
-            console.log("RAW FILE CONTENT RECEIVED:");
-            console.log(">>>" + text + "<<<");
-            
-            if (!text || text.trim() === '') {
-                throw new Error('JSON file is totally empty. Did you save it on GitHub?');
-            }
-            
-            const data = JSON.parse(text);
-            
+            const data = await response.json();
             galleryContainer.innerHTML = '';
             
-            let displayIndex = 0;
-            data.forEach((artifact) => {
-                if (artifact._comment) return;
-                galleryContainer.innerHTML += createArtifactCard(artifact, displayIndex);
-                displayIndex++;
+            // Simplified: No longer checking for _comment, just parsing the raw, clean JSON array
+            data.forEach((artifact, index) => {
+                galleryContainer.innerHTML += createArtifactCard(artifact, index);
             });
 
         } catch (error) {
-            console.error("JSON fetch failed with error:", error);
+            console.error("JSON load failed:", error);
             galleryContainer.innerHTML = '';
             
             fallbackData.forEach((artifact, index) => {
