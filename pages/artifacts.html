@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artifacts | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- 1. Global CSS (Fonts, colors, animations) -->
+    <link rel="stylesheet" href="../css/global.css">
+    
+    <!-- 2. Artifacts Specific CSS (Gallery card styling) -->
+    <link rel="stylesheet" href="../css/artifacts.css">
+</head>
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col bg-bone text-oxford">
+
+    <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+            <a href="../index.html" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
+                <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
+                Design In Motion
+            </a>
+            
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="copyright.html" class="nav-link">Copyright</a>
+                <a href="principles.html" class="nav-link">Principles</a>
+                <a href="elements.html" class="nav-link">Elements</a>
+                <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link text-oxford/50">Artifacts</a>
+            </nav>
+
+            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
+            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Color Theory</a>
+            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
+        <section class="px-6 md:px-12 pt-12 pb-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
+                    <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
+                        Practical Work Exhibition
+                    </p>
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6">
+                    Digital Artifacts.
+                </h1>
+                <p class="text-lg text-oxford/80 max-w-2xl font-light">
+                    A curated collection of original graphic pieces demonstrating the practical application of design principles, tool proficiency, and creative execution.
+                </p>
+            </div>
+        </section>
+
+        <!-- Dynamic Gallery Grid -->
+        <section class="px-6 md:px-12">
+            <div class="max-w-7xl mx-auto">
+                <!-- Data injection point -->
+                <div id="gallery-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 md:gap-12">
+                    
+                    <!-- Loading Skeleton -->
+                    <div class="border border-oxford/10 p-4 skeleton h-[500px] flex items-center justify-center bg-oxford/5 w-full">
+                        <p class="text-sm font-display tracking-widest uppercase text-oxford/50">Fetching Artifact Data...</p>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-oxford block rotate-45"></span>
+                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
+            </div>
+            <div class="text-xs md:text-sm text-oxford/60 font-light">
+                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- 1. Global App Script (Menu, animations) -->
+    <script src="../js/app.js"></script>
+    
+    <!-- 2. Artifacts Specific Script (JSON Loading) -->
+    <script src="../js/artifacts.js"></script>
+</body>
+</html>
