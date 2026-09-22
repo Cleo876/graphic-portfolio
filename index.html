@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design In Motion | Graphics Design Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- LINKING YOUR EXTERNAL CSS -->
+    <!-- Notice this is a relative path. It looks in the 'css' folder for 'global.css' -->
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative">
+
+    <div class="absolute top-0 left-0 w-full h-[100vh] overflow-hidden z-0 pointer-events-none">
+        <svg id="mograph-canvas" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#002147" stroke-width="0.5" stroke-opacity="0.1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            <g id="dynamic-paths"></g>
+        </svg>
+        <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-bone to-transparent z-10"></div>
+    </div>
+
+    <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+            <a href="#" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
+                <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
+                Design In Motion
+            </a>
+            
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide">
+                <a href="#" class="nav-link">Home</a>
+                <a href="pages/copyright.html" class="nav-link">Copyright</a>
+                <a href="pages/principles.html" class="nav-link">Principles</a>
+                <a href="pages/elements.html" class="nav-link">Elements</a>
+                <a href="pages/theory.html" class="nav-link">Theory</a>
+                <a href="pages/artifacts.html" class="nav-link">Artifacts</a>
+            </nav>
+
+            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="#" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="pages/copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="pages/principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="pages/elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
+            <a href="pages/theory.html" class="hover:text-oxford/70 transition-colors py-1">Color Theory</a>
+            <a href="pages/raster-vector.html" class="hover:text-oxford/70 transition-colors py-1">Raster vs Vector</a>
+            <a href="pages/artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+            <a href="pages/authors.html" class="hover:text-oxford/70 transition-colors py-1">Authors & Bibliography</a>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-20 md:pt-24 content-layer">
+        
+        <section class="relative px-6 md:px-12 pt-12 pb-24 md:pt-20 md:pb-32 lg:pt-32 lg:pb-40">
+            <div class="max-w-7xl mx-auto w-full relative z-10">
+                <div class="max-w-3xl cloud-fade delay-100">
+                    <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                        <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
+                        <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
+                            Portfolio of Cleon Williams 
+                            <span class="mx-2 md:mx-3 text-oxford/40">|</span> 
+                            <span class="tracking-[0.25em] text-[10px] md:text-xs">ID: 20191424</span>
+                        </p>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[1.1] mb-6 md:mb-8 tracking-tight">
+                        Visualizing <br>
+                        <span class="italic font-light">Concepts</span> <br>
+                        In Motion.
+                    </h1>
+                    <p class="text-base sm:text-lg md:text-xl font-light max-w-xl leading-relaxed text-oxford/80">
+                        An exploration of graphics design principles, elements, and practical application. Crafted with precision, driven by creative intent.
+                    </p>
+                </div>
+                
+                <div class="mt-12 md:mt-20 cloud-fade delay-300 flex items-center gap-3">
+                    <div class="w-px h-12 md:h-16 bg-oxford/20 relative overflow-hidden">
+                        <div class="w-full h-1/2 bg-oxford absolute top-0 left-0 animate-[bounce_2s_infinite]"></div>
+                    </div>
+                    <span class="uppercase text-[10px] md:text-xs tracking-widest font-semibold rotate-90 origin-left translate-x-2">Scroll</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 md:py-32 px-6 md:px-12 bg-bone relative z-20">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                <div class="md:col-span-4 lg:col-span-4 cloud-fade">
+                    <h2 class="text-3xl md:text-4xl font-display font-bold relative inline-block mb-4 md:mb-0">
+                        Overview of <br class="hidden md:block"> Graphics Design
+                        <div class="absolute -z-10 w-full h-3 md:h-4 bg-oxford/10 bottom-1 md:bottom-2 left-2"></div>
+                    </h2>
+                </div>
+                <div class="md:col-span-8 lg:col-span-7 lg:col-start-6 cloud-fade delay-100">
+                    <p class="text-lg sm:text-xl md:text-2xl font-light leading-relaxed mb-6 md:mb-8">
+                        Graphics design is the art and practice of planning and projecting ideas and experiences with visual and textual content. It acts as the critical bridge between raw information and human understanding.
+                    </p>
+                    <p class="text-base sm:text-lg text-oxford/80 leading-relaxed font-light mb-6 md:mb-8">
+                        At its core, graphic design is the visual communicator of a concept, event, movie, or brand, driven entirely by the way the elements of the composition are arranged. It gives structure and emotion to the messages we consume daily.
+                    </p>
+                    <p class="text-base sm:text-lg text-oxford/80 leading-relaxed font-light">
+                        In our increasingly visual world, graphic design is not merely about making things look aesthetically pleasing. It is a strategic discipline that utilizes typography, imagery, color, theory, and form to communicate complex messages with clarity. From the logos that define brands to the layouts that structure our reading, graphics design shapes the way we perceive and interact with our environment.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 md:py-32 px-6 md:px-12 bg-oxford text-bone relative z-20">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
+                <div class="md:col-span-5 lg:col-span-5 cloud-fade order-2 md:order-1">
+                    <div class="aspect-square border border-bone/20 p-6 md:p-8 relative flex items-center justify-center group overflow-hidden max-w-sm mx-auto md:max-w-none">
+                        <div class="absolute top-0 left-0 w-3 h-3 md:w-4 md:h-4 border-t-2 border-l-2 border-bone transition-transform group-hover:scale-150 group-hover:-translate-x-1 group-hover:-translate-y-1 md:group-hover:-translate-x-2 md:group-hover:-translate-y-2"></div>
+                        <div class="absolute top-0 right-0 w-3 h-3 md:w-4 md:h-4 border-t-2 border-r-2 border-bone transition-transform group-hover:scale-150 group-hover:translate-x-1 group-hover:-translate-y-1 md:group-hover:translate-x-2 md:group-hover:-translate-y-2"></div>
+                        <div class="absolute bottom-0 left-0 w-3 h-3 md:w-4 md:h-4 border-b-2 border-l-2 border-bone transition-transform group-hover:scale-150 group-hover:-translate-x-1 group-hover:translate-y-1 md:group-hover:-translate-x-2 md:group-hover:translate-y-2"></div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 md:w-4 md:h-4 border-b-2 border-r-2 border-bone transition-transform group-hover:scale-150 group-hover:translate-x-1 group-hover:translate-y-1 md:group-hover:translate-x-2 md:group-hover:translate-y-2"></div>
+                        
+                        <div class="text-center z-10 relative px-4">
+                            <h3 class="font-display text-xl md:text-2xl mb-3 md:mb-4 italic">"Design is intelligence made visible."</h3>
+                            <p class="text-xs md:text-sm font-light tracking-widest uppercase text-bone/60">— Alina Wheeler</p>
+                        </div>
+                        
+                        <div class="absolute inset-0 bg-bone/5 scale-0 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+                    </div>
+                </div>
+                <div class="md:col-span-7 lg:col-span-6 lg:col-start-7 cloud-fade delay-100 order-1 md:order-2">
+                    <h2 class="text-3xl md:text-4xl font-display font-bold mb-6 md:mb-8">Portfolio Rationale</h2>
+                    <p class="text-base sm:text-lg text-bone/80 leading-relaxed font-light mb-6">
+                        This portfolio serves as a dynamic exhibition of my journey through the foundational principles, fundamental elements, and practical applications of graphics design. 
+                    </p>
+                    <p class="text-base sm:text-lg text-bone/80 leading-relaxed font-light">
+                        It is curated not merely as a repository of academic assignments, but as a cohesive narrative demonstrating my technical growth, creative problem-solving skills, and understanding of theoretical concepts. By presenting these digital artifacts within a motion-inspired, minimalist framework, I aim to showcase my ability to craft meaningful, engaging, and professional visual experiences.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-oxford block rotate-45"></span>
+                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
+            </div>
+            <div class="text-xs md:text-sm text-oxford/60 font-light">
+                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
+            </div>
+            <a href="pages/copyright.html" class="text-xs md:text-sm font-medium uppercase tracking-widest hover:text-oxford/60 transition-colors flex items-center gap-2 group">
+                Next: Copyright 
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+    </footer>
+
+    <!-- LINKING YOUR EXTERNAL JAVASCRIPT -->
+    <!-- Notice this is a relative path. It looks in the 'js' folder for 'app.js' -->
+    <script src="js/app.js"></script>
+</body>
+</html>
