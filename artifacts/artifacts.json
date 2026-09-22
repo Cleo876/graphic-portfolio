@@ -14,5 +14,13 @@
     "skills": "Layer Compositing, Sourcing Elements, Layer Arrangement, Overlay Compositing",
     "image": "../artifacts/Spce Composition - Assignment 1.png",
     "message": "This artifact challenges us to arrange and composit a space themed wallpaper representing <b>what we would like to experience about space</b> and for me, I best experience space through movies. <br>Hence this was designed as such. It focuses on me selecting like colored images from the internet so that the color composition is near and feels like each element deserves to be part of the entire design. Additional things such as using overlay light leaks,lens flares and even image titles as the <b>restriction was to use selection tools only</b> and not the wider design tools."
+  },
+  {
+    "id": "3",
+    "title": "Basket of Fruits",
+    "tools": "Layer Mask, <br>Brush Tool,<br>Scale Tool,<br>Filter Mode",
+    "skills": "Layer Composition, Layer Masking, Color Adjustment, Detailing, Light Matching, Photo Manipulation",
+    "image": ".../Basket of Fruits.png",
+    "message": "During the development of this composition, we had to utilize skills from the other 2 <i>Artifacts</i> to apply techniques such as <b>Layer Composition & Arrangement</b> while also introducing the use of new techniques such as adding in <i>ambient occlusions, masking layers</i> which would be regarded as <b>Light Matching & Photo Manipulation.</b><br><br> This composition had alot of lighting adjustment layers with creating shadows as well as doing scene placement for the elements, it was a good challenge since none of the elements where transparent backgrounds and we had to make it appear as though they were."
   }
 ]
