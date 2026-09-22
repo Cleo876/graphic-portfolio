@@ -27,10 +27,10 @@
         }
     </script>
 
-    <!-- 1. Global CSS (Fonts, colors, animations) -->
+    <!-- 1. Global CSS -->
     <link rel="stylesheet" href="../css/global.css">
     
-    <!-- 2. Artifacts Specific CSS (Gallery card styling) -->
+    <!-- 2. Artifacts Specific CSS -->
     <link rel="stylesheet" href="../css/artifacts.css">
 </head>
 <body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col bg-bone text-oxford">
@@ -86,17 +86,12 @@
             </div>
         </section>
 
-        <!-- Dynamic Gallery Grid -->
         <section class="px-6 md:px-12">
             <div class="max-w-7xl mx-auto">
-                <!-- Data injection point -->
                 <div id="gallery-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 md:gap-12">
-                    
-                    <!-- Loading Skeleton -->
                     <div class="border border-oxford/10 p-4 skeleton h-[500px] flex items-center justify-center bg-oxford/5 w-full">
                         <p class="text-sm font-display tracking-widest uppercase text-oxford/50">Fetching Artifact Data...</p>
                     </div>
-                    
                 </div>
             </div>
         </section>
@@ -114,10 +109,10 @@
         </div>
     </footer>
 
-    <!-- 1. Global App Script (Menu, animations) -->
+    <!-- 1. Global App Script -->
     <script src="../js/app.js"></script>
     
-    <!-- 2. Artifacts Specific Script (JSON Loading) -->
+    <!-- 2. Artifacts Specific Script -->
     <script src="../js/artifacts.js"></script>
 </body>
 </html>
