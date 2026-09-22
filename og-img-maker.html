@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Graph Image Generator | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                        'studio': '#1a1a1a', 
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; 
+        }
+
+        #og-canvas {
+            width: 1200px;
+            height: 630px;
+            background-color: #F9F6EE;
+            position: relative;
+            transform-origin: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden; /* Ensures nothing leaks out of the 1200x630 capture area */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fixed top-0 left-0 w-full p-4 bg-black/50 backdrop-blur border-b border-white/10 flex justify-between items-center z-50">
+        <div class="font-display font-bold text-lg tracking-widest text-white/80">SOCIAL ASSET STUDIO</div>
+        <div class="flex items-center gap-3">
+            <div class="text-sm font-sans text-white/50 hidden md:block mr-4">Native SVG Renderer Active</div>
+            <button onclick="downloadAsset(1.5, 'design-in-motion-social.png')" class="bg-oxford text-bone border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-bone hover:text-oxford hover:border-bone transition-colors shadow-lg">
+                WhatsApp Optimized
+            </button>
+            <button onclick="downloadAsset(2, 'design-in-motion-social-hd.png')" class="bg-bone text-oxford px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white transition-colors shadow-lg">
+                Download HD
+            </button>
+        </div>
+    </div>
+
+    <div id="scale-wrapper" class="flex items-center justify-center w-full h-full p-12 mt-10">
+        
+        <!-- THE MASTER CAPTURE CANVAS -->
+        <div id="og-canvas">
+            
+            <!-- BACKGROUND LAYER (Pure SVG for html2canvas compatibility) -->
+            <svg width="1200" height="630" class="absolute inset-0 z-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#002147" stroke-width="1" stroke-opacity="0.05"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                <path d="M-100 600 C 300 200, 800 700, 1300 -100" stroke="#002147" stroke-width="1.5" fill="none" opacity="0.3" />
+                <path d="M-50 -50 C 400 400, 900 100, 1400 500" stroke="#002147" stroke-width="1.5" fill="none" opacity="0.15" />
+            </svg>
+
+            <!-- CONTENT LAYER -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center z-10 pt-8">
+                
+                <!-- TITLE & BEZIER HANDLES (Unified SVG to fix rendering bugs) -->
+                <svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" class="select-none mb-2">
+                    <defs>
+                        <!-- Native SVG Clip Path to slice the "e" in half perfectly -->
+                        <!-- 14% of 1050 width is roughly 147. We offset it by the 75px margin to reach x=235 -->
+                        <clipPath id="text-split">
+                            <rect x="235" y="0" width="1000" height="300" />
+                        </clipPath>
+                    </defs>
+
+                    <!-- BOTTOM TEXT (Outline only, covers the whole word) -->
+                    <text x="600" y="200" text-anchor="middle" fill="transparent" stroke="#002147" stroke-width="4" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -0.05em;">Design In Motion</text>
+                    
+                    <!-- TOP TEXT (Solid fill, sliced by the clipPath so only the right side shows) -->
+                    <text x="600" y="200" text-anchor="middle" fill="#002147" clip-path="url(#text-split)" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 140px; letter-spacing: -0.05em;">Design In Motion</text>
+
+                    <!-- LEFT BEZIER HANDLES (D) -->
+                    <g stroke="#002147" fill="none">
+                        <!-- Top Left Handle -->
+                        <line x1="100" y1="110" x2="45" y2="35" stroke-width="2" stroke-dasharray="6 6" />
+                        <circle cx="45" cy="35" r="6" fill="#002147" />
+                        <rect x="92" y="102" width="16" height="16" fill="#F9F6EE" stroke-width="2.5" />
+                        
+                        <!-- Bottom Left Handle -->
+                        <line x1="100" y1="200" x2="160" y2="280" stroke-width="2" stroke-dasharray="6 6" />
+                        <circle cx="160" cy="280" r="6" fill="#002147" />
+                        <rect x="92" y="192" width="16" height="16" fill="#F9F6EE" stroke-width="2.5" />
+                    </g>
+
+                    <!-- MIDDLE ALIGNMENT GUIDES -->
+                    <g stroke="#002147" fill="none">
+                        <!-- Vertical Dashed Line -->
+                        <line x1="230" y1="70" x2="230" y2="230" stroke-width="1.5" stroke-dasharray="8 8" opacity="0.3" />
+                        <!-- Tiny Guide Boxes -->
+                        <rect x="226" y="66" width="8" height="8" fill="#F9F6EE" stroke-width="2" />
+                        <rect x="226" y="226" width="8" height="8" fill="#F9F6EE" stroke-width="2" />
+                        
+                        <!-- Horizontal Handle going right from 'e' -->
+                        <rect x="180" y="146" width="12" height="12" fill="#F9F6EE" stroke-width="2.5" rx="2" />
+                        <line x1="192" y1="152" x2="250" y2="152" stroke-width="2" stroke-dasharray="4 4" />
+                        <circle cx="250" cy="152" r="5" fill="#002147" />
+                    </g>
+
+                    <!-- RIGHT BEZIER HANDLES (n) -->
+                    <g stroke="#002147" fill="none">
+                        <!-- Tiny floating guide square above -->
+                        <rect x="1050" y="100" width="10" height="10" fill="#F9F6EE" stroke-width="2" />
+                        
+                        <!-- Right Tail Handle -->
+                        <line x1="1090" y1="195" x2="1145" y2="245" stroke-width="2" stroke-dasharray="6 6" />
+                        <circle cx="1145" cy="245" r="6" fill="#002147" />
+                        <rect x="1082" y="187" width="16" height="16" fill="#F9F6EE" stroke-width="2.5" />
+                    </g>
+                </svg>
+
+                <!-- SUBTITLE LOCKUP (Standard HTML flexbox, html2canvas rendered this perfectly last time) -->
+                <div class="w-[1050px] flex flex-col border-t-2 border-oxford/20 pt-5 relative z-20 select-none">
+                    <div class="flex justify-between items-end w-full mb-3">
+                        <span class="font-sans text-[34px] tracking-[0.25em] uppercase font-bold text-oxford leading-none">Graphic</span>
+                        <span class="font-sans text-[34px] tracking-[0.25em] uppercase font-bold text-oxford leading-none">Design</span>
+                        <span class="font-sans text-[34px] tracking-[0.25em] uppercase font-bold text-oxford leading-none">Portfolio</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center w-full pt-3">
+                        <span class="font-sans text-[20px] tracking-[0.35em] uppercase font-medium text-oxford/60">By</span>
+                        <span class="font-sans text-[20px] tracking-[0.35em] uppercase font-semibold text-oxford">Cleon</span>
+                        <span class="font-sans text-[20px] tracking-[0.35em] uppercase font-semibold text-oxford">Williams</span>
+                        <span class="text-oxford/30 text-[20px]">—</span>
+                        <span class="font-display text-[20px] tracking-[0.35em] font-bold text-oxford/80">ID: 20191424</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('og-canvas');
+
+            // Viewport scaling for preview only
+            function scaleCanvas() {
+                const availableWidth = window.innerWidth - 80; 
+                const availableHeight = window.innerHeight - 120;
+                
+                const canvasWidth = 1200;
+                const canvasHeight = 630;
+
+                const scaleWidth = availableWidth / canvasWidth;
+                const scaleHeight = availableHeight / canvasHeight;
+                
+                let scale = Math.min(scaleWidth, scaleHeight);
+                if (scale > 1) scale = 1;
+
+                canvas.style.transform = `scale(${scale})`;
+            }
+
+            scaleCanvas();
+            window.addEventListener('resize', scaleCanvas);
+        });
+
+        // Ensure fonts are loaded before capturing
+        function downloadAsset(scaleMultiplier, outputFilename) {
+            document.fonts.ready.then(() => {
+                const canvasEl = document.getElementById('og-canvas');
+                const originalTransform = canvasEl.style.transform;
+                
+                // Remove CSS scaling temporarily so capture is exact
+                canvasEl.style.transform = 'scale(1)';
+                
+                setTimeout(() => {
+                    html2canvas(canvasEl, {
+                        scale: scaleMultiplier, 
+                        backgroundColor: '#F9F6EE',
+                        useCORS: true, 
+                        logging: false
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = outputFilename;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        
+                        // Restore preview scale
+                        canvasEl.style.transform = originalTransform;
+                    });
+                }, 100);
+            });
+        }
+    </script>
+</body>
+</html>
