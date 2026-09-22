@@ -53,19 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('../artifacts/artifacts.json');
             
-            // Check if response is ok and actually has content
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             
-            // Wait for the text first to check if it's empty
             const text = await response.text();
             
+            // DEBUGGING: Print exactly what is coming from the JSON file
+            console.log("RAW FILE CONTENT RECEIVED:");
+            console.log(">>>" + text + "<<<");
+            
             if (!text || text.trim() === '') {
-                throw new Error('JSON file is empty');
+                throw new Error('JSON file is totally empty. Did you save it on GitHub?');
             }
             
-            // Safely parse the text into JSON
             const data = JSON.parse(text);
             
             galleryContainer.innerHTML = '';
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         } catch (error) {
-            console.warn("JSON fetch failed (likely running locally). Loading fallback data.", error);
+            console.error("JSON fetch failed with error:", error);
             galleryContainer.innerHTML = '';
             
             fallbackData.forEach((artifact, index) => {
