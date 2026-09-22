@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="artifact-image-container aspect-[4/3] w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden">
-                    <img src="${artifact.image}" alt="${artifact.title}" class="artifact-image object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
+                    <img src="${artifact.image}" alt="${artifact.title}" class="artifact-image w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
                 </div>
 
                 <div class="p-6 md:p-8 flex-grow flex flex-col">
@@ -56,16 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Network response was not ok');
             }
             
-            const data = await response.json();
+            const text = await response.text();
+            
+            // DEBUGGING: Print exactly what is coming from the JSON file
+            console.log("RAW FILE CONTENT RECEIVED:");
+            console.log(">>>" + text + "<<<");
+            
+            if (!text || text.trim() === '') {
+                throw new Error('JSON file is totally empty. Did you save it on GitHub?');
+            }
+            
+            const data = JSON.parse(text);
+            
             galleryContainer.innerHTML = '';
             
-            // Simplified: No longer checking for _comment, just parsing the raw, clean JSON array
-            data.forEach((artifact, index) => {
-                galleryContainer.innerHTML += createArtifactCard(artifact, index);
+            let displayIndex = 0;
+            data.forEach((artifact) => {
+                if (artifact._comment) return;
+                galleryContainer.innerHTML += createArtifactCard(artifact, displayIndex);
+                displayIndex++;
             });
 
         } catch (error) {
-            console.error("JSON load failed:", error);
+            console.error("JSON fetch failed with error:", error);
             galleryContainer.innerHTML = '';
             
             fallbackData.forEach((artifact, index) => {
