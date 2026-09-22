@@ -2,7 +2,7 @@
   {
   "id": "1",
   "title": "House with Lines",
-  "tools": "G.I.M.P",
+  "tools": "G.I.M.P - Brush tool,<br> Paint Bucket Tool,",
   "skills": "Vector paths, Line weight hierarchy, Bucket & Color Picking",
   "image": "../artifacts/house-lines.png",
   "message": "This artifact allows us to practice foundational drawing skills by creating a simple house illustration using basic lines and shapes. This activity helps build <b>observation skills, line control, proportion awareness</b>, and confidence in visual composition — all essential to graphic design."
@@ -10,7 +10,7 @@
   {
     "id": "1",
     "title": "Space Theme Wallpaper",
-    "tools": "G.I.M.P",
+    "tools": "Selection Tool,<br> Scale, <br>Rotate",
     "skills": "Layer Compositing, Sourcing Elements, Layer Arrangement, Overlay Compositing",
     "image": "../artifacts/Spce Composition - Assignment 1.png",
     "message": "This artifact challenges us to arrange and composit a space themed wallpaper representing <b>what we would like to experience about space</b> and for me, I best experience space through movies. <br>Hence this was designed as such. It focuses on me selecting like colored images from the internet so that the color composition is near and feels like each element deserves to be part of the entire design. Additional things such as using overlay light leaks,lens flares and even image titles as the <b>restriction was to use selection tools only</b> and not the wider design tools."
