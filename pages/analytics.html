@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Flight Analytics | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        /* Specific animations for the analytics graphs */
+        @keyframes drawVector {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes revealNode {
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-vector {
+            stroke-dasharray: 1500;
+            stroke-dashoffset: 1500;
+            animation: drawVector 3s cubic-bezier(0.25, 1, 0.25, 1) forwards;
+        }
+        .animate-node {
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: center;
+            animation: revealNode 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .stat-bar {
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .vector-node {
+            transform-box: fill-box;
+            transform-origin: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: crosshair;
+        }
+        .vector-node:hover {
+            transform: scale(2.5);
+            fill: #002147;
+            stroke: #F9F6EE;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col bg-bone text-oxford overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+            <a href="../index.html" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
+                <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
+                Design In Motion
+            </a>
+            
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide" id="magnetic-nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="copyright.html" class="nav-link">Copyright</a>
+                <a href="principles.html" class="nav-link">Principles</a>
+                <a href="elements.html" class="nav-link">Elements</a>
+                <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link">Artifacts</a>
+            </nav>
+
+            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
+            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Theory</a>
+            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
+        
+        <!-- Hero Section -->
+        <section class="px-6 md:px-12 pt-12 pb-16">
+            <div class="max-w-7xl mx-auto cloud-fade delay-100">
+                <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
+                    <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
+                        Telemetry & Metrics <span class="mx-2 md:mx-3 text-oxford/40">|</span> <span class="tracking-[0.25em] text-[10px] md:text-xs">PRE-FLIGHT DIAGNOSTICS</span>
+                    </p>
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6">
+                    Performance <br class="hidden md:block"> Analytics.
+                </h1>
+                <p class="text-lg text-oxford/80 max-w-2xl font-light">
+                    Real-time traffic visualization and structural engagement metrics for the portfolio. Data tracked securely via session-based API increments.
+                </p>
+            </div>
+        </section>
+
+        <!-- Thematic Line Graph Section (Vector Spline Metaphor) -->
+        <section class="px-6 md:px-12 mb-20 md:mb-32">
+            <div class="max-w-7xl mx-auto cloud-fade delay-200">
+                
+                <div class="border border-oxford p-6 md:p-10 relative bg-bone overflow-hidden group">
+                    <!-- Top Left Crop Mark -->
+                    <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-oxford -translate-x-1 -translate-y-1"></div>
+                    <!-- Top Right Crop Mark -->
+                    <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-oxford translate-x-1 -translate-y-1"></div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 relative z-10">
+                        <div>
+                            <h2 class="text-xs uppercase tracking-[0.3em] font-bold text-oxford/60 mb-2">Total Impressions</h2>
+                            <div class="font-display text-5xl md:text-6xl font-bold flex items-baseline gap-2">
+                                <span id="total-hits-counter">0,000</span>
+                                <span class="text-sm font-sans font-light tracking-normal text-oxford/50">Last 7 Days</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-oxford/20 px-3 py-1.5">
+                            <span class="w-1.5 h-1.5 bg-oxford rounded-full animate-pulse"></span>
+                            Live Vector Data
+                        </div>
+                    </div>
+
+                    <!-- Line Graph (Illustrator Bezier Theme) -->
+                    <div class="w-full h-[250px] md:h-[350px] relative border-b border-l border-oxford/20">
+                        <!-- Background Graph Grid -->
+                        <div class="absolute inset-0 grid grid-cols-6 grid-rows-4 pointer-events-none opacity-20">
+                            <div class="border-b border-r border-oxford/30 col-span-6 row-span-1"></div>
+                            <div class="border-b border-r border-oxford/30 col-span-6 row-span-1"></div>
+                            <div class="border-b border-r border-oxford/30 col-span-6 row-span-1"></div>
+                            <div class="border-r border-oxford/30 col-span-6 row-span-1"></div>
+                        </div>
+
+                        <!-- SVG Graph Layer -->
+                        <svg class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Bezier Handles (The "Illustrator" effect) -->
+                            <g stroke="#002147" fill="none" opacity="0.3" stroke-width="1.5">
+                                <line x1="200" y1="200" x2="150" y2="100" stroke-dasharray="4 4" class="animate-node" style="animation-delay: 1.2s;"></line>
+                                <circle cx="150" cy="100" r="4" fill="#F9F6EE" class="animate-node vector-node" style="animation-delay: 1.2s;"></circle>
+
+                                <line x1="500" y1="80" x2="600" y2="40" stroke-dasharray="4 4" class="animate-node" style="animation-delay: 1.8s;"></line>
+                                <circle cx="600" cy="40" r="4" fill="#F9F6EE" class="animate-node vector-node" style="animation-delay: 1.8s;"></circle>
+                                
+                                <line x1="800" y1="220" x2="850" y2="300" stroke-dasharray="4 4" class="animate-node" style="animation-delay: 2.2s;"></line>
+                                <circle cx="850" cy="300" r="4" fill="#F9F6EE" class="animate-node vector-node" style="animation-delay: 2.2s;"></circle>
+                            </g>
+
+                            <!-- The Main Graph Vector Spline -->
+                            <!-- Coordinates: start -> point1 -> peak -> dip -> peak -> end -->
+                            <path d="M 0 280 C 150 280, 150 200, 200 200 S 350 80, 500 80 S 700 220, 800 220 S 950 50, 1000 50" 
+                                  fill="none" stroke="#002147" stroke-width="3" class="animate-vector"></path>
+
+                            <!-- Data Nodes (Illustrator Anchor Points) -->
+                            <g fill="#F9F6EE" stroke="#002147" stroke-width="2.5">
+                                <rect x="-4" y="276" width="8" height="8" class="animate-node vector-node" style="animation-delay: 0.5s;"></rect>
+                                <rect x="196" y="196" width="8" height="8" class="animate-node vector-node" style="animation-delay: 1.1s;"></rect>
+                                <rect x="496" y="76" width="8" height="8" class="animate-node vector-node" style="animation-delay: 1.7s;"></rect>
+                                <rect x="796" y="216" width="8" height="8" class="animate-node vector-node" style="animation-delay: 2.1s;"></rect>
+                                <rect x="996" y="46" width="8" height="8" class="animate-node vector-node" style="animation-delay: 2.5s;"></rect>
+                            </g>
+                        </svg>
+                    </div>
+                    
+                    <!-- Bottom Left Crop Mark -->
+                    <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-oxford -translate-x-1 translate-y-1"></div>
+                    <!-- Bottom Right Crop Mark -->
+                    <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-oxford translate-x-1 translate-y-1"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Horizontal Bar Charts (Registration Marks Theme) -->
+        <section class="px-6 md:px-12">
+            <div class="max-w-7xl mx-auto cloud-fade delay-300">
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-oxford/10">
+                    <h2 class="text-2xl font-display font-bold">Registration Data <span class="font-light text-oxford/50 text-lg ml-2">(By Asset)</span></h2>
+                    <div class="w-4 h-4 border border-oxford rounded-full relative flex items-center justify-center">
+                        <div class="w-px h-6 bg-oxford absolute"></div>
+                        <div class="w-6 h-px bg-oxford absolute"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-8" id="horizontal-bars-container">
+                    <!-- JS will inject the bars here. HTML template below is for structure visualization -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 bg-oxford block rotate-45"></span>
+                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
+            </div>
+            <div class="text-xs md:text-sm text-oxford/60 font-light">
+                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
+            </div>
+            <a href="../index.html" class="text-xs md:text-sm font-bold uppercase tracking-widest text-oxford hover:text-oxford/60 transition-colors flex items-center gap-2 group">
+                Return Home 
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Global JS -->
+    <script src="../js/app.js"></script>
+
+    <!-- Specific Analytics Rendering Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            // 1. Fetch Live Data from Abaccus API
+            const pagesConfig = [
+                { title: "Home Canvas", api_key: "home_page" },
+                { title: "Digital Artifacts", api_key: "artifacts_page" },
+                { title: "Design Principles", api_key: "principles_page" },
+                { title: "Design Elements", api_key: "elements_page" },
+                { title: "Color Theory", api_key: "theory_page" },
+                { title: "Copyright Specs", api_key: "copyright_page" }
+            ];
+
+            const apiData = [];
+            
+            // Show a temporary loading state in the total counter
+            const totalElement = document.getElementById('total-hits-counter');
+            totalElement.innerText = "Syncing...";
+
+            for (let page of pagesConfig) {
+                let currentHits = 0;
+                try {
+                    // This hits your live Abaccus API endpoints.
+                    // Replace "https://api.abaccus.com/v1/hits/" with your actual base URL
+                    const response = await fetch(`https://api.abaccus.com/v1/hits/${page.api_key}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Adapting to standard API JSON response structures
+                        currentHits = data.value || data.hits || data.count || 0;
+                    } else {
+                        // STRICT OVERRIDE: No simulated data. If API fails, value is 0.
+                        currentHits = 0;
+                    }
+                } catch (e) {
+                    // STRICT OVERRIDE: No simulated data. If network fails, value is 0.
+                    currentHits = 0;
+                }
+
+                // APPLY THE EXACT +7 OVERRIDE REQUESTED
+                if (page.api_key === "home_page" || page.api_key === "artifacts_page") {
+                    currentHits += 7;
+                }
+
+                apiData.push({ ...page, hits: currentHits });
+            }
+
+            // 2. Animate the Total Counter
+            const totalHits = apiData.reduce((sum, item) => sum + item.hits, 0);
+            let currentCount = 0;
+            const duration = 2000; 
+            const frameRate = 30;
+            const increment = totalHits / (duration / frameRate);
+
+            const counterInterval = setInterval(() => {
+                currentCount += increment;
+                if (currentCount >= totalHits) {
+                    currentCount = totalHits;
+                    clearInterval(counterInterval);
+                }
+                totalElement.innerText = Math.floor(currentCount).toLocaleString();
+            }, frameRate);
+
+
+            // 3. Render and Animate the Horizontal Print Registration Bars
+            const container = document.getElementById('horizontal-bars-container');
+            const maxHits = Math.max(...apiData.map(d => d.hits));
+
+            // Clear any loading states
+            container.innerHTML = '';
+
+            apiData.forEach((page, index) => {
+                // Calculate percentage width for the bar
+                const percentage = (page.hits / maxHits) * 100;
+                
+                // Build the graphic design thematic bar
+                const barHTML = `
+                    <div class="group relative">
+                        <div class="flex justify-between items-end mb-2">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-display font-bold text-lg md:text-xl group-hover:translate-x-2 transition-transform">${page.title}</h3>
+                                <div class="px-2 py-0.5 bg-oxford/10 border border-oxford/20 text-[9px] uppercase tracking-widest font-bold text-oxford/70">
+                                    API: ${page.api_key}
+                                </div>
+                            </div>
+                            <span class="font-mono text-sm md:text-base font-medium">${page.hits.toLocaleString()}</span>
+                        </div>
+                        
+                        <!-- Thematic Bounding Box Container -->
+                        <div class="w-full h-4 bg-bone border border-oxford/20 relative overflow-hidden flex items-center p-0.5">
+                            
+                            <!-- Anchor Nodes on ends of container -->
+                            <div class="absolute left-0 w-1 h-4 border-r border-oxford/40 bg-bone z-10"></div>
+                            <div class="absolute right-0 w-1 h-4 border-l border-oxford/40 bg-bone z-10"></div>
+                            
+                            <!-- The Fill Bar -->
+                            <!-- We set the width inline, but trigger the animation via JS -->
+                            <div class="h-full bg-oxford stat-bar relative" id="bar-${index}" style="width: ${percentage}%;">
+                                <!-- Little registration node at the tip of the fill -->
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-full bg-bone opacity-50"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += barHTML;
+            });
+
+            // Trigger the horizontal bar scaling animation after a tiny delay
+            setTimeout(() => {
+                apiData.forEach((_, index) => {
+                    const bar = document.getElementById(`bar-${index}`);
+                    if(bar) bar.style.transform = 'scaleX(1)';
+                });
+            }, 300);
+
+        });
+    </script>
+</body>
+</html>
