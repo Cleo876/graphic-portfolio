@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- We link to global CSS for consistency -->
+    <link rel="stylesheet" href="css/global.css">
+    
+    <script>
+        // 1. SMART ROUTING LOGIC
+        // This script runs immediately in the <head> before the page even renders.
+        document.addEventListener("DOMContentLoaded", () => {
+            const brokenUrl = window.location.pathname.toLowerCase();
+            const repoName = "graphic-portfolio"; // Your GitHub repo name
+            
+            // Determine the base URL dynamically (handles both local testing and GitHub Pages)
+            const baseUrl = window.location.origin + (brokenUrl.includes(repoName) ? "/" + repoName : "");
+
+            // Define the pages that belong in the /pages/ directory
+            const subPages = ['artifacts', 'copyright', 'principles', 'elements', 'theory'];
+
+            // Loop through and check if the user tried to access one of these pages from the root
+            for (let page of subPages) {
+                if (brokenUrl.includes(`/${page}.html`) || brokenUrl.endsWith(`/${page}`)) {
+                    // Redirect them instantly to the correct folder
+                    window.location.replace(`${baseUrl}/pages/${page}.html`);
+                    return; // Stop execution
+                }
+            }
+        });
+    </script>
+</head>
+
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col items-center justify-center bg-bone text-oxford overflow-hidden relative">
+
+    <!-- Background Grid -->
+    <div class="absolute inset-0 z-0 pointer-events-none opacity-20">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid404" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#002147" stroke-width="0.5"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid404)" />
+        </svg>
+    </div>
+
+    <!-- 404 Content -->
+    <main class="relative z-10 text-center px-6">
+        <div class="inline-block relative mb-8">
+            <h1 class="text-8xl md:text-[150px] font-display font-bold leading-none tracking-tighter text-oxford">404</h1>
+            
+            <!-- Animated decorative line -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-2 bg-oxford transform -rotate-6"></div>
+        </div>
+        
+        <p class="font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-bold mb-4 text-oxford/60">Path Not Found</p>
+        <h2 class="text-2xl md:text-3xl font-display mb-8 max-w-md mx-auto">The requested composite is missing from the timeline.</h2>
+        
+        <a href="index.html" class="inline-flex items-center gap-3 border border-oxford text-oxford px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-oxford hover:text-bone transition-colors group">
+            <span class="w-1.5 h-1.5 bg-oxford group-hover:bg-bone transition-colors rounded-full animate-pulse"></span>
+            Return to Root
+        </a>
+    </main>
+    
+    <!-- Footer watermark -->
+    <div class="absolute bottom-8 w-full text-center z-10">
+        <p class="font-display text-[10px] uppercase tracking-[0.4em] font-bold text-oxford/30">Design In Motion Framework</p>
+    </div>
+
+</body>
+</html>
