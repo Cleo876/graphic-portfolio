@@ -1,93 +1,117 @@
+/* STREAMING_CHUNK: Setting baseline document variables and structural resets */
 body {
-    background-color: #F9F6EE;
-    color: #002147;
-    overflow-x: hidden;
+background-color: #F9F6EE;
+color: #002147;
+overflow-x: hidden;
 }
 
-/* MoGraph background styles */
+/* MoGraph background canvas positioning */
 #mograph-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.35;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100vh;
+z-index: 0;
+pointer-events: none;
+opacity: 0.85;
 }
 
-/* Illustrator Style Anchor Point */
-.anchor-point {
-    fill: #F9F6EE;
-    stroke: #002147;
-    stroke-width: 1.5;
-    transition: all 0.3s ease;
-    opacity: 0.5;
-}
-
-/* Illustrator Style Path */
+/* STREAMING_CHUNK: Configuring the Infinite Linear SVG Path Tracing /
+/ The Infinite Linear Tracing Line */
 .vector-path {
-    fill: none;
-    stroke: #002147;
-    stroke-width: 1;
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: drawPath 12s ease-in-out infinite alternate;
+fill: none;
+stroke: #002147;
+stroke-width: 1.5;
+stroke-linecap: round;
+
+/* Strict pattern: 600px of visible line, 600px of empty gap */
+stroke-dasharray: 600 600;
+
+/* Linear easing ensures a seamless, imperceptible loop without starting or stopping */
+animation: infiniteTrace 3s linear infinite;
+
+
 }
 
-@keyframes drawPath {
-    0% { stroke-dashoffset: 1000; }
-    100% { stroke-dashoffset: 0; }
+/* Moving exactly 1200px (line + gap) creates a flawless, undetectable tile */
+@keyframes infiniteTrace {
+0% { stroke-dashoffset: 1200; }
+100% { stroke-dashoffset: 0; }
 }
 
-/* Cloud Fading Effect */
+/* Make the inner ribbon dashes flow continuously as well */
+.ribbon-dashed {
+animation: flowDash 25s linear infinite;
+}
+
+@keyframes flowDash {
+0% { stroke-dashoffset: 400; }
+100% { stroke-dashoffset: 0; }
+}
+
+/* Geometric anchor points */
+.anchor-point {
+fill: #F9F6EE;
+stroke: #002147;
+stroke-width: 1.5;
+transition: all 0.3s ease;
+opacity: 0.5;
+}
+
+/* STREAMING_CHUNK: Styling the Cloud Fade scroll animations */
 .cloud-fade {
-    opacity: 0;
-    filter: blur(8px);
-    transform: translateY(30px) scale(0.98);
-    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
-                filter 1s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, filter, transform;
+opacity: 0;
+filter: blur(8px);
+transform: translateY(30px) scale(0.98);
+transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+filter 1s cubic-bezier(0.22, 1, 0.36, 1),
+transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+will-change: opacity, filter, transform;
 }
 
 .cloud-fade.is-visible {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0) scale(1);
+opacity: 1;
+filter: blur(0px);
+transform: translateY(0) scale(1);
 }
 
 .delay-100 { transition-delay: 100ms; }
 .delay-200 { transition-delay: 200ms; }
 .delay-300 { transition-delay: 300ms; }
 
+/* STREAMING_CHUNK: Styling the Magnetic Navigation Links underline effect */
 .nav-link {
-    position: relative;
-    text-decoration: none;
+position: relative;
+text-decoration: none;
+display: inline-block;
+transition: transform 0.4s cubic-bezier(0.25, 1, 0.25, 1);
 }
+
 .nav-link::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1.5px;
-    bottom: -2px;
-    left: 0;
-    background-color: #002147;
-    transform: scaleX(0);
-    transform-origin: bottom right;
-    transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+content: '';
+position: absolute;
+width: 100%;
+height: 1.5px;
+bottom: -2px;
+left: 0;
+background-color: #002147;
+transform: scaleX(0);
+transform-origin: bottom right;
+transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
 }
+
 .nav-link:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
+transform: scaleX(1);
+transform-origin: bottom left;
 }
 
 ::selection {
-    background-color: #002147;
-    color: #F9F6EE;
+background-color: #002147;
+color: #F9F6EE;
 }
 
 .content-layer {
-    position: relative;
-    z-index: 10;
+position: relative;
+z-index: 10;
 }
