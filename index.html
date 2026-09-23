@@ -239,25 +239,32 @@
     </footer>
 
     <script src="js/app.js"></script>
-    <!-- ========================================== -->
-<!-- NEW: ANALYTICS TRACKING SCRIPT             -->
+    
+<!-- ========================================== -->
+<!-- REAL ANALYTICS TRACKING SCRIPT             -->
 <!-- ========================================== -->
 <script>
     function recordPageVisit(pageID) {
         const lockKey = `tracked_visit_${pageID}`;
         
+        // Check if user has already visited this specific page in this tab session
         if (!sessionStorage.getItem(lockKey)) {
-            // (Replace the URL below with your actual API endpoint later)
-            fetch(`https://api.your-counter.com/hit/${pageID}`, { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
+            
+            // This is the REAL, live CounterAPI endpoint (no account needed).
+            // It strictly pings the 'up' route to increment the count by 1.
+            fetch(`https://api.counterapi.dev/v1/cleon-williams-portfolio/${pageID}/up`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.count !== undefined) {
+                        // Success! Lock it so reloading doesn't inflate the data.
                         sessionStorage.setItem(lockKey, 'true');
-                        console.log(`[Analytics] New session visit logged for: ${pageID}`);
+                        console.log(`[Analytics] Success! Real hit logged for: ${pageID}. Total count: ${data.count}`);
                     }
                 })
                 .catch(error => {
-                    console.warn("[Analytics] Tracking request failed (this is normal if no API is linked yet).");
+                    console.warn("[Analytics] Tracking request failed.", error);
                 });
+                
         } else {
             console.log(`[Analytics] Ignored duplicate visit for: ${pageID}`);
         }
