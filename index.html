@@ -239,5 +239,33 @@
     </footer>
 
     <script src="js/app.js"></script>
+    <!-- ========================================== -->
+<!-- NEW: ANALYTICS TRACKING SCRIPT             -->
+<!-- ========================================== -->
+<script>
+    function recordPageVisit(pageID) {
+        const lockKey = `tracked_visit_${pageID}`;
+        
+        if (!sessionStorage.getItem(lockKey)) {
+            // (Replace the URL below with your actual API endpoint later)
+            fetch(`https://api.your-counter.com/hit/${pageID}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        sessionStorage.setItem(lockKey, 'true');
+                        console.log(`[Analytics] New session visit logged for: ${pageID}`);
+                    }
+                })
+                .catch(error => {
+                    console.warn("[Analytics] Tracking request failed (this is normal if no API is linked yet).");
+                });
+        } else {
+            console.log(`[Analytics] Ignored duplicate visit for: ${pageID}`);
+        }
+    }
+
+    // Fire the tracker specifically for the Home Page
+    recordPageVisit('home_page');
+</script>
+
 </body>
 </html>
