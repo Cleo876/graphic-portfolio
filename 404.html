@@ -40,6 +40,12 @@
             // Determine the base URL dynamically (handles both local testing and GitHub Pages)
             const baseUrl = window.location.origin + (brokenUrl.includes(repoName) ? "/" + repoName : "");
 
+            // FIX: Dynamically update the Home button to point to the correct absolute path
+            const homeBtn = document.getElementById("home-btn");
+            if (homeBtn) {
+                homeBtn.href = `${baseUrl}/index.html`;
+            }
+
             // Define the pages that belong in the /pages/ directory
             const subPages = ['artifacts', 'copyright', 'principles', 'elements', 'theory'];
 
@@ -126,7 +132,8 @@
         <p class="font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-bold mb-4 text-oxford/60">Asset Not Found</p>
         <h2 class="text-xl md:text-2xl font-display mb-10 max-w-md mx-auto leading-relaxed">The requested composite is missing from the artboard.</h2>
         
-        <a href="index.html" class="inline-flex items-center gap-3 border border-oxford text-oxford px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-oxford hover:text-bone transition-colors group">
+        <!-- Added id="home-btn" so the JS can force the absolute path onto it -->
+        <a id="home-btn" href="index.html" class="inline-flex items-center gap-3 border border-oxford text-oxford px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-oxford hover:text-bone transition-colors group">
             <span class="w-1.5 h-1.5 bg-oxford group-hover:bg-bone transition-colors rounded-full animate-pulse"></span>
             Return to Canvas
         </a>
