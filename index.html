@@ -3,35 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Primary Meta Tags -->
-    <meta name="title" content="Design In Motion | Graphic Design Portfolio">
-    <meta name="description" content="An exploration of graphics design principles, elements, and practical application by Cleon Williams.">
-    <meta name="author" content="Cleon Williams">
-
-    <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cleo876.github.io/graphic-portfolio/">
-    <meta property="og:title" content="Design In Motion | Graphic Design Portfolio">
-    <meta property="og:description" content="An exploration of graphics design principles, elements, and practical application by Cleon Williams.">
-    
-    <!-- The exact GitHub URL you provided -->
-    <meta property="og:image" content="https://github.com/Cleo876/graphic-portfolio/blob/main/design-in-motion-social.png?raw=true">
-    <meta property="og:image:secure_url" content="https://github.com/Cleo876/graphic-portfolio/blob/main/design-in-motion-social.png?raw=true">
-    
-    <!-- STRICT WHATSAPP & FACEBOOK REQUIREMENTS -->
-    <!-- Defining these prevents the platforms from "skipping" the image on the first share -->
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:site_name" content="Design In Motion">
-
-    <!-- Twitter / X (Included for standard completion) -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://cleo876.github.io/graphic-portfolio/">
-    <meta property="twitter:title" content="Design In Motion | Graphic Design Portfolio">
-    <meta property="twitter:description" content="An exploration of graphics design principles, elements, and practical application by Cleon Williams.">
-    <meta property="twitter:image" content="https://github.com/Cleo876/graphic-portfolio/blob/main/design-in-motion-social.png?raw=true">
-
     <title>Design In Motion | Graphics Design Portfolio</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,21 +27,27 @@
         }
     </script>
 
-    <!-- LINKING YOUR EXTERNAL CSS -->
-    <!-- Notice this is a relative path. It looks in the 'css' folder for 'global.css' -->
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative">
 
     <div class="absolute top-0 left-0 w-full h-[100vh] overflow-hidden z-0 pointer-events-none">
-        <svg id="mograph-canvas" xmlns="http://www.w3.org/2000/svg">
+        <!-- A strict viewBox guarantees the geometry scales perfectly on every device -->
+        <svg id="mograph-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
             <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#002147" stroke-width="0.5" stroke-opacity="0.1"/>
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#002147" stroke-width="0.5" stroke-opacity="0.15"/>
                 </pattern>
+                
+                <clipPath id="ribbon-aabb-mask">
+                    <rect x="650" y="50" width="800" height="850" fill="white"/>
+                </clipPath>
             </defs>
+            
             <rect width="100%" height="100%" fill="url(#grid)" />
-            <g id="dynamic-paths"></g>
+
+            <!-- The Bezier "Lasers" injected via JS will trace these paths infinitely -->
+            <g id="dynamic-paths" clip-path="url(#ribbon-aabb-mask)"></g>
         </svg>
         <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-bone to-transparent z-10"></div>
     </div>
@@ -82,39 +59,29 @@
                 Design In Motion
             </a>
             
-            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide">
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide" id="magnetic-nav">
                 <a href="#" class="nav-link">Home</a>
-                <a href="pages/copyright.html" class="nav-link">Copyright</a>
-                <a href="pages/principles.html" class="nav-link">Principles</a>
-                <a href="pages/elements.html" class="nav-link">Elements</a>
-                <a href="pages/theory.html" class="nav-link">Theory</a>
-                <a href="pages/artifacts.html" class="nav-link">Artifacts</a>
+                <a href="copyright.html" class="nav-link">Copyright</a>
+                <a href="principles.html" class="nav-link">Principles</a>
+                <a href="elements.html" class="nav-link">Elements</a>
+                <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link">Artifacts</a>
             </nav>
 
             <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
-                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
-        </div>
-
-        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
-            <a href="#" class="hover:text-oxford/70 transition-colors py-1">Home</a>
-            <a href="pages/copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
-            <a href="pages/principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
-            <a href="pages/elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
-            <a href="pages/theory.html" class="hover:text-oxford/70 transition-colors py-1">Color Theory</a>
-            <a href="pages/raster-vector.html" class="hover:text-oxford/70 transition-colors py-1">Raster vs Vector</a>
-            <a href="pages/artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
-            <a href="pages/authors.html" class="hover:text-oxford/70 transition-colors py-1">Authors & Bibliography</a>
         </div>
     </header>
 
     <main class="flex-grow pt-20 md:pt-24 content-layer">
         
-        <section class="relative px-6 md:px-12 pt-12 pb-24 md:pt-20 md:pb-32 lg:pt-32 lg:pb-40">
-            <div class="max-w-7xl mx-auto w-full relative z-10">
-                <div class="max-w-3xl cloud-fade delay-100">
+        <section class="relative px-6 md:px-12 pt-12 pb-8 border-b border-oxford/10">
+            <div class="max-w-7xl mx-auto w-full relative z-10 flex flex-col justify-start">
+                
+                <div class="max-w-3xl cloud-fade delay-100 w-full">
                     <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
                         <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
                         <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
@@ -133,16 +100,77 @@
                     </p>
                 </div>
                 
-                <div class="mt-12 md:mt-20 cloud-fade delay-300 flex items-center gap-3">
-                    <div class="w-px h-12 md:h-16 bg-oxford/20 relative overflow-hidden">
-                        <div class="w-full h-1/2 bg-oxford absolute top-0 left-0 animate-[bounce_2s_infinite]"></div>
+                <!-- The Block is pushed down precisely using mt-28 to clear the Ribbon geometry -->
+                <div class="mt-28 md:mt-32 flex flex-col sm:flex-row items-start sm:items-end gap-10 md:gap-16 w-full relative z-20">
+                    
+                    <div class="cloud-fade delay-200 flex items-center gap-3 pb-2 sm:pb-8">
+                        <div class="w-px h-12 md:h-16 bg-oxford/20 relative overflow-hidden">
+                            <div class="w-full h-1/2 bg-oxford absolute top-0 left-0 animate-[bounce_2s_infinite]"></div>
+                        </div>
+                        <span class="uppercase text-[10px] md:text-xs tracking-widest font-semibold rotate-90 origin-left translate-x-2">Scroll</span>
                     </div>
-                    <span class="uppercase text-[10px] md:text-xs tracking-widest font-semibold rotate-90 origin-left translate-x-2">Scroll</span>
+
+                    <!-- Kinetic Typography Mask Module -->
+                    <div class="w-full max-w-[400px] lg:max-w-lg relative group border-2 border-oxford overflow-hidden bg-bone aspect-[4/3] cloud-fade delay-300">
+                        <div class="absolute top-0 left-0 w-full bg-oxford text-bone flex justify-between items-center px-3 py-1.5 z-20">
+                            <div class="text-[9px] uppercase font-display tracking-[0.2em] flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-bone rounded-full animate-pulse"></span>
+                                Boolean_Matte.aep
+                            </div>
+                            <div class="text-[9px] uppercase font-display tracking-widest opacity-50">100%</div>
+                        </div>
+
+                        <svg viewBox="0 0 500 375" class="w-full h-full absolute inset-0 mt-6" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <clipPath id="kinetic-mask">
+                                    <circle cx="250" cy="187.5" r="140">
+                                        <animate attributeName="cx" values="-150; 650; -150" dur="7s" repeatCount="indefinite" ease="ease-in-out"/>
+                                    </circle>
+                                    <rect x="0" y="30" width="120" height="300">
+                                        <animate attributeName="x" values="550; -200; 550" dur="11s" repeatCount="indefinite" ease="ease-in-out"/>
+                                    </rect>
+                                </clipPath>
+                                <pattern id="thick-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#002147" stroke-width="1.5" opacity="0.15"/>
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#thick-grid)" />
+                            
+                            <!-- BASE LAYER -->
+                            <g font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="100" letter-spacing="-0.04em" text-anchor="middle">
+                                <line x1="0" y1="80" x2="500" y2="80" stroke="#002147" stroke-width="14" stroke-dasharray="150 50">
+                                     <animate attributeName="stroke-dashoffset" values="0; -400" dur="5s" repeatCount="indefinite" linear />
+                                </line>
+                                <line x1="0" y1="285" x2="500" y2="285" stroke="#002147" stroke-width="14" stroke-dasharray="50 150">
+                                     <animate attributeName="stroke-dashoffset" values="0; 400" dur="7s" repeatCount="indefinite" linear />
+                                </line>
+                                <text x="250" y="115" fill="none" stroke="#002147" stroke-width="3">GRAPHIC</text>
+                                <text x="250" y="215" fill="#002147">DESIGN</text>
+                                <text x="250" y="315" fill="none" stroke="#002147" stroke-width="3">MOTION</text>
+                            </g>
+
+                            <!-- MATTE LAYER -->
+                            <g clip-path="url(#kinetic-mask)">
+                                <rect width="100%" height="100%" fill="#002147" />
+                                <g font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="100" letter-spacing="-0.04em" text-anchor="middle">
+                                    <line x1="0" y1="80" x2="500" y2="80" stroke="#F9F6EE" stroke-width="14" stroke-dasharray="150 50">
+                                         <animate attributeName="stroke-dashoffset" values="0; -400" dur="5s" repeatCount="indefinite" linear />
+                                    </line>
+                                    <line x1="0" y1="285" x2="500" y2="285" stroke="#F9F6EE" stroke-width="14" stroke-dasharray="50 150">
+                                         <animate attributeName="stroke-dashoffset" values="0; 400" dur="7s" repeatCount="indefinite" linear />
+                                    </line>
+                                    <text x="250" y="115" fill="#F9F6EE">GRAPHIC</text>
+                                    <text x="250" y="215" fill="none" stroke="#F9F6EE" stroke-width="3">DESIGN</text>
+                                    <text x="250" y="315" fill="#F9F6EE">MOTION</text>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-20 md:py-32 px-6 md:px-12 bg-bone relative z-20">
+        <section class="py-12 md:py-20 px-6 md:px-12 bg-bone relative z-20">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
                 <div class="md:col-span-4 lg:col-span-4 cloud-fade">
                     <h2 class="text-3xl md:text-4xl font-display font-bold relative inline-block mb-4 md:mb-0">
@@ -158,14 +186,14 @@
                         At its core, graphic design is the visual communicator of a concept, event, movie, or brand, driven entirely by the way the elements of the composition are arranged. It gives structure and emotion to the messages we consume daily.
                     </p>
                     <p class="text-base sm:text-lg text-oxford/80 leading-relaxed font-light">
-                        In our increasingly visual world, graphic design is not merely about making things look aesthetically pleasing. It is a strategic discipline that utilizes typography, imagery, color, theory, and form to communicate complex messages with clarity. From the logos that define brands to the layouts that structure our reading, graphics design shapes the way we perceive and interact with our environment.
+                        In our increasingly visual world, graphic design is not merely about making things look aesthetically pleasing. It is a strategic discipline that utilizes typography, imagery, color, theory, and form to communicate complex messages with clarity.
                     </p>
                 </div>
             </div>
         </section>
 
         <section class="py-20 md:py-32 px-6 md:px-12 bg-oxford text-bone relative z-20">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-start">
                 <div class="md:col-span-5 lg:col-span-5 cloud-fade order-2 md:order-1">
                     <div class="aspect-square border border-bone/20 p-6 md:p-8 relative flex items-center justify-center group overflow-hidden max-w-sm mx-auto md:max-w-none">
                         <div class="absolute top-0 left-0 w-3 h-3 md:w-4 md:h-4 border-t-2 border-l-2 border-bone transition-transform group-hover:scale-150 group-hover:-translate-x-1 group-hover:-translate-y-1 md:group-hover:-translate-x-2 md:group-hover:-translate-y-2"></div>
@@ -177,8 +205,6 @@
                             <h3 class="font-display text-xl md:text-2xl mb-3 md:mb-4 italic">"Design is intelligence made visible."</h3>
                             <p class="text-xs md:text-sm font-light tracking-widest uppercase text-bone/60">— Alina Wheeler</p>
                         </div>
-                        
-                        <div class="absolute inset-0 bg-bone/5 scale-0 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
                     </div>
                 </div>
                 <div class="md:col-span-7 lg:col-span-6 lg:col-start-7 cloud-fade delay-100 order-1 md:order-2">
@@ -197,21 +223,19 @@
     <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-oxford block rotate-45"></span>
+                <span class="w-2.5 h-2.5 bg-oxford block rotate-45"></span>
                 <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
             </div>
             <div class="text-xs md:text-sm text-oxford/60 font-light">
                 &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
             </div>
-            <a href="pages/copyright.html" class="text-xs md:text-sm font-medium uppercase tracking-widest hover:text-oxford/60 transition-colors flex items-center gap-2 group">
+            <a href="copyright.html" class="text-xs md:text-sm font-bold uppercase tracking-widest text-oxford hover:text-oxford/60 transition-colors flex items-center gap-2 group">
                 Next: Copyright 
-                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
         </div>
     </footer>
 
-    <!-- LINKING YOUR EXTERNAL JAVASCRIPT -->
-    <!-- Notice this is a relative path. It looks in the 'js' folder for 'app.js' -->
     <script src="js/app.js"></script>
 </body>
 </html>
