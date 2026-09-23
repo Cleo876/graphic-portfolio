@@ -1,33 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-            
-    // 1. Cloud Fading
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
+    
+    // 1. Intersection Observer for Cloud Fade Elements
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    const fadeElements = document.querySelectorAll('.cloud-fade');
-    fadeElements.forEach(el => observer.observe(el));
-
+    document.querySelectorAll('.cloud-fade').forEach(el => observer.observe(el));
     setTimeout(() => {
-        fadeElements.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            if (rect.top < window.innerHeight) {
-                el.classList.add('is-visible');
-            }
+        document.querySelectorAll('.cloud-fade').forEach(el => {
+            if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('is-visible');
         });
     }, 100);
 
-    // 2. Mobile Menu
+    // 2. Mobile Menu Toggle Logic
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
 
@@ -38,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Header Scroll
+    // 3. Header Scroll Glassmorphism Logic
     const header = document.getElementById('header');
     if (header) {
         window.addEventListener('scroll', () => {
@@ -52,49 +41,97 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Constrained Dynamic MoGraph SVG Background
+    // 4. Advanced AABB Magnetic Navigation Links using Pythagorean Radial Distance
+    const navContainer = document.getElementById('magnetic-nav');
+    const magneticLinks = document.querySelectorAll('.nav-link');
+    
+    if (navContainer && magneticLinks.length > 1) {
+        // Calculate the AABB radius based on distance between the first two links
+        const rect1 = magneticLinks[0].getBoundingClientRect();
+        const rect2 = magneticLinks[1].getBoundingClientRect();
+        
+        // As requested: Proximity range is set to half (0.5) the distance between adjacent links
+        const magneticRadius = Math.abs((rect2.left + rect2.width/2) - (rect1.left + rect1.width/2)) * 0.5;
+
+        document.addEventListener('mousemove', (e) => {
+            magneticLinks.forEach(link => {
+                const rect = link.getBoundingClientRect();
+                const linkCenterX = rect.left + rect.width / 2;
+                const linkCenterY = rect.top + rect.height / 2;
+                
+                // Pythagorean theorem calculates true radial distance from cursor to link center
+                const distance = Math.hypot(e.clientX - linkCenterX, e.clientY - linkCenterY);
+                
+                // AABB Boundary Check: Only apply magnetic pull if INSIDE the specific radius
+                if (distance < magneticRadius) {
+                    // Calculate pull strength (stronger when closer to center)
+                    const pullStrength = 1 - (distance / magneticRadius);
+                    const x = (e.clientX - linkCenterX) * 0.2 * pullStrength;
+                    const y = (e.clientY - linkCenterY) * 0.2 * pullStrength;
+                    
+                    link.style.transform = `translate(${x}px, ${y}px)`;
+                    link.style.transition = 'none'; // Instant tracking when active
+                } else {
+                    // Outside AABB radius: snap back to original position smoothly
+                    link.style.transform = 'translate(0px, 0px)';
+                    link.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.25, 1)';
+                }
+            });
+        });
+    }
+
+    // 5. Constrained Dynamic MoGraph SVG Ribbon Background
     const svgGroup = document.getElementById('dynamic-paths');
 
     function generateBackground() {
         if (!svgGroup) return;
         svgGroup.innerHTML = ''; 
         
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        
-        const pathCount = Math.max(3, Math.floor(vw / 300));
+        const pathCount = 15; // Creates a dense, visible 3D ribbon of 15 overlapping lines
 
         for (let i = 0; i < pathCount; i++) {
-            createPath(vw, vh);
+            // Offset multiplies to create the thickness of the 3D ribbon
+            const offset = i * 15; 
+            
+            // Hardcoded coordinates inside the 1440x900 viewBox.
+            // This anchors the ribbon firmly in the right-side negative space.
+            const startX = 1300 - (offset * 1.2);
+            const startY = 50 + (offset * 0.5);
+            
+            // The ribbon swoops sharply left towards the center text
+            const cp1X = 600 - (offset * 2);
+            const cp1Y = 400 + offset;
+            
+            // Then swoops sharply back right, crossing over itself
+            const cp2X = 1500 - offset;
+            const cp2Y = 650 + (offset * 0.8);
+            
+            // And exits cleanly at the bottom right
+            const endX = 800 - offset;
+            const endY = 1000;
+
+            const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'vector-path');
+            
+            // Stagger the animation timing to offset the dashed pattern drawing sequentially
+            path.style.animationDelay = `${i * 0.05}s`;
+            
+            // Outer lines are slightly thinner/lighter to enhance the 3D rounded edge illusion
+            path.style.opacity = 1 - (i * 0.04);
+            path.style.strokeWidth = i === 0 ? 2 : 1; 
+
+            svgGroup.appendChild(path);
+
+            if (i === 0) {
+                createAnchorPoint(startX, startY);
+                createAnchorPoint(endX, endY);
+                createHandle(startX, startY, cp1X, cp1Y);
+                createHandle(endX, endY, cp2X, cp2Y);
+            }
         }
-    }
-
-    function createPath(vw, vh) {
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        
-        const startX = (Math.random() * 1.2 - 0.1) * vw;
-        const startY = (Math.random() * 1.2 - 0.1) * vh;
-        const cp1X = Math.random() * vw;
-        const cp1Y = Math.random() * vh;
-        const cp2X = Math.random() * vw;
-        const cp2Y = Math.random() * vh;
-        const endX = (Math.random() * 1.2 - 0.1) * vw;
-        const endY = (Math.random() * 1.2 - 0.1) * vh;
-
-        const d = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
-        
-        path.setAttribute('d', d);
-        path.setAttribute('class', 'vector-path');
-        
-        const duration = 15 + Math.random() * 20;
-        path.style.animationDuration = `${duration}s`;
-
-        svgGroup.appendChild(path);
-
-        createAnchorPoint(startX, startY);
-        createAnchorPoint(endX, endY);
-        createHandle(startX, startY, cp1X, cp1Y);
-        createHandle(endX, endY, cp2X, cp2Y);
     }
 
     function createAnchorPoint(x, y) {
@@ -133,12 +170,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if(svgGroup) {
         window.addEventListener('load', generateBackground);
         generateBackground();
-
-        window.addEventListener('resize', () => {
-            clearTimeout(window.resizeTimer);
-            window.resizeTimer = setTimeout(() => {
-                generateBackground();
-            }, 250);
-        });
     }
 });
