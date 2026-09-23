@@ -78,10 +78,12 @@
 
     <main class="flex-grow pt-20 md:pt-24 content-layer">
         
+        <!-- Replaced existing relative section with this updated block -->
         <section class="relative px-6 md:px-12 pt-12 pb-8 border-b border-oxford/10">
             <div class="max-w-7xl mx-auto w-full relative z-10 flex flex-col justify-start">
                 
-                <div class="max-w-3xl cloud-fade delay-100 w-full">
+                <!-- FIX: Added max-w-[65%] on mobile to force wrapping and protect the right-side SVG ribbon. Reverts to max-w-3xl on md (desktop) -->
+                <div class="max-w-[65%] md:max-w-3xl cloud-fade delay-100 w-full">
                     <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
                         <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
                         <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
@@ -100,8 +102,8 @@
                     </p>
                 </div>
                 
-                <!-- The Block is pushed down precisely using mt-28 to clear the Ribbon geometry -->
-                <div class="mt-28 md:mt-32 flex flex-col sm:flex-row items-start sm:items-end gap-10 md:gap-16 w-full relative z-20">
+                <!-- FIX: Reduced mt-28 to mt-12 on mobile. The taller wrapping text above will naturally fill this gap without pushing the page down! -->
+                <div class="mt-12 md:mt-32 flex flex-col sm:flex-row items-start sm:items-end gap-10 md:gap-16 w-full relative z-20">
                     
                     <div class="cloud-fade delay-200 flex items-center gap-3 pb-2 sm:pb-8">
                         <div class="w-px h-12 md:h-16 bg-oxford/20 relative overflow-hidden">
