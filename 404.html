@@ -46,6 +46,13 @@
             // Loop through and check if the user tried to access one of these pages from the root
             for (let page of subPages) {
                 if (brokenUrl.includes(`/${page}.html`) || brokenUrl.endsWith(`/${page}`)) {
+                    
+                    // CRITICAL FIX: If they are ALREADY in the /pages/ folder, 
+                    // the file genuinely doesn't exist yet. Break the loop so the 404 animation can play!
+                    if (brokenUrl.includes(`/pages/${page}`)) {
+                        return; 
+                    }
+
                     // Redirect them instantly to the correct folder
                     window.location.replace(`${baseUrl}/pages/${page}.html`);
                     return; // Stop execution
