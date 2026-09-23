@@ -70,27 +70,55 @@
     </div>
 
     <!-- 404 Content -->
-    <main class="relative z-10 text-center px-6">
-        <div class="inline-block relative mb-8">
-            <h1 class="text-8xl md:text-[150px] font-display font-bold leading-none tracking-tighter text-oxford">404</h1>
+    <main class="relative z-10 text-center px-6 w-full max-w-4xl mx-auto flex flex-col items-center">
+        <!-- Responsive Bounding Box Container -->
+        <div class="relative w-full aspect-[4/3] md:aspect-[21/9] flex items-center justify-center mb-12 mt-4">
             
-            <!-- Animated decorative line -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-2 bg-oxford transform -rotate-6"></div>
+            <!-- Fluid SVG Missing Asset Box -->
+            <svg width="100%" height="100%" class="absolute inset-0 pointer-events-none overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main Bounding Box -->
+                <rect x="0" y="0" width="100%" height="100%" fill="none" stroke="#002147" stroke-width="2" />
+                
+                <!-- The Classic Missing Link "X" -->
+                <line x1="0" y1="0" x2="100%" y2="100%" stroke="#002147" stroke-width="1" opacity="0.3" />
+                <line x1="100%" y1="0" x2="0" y2="100%" stroke="#002147" stroke-width="1" opacity="0.3" />
+                
+                <!-- Top Left Node -->
+                <rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
+                <!-- Top Right Node -->
+                <svg x="100%" y="0" class="overflow-visible"><rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" /></svg>
+                <!-- Bottom Left Node -->
+                <svg x="0" y="100%" class="overflow-visible"><rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" /></svg>
+                <!-- Bottom Right Node -->
+                <svg x="100%" y="100%" class="overflow-visible"><rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" /></svg>
+                <!-- Top Center Node -->
+                <svg x="50%" y="0" class="overflow-visible"><rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" /></svg>
+                <!-- Bottom Center Node -->
+                <svg x="50%" y="100%" class="overflow-visible"><rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" /></svg>
+
+                <!-- Center Node & Spinning Handle -->
+                <svg x="50%" y="50%" class="overflow-visible">
+                    <g class="origin-center animate-[spin_8s_linear_infinite]">
+                        <rect x="-5" y="-5" width="10" height="10" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
+                        <line x1="0" y1="0" x2="70" y2="-70" stroke="#002147" stroke-width="2" />
+                        <circle cx="70" cy="-70" r="6" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
+                    </g>
+                </svg>
+            </svg>
+
+            <!-- Massive 404 Typography -->
+            <h1 class="text-[100px] sm:text-[150px] md:text-[200px] font-display font-bold leading-none tracking-tighter text-oxford relative z-10 px-8 bg-bone/80 backdrop-blur-sm">
+                404
+            </h1>
         </div>
         
-        <p class="font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-bold mb-4 text-oxford/60">Path Not Found</p>
-        <h2 class="text-2xl md:text-3xl font-display mb-8 max-w-md mx-auto">The requested composite is missing from the timeline.</h2>
+        <p class="font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-bold mb-4 text-oxford/60">Asset Not Found</p>
+        <h2 class="text-xl md:text-2xl font-display mb-10 max-w-md mx-auto leading-relaxed">The requested composite is missing from the artboard.</h2>
         
         <a href="index.html" class="inline-flex items-center gap-3 border border-oxford text-oxford px-8 py-4 font-bold uppercase tracking-widest text-xs hover:bg-oxford hover:text-bone transition-colors group">
             <span class="w-1.5 h-1.5 bg-oxford group-hover:bg-bone transition-colors rounded-full animate-pulse"></span>
-            Return to Root
+            Return to Canvas
         </a>
     </main>
     
     <!-- Footer watermark -->
-    <div class="absolute bottom-8 w-full text-center z-10">
-        <p class="font-display text-[10px] uppercase tracking-[0.4em] font-bold text-oxford/30">Design In Motion Framework</p>
-    </div>
-
-</body>
-</html>
