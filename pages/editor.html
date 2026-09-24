@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
+<html lang="en" class="scroll-smooth"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canvas Editor | Design In Motion</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;family=Space+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -68,6 +67,34 @@
         .rich-text b, .rich-text strong { font-weight: 600; color: #002147; }
         .rich-text i, .rich-text em { font-style: italic; }
         
+        /* NEW: Premium Blockquote and Monospace Formatting Styles */
+        .rich-text blockquote {
+            border-left: 4px solid #002147;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background-color: rgba(0, 33, 71, 0.03);
+            font-family: 'Space Grotesk', sans-serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 1.25rem;
+            color: #002147;
+            border-radius: 0 8px 8px 0;
+            /* FIX: Ensure the blockquote establishes a new formatting context, 
+               pulling the border tight against the text and ignoring the floated image bounds */
+            display: flow-root; 
+            clear: none;
+        }
+        
+        .rich-text code {
+            font-family: monospace;
+            background-color: rgba(0, 33, 71, 0.08);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #002147;
+            font-weight: 600;
+        }
+
         /* Image Wrapping Utilities */
         .clearfix::after {
             content: "";
@@ -78,25 +105,63 @@
         /* Editor UI Overlays */
         .block-hover-controls { opacity: 0; transition: opacity 0.2s; }
         .editor-block:hover .block-hover-controls { opacity: 1; }
+        
+        /* NEW: The Floating Toolbar Style */
+        #floating-toolbar {
+            position: absolute;
+            z-index: 1000;
+            display: none;
+            background-color: #002147;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 33, 71, 0.3);
+            transform: translateY(10px) scale(0.95);
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+        }
+        
+        #floating-toolbar.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .toolbar-btn {
+            color: #F9F6EE;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .toolbar-btn:hover { background-color: rgba(249, 246, 238, 0.2); }
+        .toolbar-divider { width: 1px; height: 20px; background-color: rgba(249, 246, 238, 0.2); margin: 0 4px; }
     </style>
-</head>
-<body class="antialiased min-h-screen flex flex-col">
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Outfit, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.top-0{top:0px}.-left-16{left:-4rem}.-bottom-\[1px\]{bottom:-1px}.-left-\[1px\]{left:-1px}.-right-\[1px\]{right:-1px}.-top-\[1px\]{top:-1px}.z-50{z-index:50}.z-10{z-index:10}.float-left{float:left}.mx-auto{margin-left:auto;margin-right:auto}.mt-12{margin-top:3rem}.mb-10{margin-bottom:2.5rem}.mb-4{margin-bottom:1rem}.mr-8{margin-right:2rem}.block{display:block}.flex{display:flex}.h-2{height:0.5rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-3{height:0.75rem}.h-auto{height:auto}.min-h-screen{min-height:100vh}.min-h-\[200px\]{min-height:200px}.w-2{width:0.5rem}.w-4{width:1rem}.w-6{width:1.5rem}.w-3{width:0.75rem}.w-\[350px\]{width:350px}.w-full{width:100%}.max-w-4xl{max-width:56rem}.flex-grow{flex-grow:1}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-3{gap:0.75rem}.scroll-smooth{scroll-behavior:smooth}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-b-2{border-bottom-width:2px}.border-l-2{border-left-width:2px}.border-r-2{border-right-width:2px}.border-t-2{border-top-width:2px}.border-none{border-style:none}.border-oxford\/10{border-color:rgb(0 33 71 / 0.1)}.border-oxford\/20{border-color:rgb(0 33 71 / 0.2)}.border-oxford\/15{border-color:rgb(0 33 71 / 0.15)}.border-oxford\/40{border-color:rgb(0 33 71 / 0.4)}.bg-oxford{--tw-bg-opacity:1;background-color:rgb(0 33 71 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-oxford\/5{background-color:rgb(0 33 71 / 0.05)}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-4{padding:1rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pt-8{padding-top:2rem}.font-display{font-family:Space Grotesk, sans-serif}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Outfit, sans-serif}.font-serif{font-family:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.tracking-widest{letter-spacing:0.1em}.text-bone{--tw-text-opacity:1;color:rgb(249 246 238 / var(--tw-text-opacity, 1))}.text-oxford\/80{color:rgb(0 33 71 / 0.8)}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-oxford{--tw-text-opacity:1;color:rgb(0 33 71 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-oxford\/50::placeholder{color:rgb(0 33 71 / 0.5)}.opacity-0{opacity:0}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:bg-oxford\/5:hover{background-color:rgb(0 33 71 / 0.05)}.hover\:bg-oxford\/90:hover{background-color:rgb(0 33 71 / 0.9)}.hover\:bg-oxford\/10:hover{background-color:rgb(0 33 71 / 0.1)}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-oxford:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(0 33 71 / var(--tw-ring-opacity, 1))}.group\/img:hover .group-hover\/img\:scale-\[1\.02\]{--tw-scale-x:1.02;--tw-scale-y:1.02;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group\/img:hover .group-hover\/img\:opacity-100{opacity:1}</style><style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Outfit, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.-bottom-\[1px\]{bottom:-1px}.-left-16{left:-4rem}.-left-\[1px\]{left:-1px}.-right-\[1px\]{right:-1px}.-top-\[1px\]{top:-1px}.top-0{top:0px}.z-10{z-index:10}.z-50{z-index:50}.float-left{float:left}.mx-auto{margin-left:auto;margin-right:auto}.mb-10{margin-bottom:2.5rem}.mb-4{margin-bottom:1rem}.mr-8{margin-right:2rem}.mt-12{margin-top:3rem}.block{display:block}.flex{display:flex}.h-2{height:0.5rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-auto{height:auto}.min-h-\[200px\]{min-height:200px}.min-h-screen{min-height:100vh}.w-2{width:0.5rem}.w-3{width:0.75rem}.w-4{width:1rem}.w-6{width:1.5rem}.w-\[350px\]{width:350px}.w-full{width:100%}.max-w-4xl{max-width:56rem}.flex-grow{flex-grow:1}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.scroll-smooth{scroll-behavior:smooth}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l-2{border-left-width:2px}.border-r-2{border-right-width:2px}.border-t{border-top-width:1px}.border-t-2{border-top-width:2px}.border-none{border-style:none}.border-oxford\/10{border-color:rgb(0 33 71 / 0.1)}.border-oxford\/15{border-color:rgb(0 33 71 / 0.15)}.border-oxford\/20{border-color:rgb(0 33 71 / 0.2)}.border-oxford\/40{border-color:rgb(0 33 71 / 0.4)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-oxford{--tw-bg-opacity:1;background-color:rgb(0 33 71 / var(--tw-bg-opacity, 1))}.bg-oxford\/5{background-color:rgb(0 33 71 / 0.05)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-4{padding:1rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pt-8{padding-top:2rem}.font-display{font-family:Space Grotesk, sans-serif}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Outfit, sans-serif}.font-serif{font-family:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.tracking-widest{letter-spacing:0.1em}.text-bone{--tw-text-opacity:1;color:rgb(249 246 238 / var(--tw-text-opacity, 1))}.text-oxford{--tw-text-opacity:1;color:rgb(0 33 71 / var(--tw-text-opacity, 1))}.text-oxford\/80{color:rgb(0 33 71 / 0.8)}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-oxford\/50::placeholder{color:rgb(0 33 71 / 0.5)}.opacity-0{opacity:0}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-oxford\/10:hover{background-color:rgb(0 33 71 / 0.1)}.hover\:bg-oxford\/5:hover{background-color:rgb(0 33 71 / 0.05)}.hover\:bg-oxford\/90:hover{background-color:rgb(0 33 71 / 0.9)}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-oxford:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(0 33 71 / var(--tw-ring-opacity, 1))}.group\/img:hover .group-hover\/img\:scale-\[1\.02\]{--tw-scale-x:1.02;--tw-scale-y:1.02;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group\/img:hover .group-hover\/img\:opacity-100{opacity:1}</style><style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Outfit, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.-bottom-\[1px\]{bottom:-1px}.-left-16{left:-4rem}.-left-\[1px\]{left:-1px}.-right-\[1px\]{right:-1px}.-top-\[1px\]{top:-1px}.top-0{top:0px}.z-10{z-index:10}.z-50{z-index:50}.float-left{float:left}.mx-auto{margin-left:auto;margin-right:auto}.mb-10{margin-bottom:2.5rem}.mb-4{margin-bottom:1rem}.mr-8{margin-right:2rem}.mt-12{margin-top:3rem}.block{display:block}.flex{display:flex}.h-2{height:0.5rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-auto{height:auto}.min-h-\[200px\]{min-height:200px}.min-h-screen{min-height:100vh}.w-2{width:0.5rem}.w-3{width:0.75rem}.w-4{width:1rem}.w-6{width:1.5rem}.w-\[350px\]{width:350px}.w-full{width:100%}.max-w-4xl{max-width:56rem}.flex-grow{flex-grow:1}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.scroll-smooth{scroll-behavior:smooth}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l-2{border-left-width:2px}.border-r-2{border-right-width:2px}.border-t{border-top-width:1px}.border-t-2{border-top-width:2px}.border-none{border-style:none}.border-oxford\/10{border-color:rgb(0 33 71 / 0.1)}.border-oxford\/15{border-color:rgb(0 33 71 / 0.15)}.border-oxford\/20{border-color:rgb(0 33 71 / 0.2)}.border-oxford\/40{border-color:rgb(0 33 71 / 0.4)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-oxford{--tw-bg-opacity:1;background-color:rgb(0 33 71 / var(--tw-bg-opacity, 1))}.bg-oxford\/5{background-color:rgb(0 33 71 / 0.05)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-4{padding:1rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pt-8{padding-top:2rem}.font-display{font-family:Space Grotesk, sans-serif}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Outfit, sans-serif}.font-serif{font-family:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.tracking-widest{letter-spacing:0.1em}.text-bone{--tw-text-opacity:1;color:rgb(249 246 238 / var(--tw-text-opacity, 1))}.text-oxford{--tw-text-opacity:1;color:rgb(0 33 71 / var(--tw-text-opacity, 1))}.text-oxford\/80{color:rgb(0 33 71 / 0.8)}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-oxford\/50::placeholder{color:rgb(0 33 71 / 0.5)}.opacity-0{opacity:0}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-oxford\/10:hover{background-color:rgb(0 33 71 / 0.1)}.hover\:bg-oxford\/5:hover{background-color:rgb(0 33 71 / 0.05)}.hover\:bg-oxford\/90:hover{background-color:rgb(0 33 71 / 0.9)}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-oxford:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(0 33 71 / var(--tw-ring-opacity, 1))}.group\/img:hover .group-hover\/img\:scale-\[1\.02\]{--tw-scale-x:1.02;--tw-scale-y:1.02;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group\/img:hover .group-hover\/img\:opacity-100{opacity:1}</style></head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <!-- NEW: The Floating Contextual Toolbar -->
+    <div id="floating-toolbar" class="flex items-center gap-1" style="display: none; top: 728.55px; left: 748.375px;">
+        <button onclick="formatText('bold')" class="toolbar-btn font-serif font-bold" title="Bold">B</button>
+        <button onclick="formatText('italic')" class="toolbar-btn font-serif italic" title="Italic">I</button>
+        <button onclick="formatText('mono')" class="toolbar-btn font-mono font-bold" title="Monospace">&lt;/&gt;</button>
+        <div class="toolbar-divider"></div>
+        <button onclick="formatText('formatBlock', 'H2')" class="toolbar-btn font-display font-bold text-xs" title="Heading 2">H2</button>
+        <button onclick="formatText('formatBlock', 'H3')" class="toolbar-btn font-display font-bold text-xs" title="Heading 3">H3</button>
+        <button onclick="formatText('formatBlock', 'P')" class="toolbar-btn font-sans text-xs" title="Paragraph">¶</button>
+        <div class="toolbar-divider"></div>
+        <button onclick="formatText('quote')" class="toolbar-btn font-serif font-bold text-lg" title="Blockquote">"</button>
+    </div>
 
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-oxford/10 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-6">
             <div class="font-display font-bold uppercase tracking-widest text-sm flex items-center gap-2">
                 <span class="w-2 h-2 bg-oxford block animate-pulse"></span> Visual Canvas Editor
-            </div>
-            
-            <!-- Rich Text Formatting Tools -->
-            <div class="h-6 w-px bg-oxford/20"></div>
-            <div class="flex gap-2">
-                <button onclick="formatText('bold')" class="w-8 h-8 flex items-center justify-center font-serif font-bold border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Bold">B</button>
-                <button onclick="formatText('italic')" class="w-8 h-8 flex items-center justify-center font-serif italic border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Italic">I</button>
-                <div class="h-8 w-px bg-oxford/20 mx-1"></div>
-                <button onclick="formatText('formatBlock', 'H2')" class="px-3 h-8 flex items-center justify-center font-display font-bold text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Heading 2">H2</button>
-                <button onclick="formatText('formatBlock', 'H3')" class="px-3 h-8 flex items-center justify-center font-display font-bold text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Heading 3">H3</button>
-                <button onclick="formatText('formatBlock', 'P')" class="px-3 h-8 flex items-center justify-center font-sans font-medium text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Paragraph">Text</button>
             </div>
         </div>
 
@@ -108,9 +173,49 @@
 
     <main class="flex-grow py-16 px-6 relative">
         <!-- Max-width matches your copyright page exactly -->
-        <div class="max-w-4xl mx-auto" id="editor-canvas">
-            <!-- Blocks are injected here by JS -->
-        </div>
+        <div class="max-w-4xl mx-auto" id="editor-canvas"><div class="editor-block relative mb-10 clearfix group">
+                        
+                    <div class="block-hover-controls absolute -left-16 top-0 flex flex-col gap-1 bg-white border border-oxford/10 p-1 shadow-sm rounded z-10">
+                        <button onclick="moveBlock(0, -1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Up">↑</button>
+                        <button onclick="moveBlock(0, 1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Down">↓</button>
+                        <button onclick="deleteBlock('muv5kptil')" class="w-6 h-6 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs" title="Delete">×</button>
+                    </div>
+                
+                        <div id="content-muv5kptil" contenteditable="true" class="rich-text p-2" onblur="updateBlockContent('muv5kptil')"><h2>Welcome to the Visual Editor</h2><p>Click anywhere on this text to start typing. Use the toolbar above to make text <b>bold</b> or create headings!</p></div>
+                    </div><div class="editor-block relative mb-10 clearfix group">
+                        
+                    <div class="block-hover-controls absolute -left-16 top-0 flex flex-col gap-1 bg-white border border-oxford/10 p-1 shadow-sm rounded z-10">
+                        <button onclick="moveBlock(1, -1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Up">↑</button>
+                        <button onclick="moveBlock(1, 1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Down">↓</button>
+                        <button onclick="deleteBlock('g57zgqjhd')" class="w-6 h-6 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs" title="Delete">×</button>
+                    </div>
+                
+                        
+                        <!-- The Wrapped Image Box -->
+                        <div class="float-left mr-8 mb-4 relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group/img w-[350px]">
+                            <!-- AABB Crosshairs -->
+                            <div class="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-oxford/40"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-oxford/40"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-oxford/40"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-oxford/40"></div>
+                            
+                            <!-- The Image -->
+                            <img id="img-g57zgqjhd" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=600" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform duration-300 group-hover/img:scale-[1.02]" title="Hover to edit image">
+                                 
+                            <!-- Real-Time Alignment & URL Input Overlay -->
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-2xl flex flex-col items-center justify-center gap-3 pointer-events-none p-4">
+                                <button class="pointer-events-auto bg-white text-oxford text-xs px-4 py-2 rounded font-bold shadow-lg hover:bg-gray-200 transition-colors" onclick="toggleAlign('g57zgqjhd')">
+                                    Swap Alignment
+                                </button>
+                                
+                                <!-- Inline URL Input -->
+                                <input type="text" class="pointer-events-auto w-full text-xs p-2.5 rounded bg-white/95 text-oxford placeholder-oxford/50 border-none outline-none focus:ring-2 focus:ring-oxford shadow-lg font-mono transition-all" placeholder="Paste image URL..." value="" oninput="handleInlineImageUpdate('g57zgqjhd', this.value)" onfocus="this.select()">
+                            </div>
+                        </div>
+
+                        <!-- The Text that wraps around it -->
+                        <div id="content-g57zgqjhd" contenteditable="true" class="rich-text p-2 min-h-[200px]" onblur="updateBlockContent('g57zgqjhd')"><h3>Dynamic Image Wrap</h3><p>This text will perfectly wrap around the bounding box of the image! You can highlight text to bold it, or click the image to swap its URL.</p><blockquote>This is the text I will be quoting and you will be accepting.</blockquote><blockquote><br></blockquote></div>
+                    </div></div>
 
         <!-- Add Block Button -->
         <div class="max-w-4xl mx-auto mt-12 pt-8 border-t border-oxford/10 flex justify-center gap-4">
@@ -137,9 +242,57 @@
             return Math.random().toString(36).substr(2, 9);
         }
 
+        // NEW: Upgraded text formatter that handles custom Mono and Quotes
         function formatText(command, value = null) {
+            if (command === 'mono') {
+                const selection = window.getSelection();
+                if (!selection.isCollapsed) {
+                    // Wrap highlighted text in <code> tags natively
+                    document.execCommand('insertHTML', false, `<code>${selection.toString()}</code>`);
+                }
+                return;
+            }
+            if (command === 'quote') {
+                document.execCommand('formatBlock', false, 'BLOCKQUOTE');
+                return;
+            }
             document.execCommand(command, false, value);
         }
+
+        // NEW: Logic to make the floating toolbar appear over highlighted text
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            const toolbar = document.getElementById('floating-toolbar');
+            
+            // If text is highlighted and not just a cursor click
+            if (selection.rangeCount > 0 && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const container = range.commonAncestorContainer;
+                
+                // Validate that we are highlighting text inside our actual rich-text editor blocks
+                const isInsideEditor = container.nodeType !== 1 ? container.parentElement.closest('.rich-text') : container.closest('.rich-text');
+                
+                if (isInsideEditor) {
+                    const rect = range.getBoundingClientRect();
+                    
+                    toolbar.style.display = 'flex';
+                    
+                    // Position it directly above the highlighted text, perfectly centered
+                    toolbar.style.top = `${rect.top + window.scrollY - toolbar.offsetHeight - 12}px`;
+                    toolbar.style.left = `${rect.left + window.scrollX + (rect.width / 2) - (toolbar.offsetWidth / 2)}px`;
+                    
+                    // Trigger the CSS animation
+                    setTimeout(() => toolbar.classList.add('active'), 10);
+                } else {
+                    toolbar.classList.remove('active');
+                    setTimeout(() => { if(!toolbar.classList.contains('active')) toolbar.style.display = 'none'; }, 150);
+                }
+            } else {
+                // Hide toolbar when selection is cleared
+                toolbar.classList.remove('active');
+                setTimeout(() => { if(!toolbar.classList.contains('active')) toolbar.style.display = 'none'; }, 150);
+            }
+        });
 
         // Renders the entire canvas based on the JSON state
         function renderCanvas() {
@@ -227,6 +380,57 @@
             renderCanvas();
         }
 
+        // NEW: Intercept Enter Key to break out of Blockquotes
+        document.addEventListener('keydown', (e) => {
+            // Only intercept if we are typing inside one of our rich-text editor blocks
+            const isEditor = e.target.closest('.rich-text');
+            if (!isEditor) return;
+
+            if (e.key === 'Enter') {
+                const selection = window.getSelection();
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                const currentNode = range.startContainer;
+                
+                // Climb up the DOM tree to see if we are inside a blockquote
+                const blockquote = currentNode.nodeType === 3 
+                    ? currentNode.parentNode.closest('blockquote') 
+                    : currentNode.closest('blockquote');
+
+                if (blockquote) {
+                    // Get the text content of the current line/node
+                    const lineText = currentNode.textContent || '';
+                    
+                    // If the user hits enter on a completely empty line inside a blockquote
+                    if (lineText.trim() === '') {
+                        e.preventDefault(); // Stop default browser behavior (which adds another empty line inside the quote)
+                        
+                        // We need to break out of the quote.
+                        // First, insert a new paragraph AFTER the blockquote
+                        const p = document.createElement('p');
+                        p.innerHTML = '<br>'; // Need a break so the paragraph has physical height to click into
+                        blockquote.parentNode.insertBefore(p, blockquote.nextSibling);
+                        
+                        // Move the cursor into the new paragraph
+                        const newRange = document.createRange();
+                        newRange.setStart(p, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        // Cleanup: Since the user hit enter on an empty line inside the quote, 
+                        // we should remove that empty node from the bottom of the quote so it doesn't look messy.
+                        if (currentNode.nodeType === 3) {
+                            currentNode.parentNode.remove();
+                        } else {
+                            currentNode.remove();
+                        }
+                    }
+                }
+            }
+        });
+
         function updateBlockContent(id) {
             const el = document.getElementById(`content-${id}`);
             const block = blocks.find(b => b.id === id);
@@ -299,5 +503,5 @@
         // Initial Boot
         renderCanvas();
     </script>
-</body>
-</html>
+
+</body></html>
