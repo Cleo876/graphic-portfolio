@@ -1,0 +1,71 @@
+/* Thematic styling for the Rich Text injected from the Visual Editor */
+.rich-text h2 {
+font-family: 'Space Grotesk', sans-serif;
+font-weight: 700;
+color: #002147;
+font-size: 2.25rem;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+line-height: 1.2;
+}
+
+.rich-text h3 {
+font-family: 'Space Grotesk', sans-serif;
+font-weight: 700;
+color: #002147;
+font-size: 1.5rem;
+margin-top: 1.5rem;
+margin-bottom: 0.75rem;
+}
+
+.rich-text p {
+font-family: 'Outfit', sans-serif;
+font-weight: 300;
+color: rgba(0, 33, 71, 0.8);
+font-size: 1.125rem;
+line-height: 1.75;
+margin-bottom: 1.25rem;
+}
+
+.rich-text b, .rich-text strong {
+font-weight: 600;
+color: #002147;
+}
+
+.rich-text i, .rich-text em {
+font-style: italic;
+}
+
+/* Synced Blockquote Style with flow-root fix */
+.rich-text blockquote {
+border-left: 4px solid #002147;
+padding: 1rem 1.5rem;
+margin: 2rem 0;
+background-color: rgba(0, 33, 71, 0.03);
+font-family: 'Space Grotesk', sans-serif;
+font-style: italic;
+font-weight: 400;
+font-size: 1.25rem;
+color: #002147;
+border-radius: 0 8px 8px 0;
+display: flow-root;
+clear: none;
+}
+
+/* Synced Monospace Style */
+.rich-text code {
+font-family: monospace;
+background-color: rgba(0, 33, 71, 0.08);
+padding: 0.2rem 0.4rem;
+border-radius: 4px;
+font-size: 0.9em;
+color: #002147;
+font-weight: 600;
+}
+
+/* Clearfix to ensure sections wrap images perfectly */
+.clearfix::after {
+content: "";
+clear: both;
+display: table;
+}
