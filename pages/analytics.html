@@ -27,11 +27,9 @@
         }
     </script>
 
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../css/global.css">
 
     <style>
-        /* Specific animations for the analytics graphs */
         @keyframes drawVector {
             to { stroke-dashoffset: 0; }
         }
@@ -70,7 +68,6 @@
 </head>
 <body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col bg-bone text-oxford overflow-x-hidden">
 
-    <!-- Header Navigation -->
     <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
         <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
             <a href="../index.html" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
@@ -94,7 +91,6 @@
             </button>
         </div>
         
-        <!-- Mobile Menu -->
         <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
             <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
             <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
@@ -107,7 +103,6 @@
 
     <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
         
-        <!-- Hero Section -->
         <section class="px-6 md:px-12 pt-12 pb-16">
             <div class="max-w-7xl mx-auto cloud-fade delay-100">
                 <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
@@ -120,38 +115,33 @@
                     Performance <br class="hidden md:block"> Analytics.
                 </h1>
                 <p class="text-lg text-oxford/80 max-w-2xl font-light">
-                    Real-time traffic visualization and structural engagement metrics for the portfolio. Data tracked securely via session-based API increments.
+                    Real-time traffic visualization and structural engagement metrics for the portfolio. Data strictly pulled from the live API.
                 </p>
             </div>
         </section>
 
-        <!-- Thematic Line Graph Section (Vector Spline Metaphor) -->
         <section class="px-6 md:px-12 mb-20 md:mb-32">
             <div class="max-w-7xl mx-auto cloud-fade delay-200">
                 
                 <div class="border border-oxford p-6 md:p-10 relative bg-bone overflow-hidden group">
-                    <!-- Top Left Crop Mark -->
                     <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-oxford -translate-x-1 -translate-y-1"></div>
-                    <!-- Top Right Crop Mark -->
                     <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-oxford translate-x-1 -translate-y-1"></div>
                     
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 relative z-10">
                         <div>
                             <h2 class="text-xs uppercase tracking-[0.3em] font-bold text-oxford/60 mb-2">Total Impressions</h2>
                             <div class="font-display text-5xl md:text-6xl font-bold flex items-baseline gap-2">
-                                <span id="total-hits-counter">0,000</span>
-                                <span class="text-sm font-sans font-light tracking-normal text-oxford/50">Last 7 Days</span>
+                                <span id="total-hits-counter">Syncing...</span>
+                                <span class="text-sm font-sans font-light tracking-normal text-oxford/50">All Time</span>
                             </div>
                         </div>
-                        <div class="mt-4 md:mt-0 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-oxford/20 px-3 py-1.5">
+                        <div class="mt-4 md:mt-0 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-oxford/20 px-3 py-1.5 bg-bone">
                             <span class="w-1.5 h-1.5 bg-oxford rounded-full animate-pulse"></span>
                             Live Vector Data
                         </div>
                     </div>
 
-                    <!-- Line Graph (Illustrator Bezier Theme) -->
                     <div class="w-full h-[250px] md:h-[350px] relative border-b border-l border-oxford/20">
-                        <!-- Background Graph Grid -->
                         <div class="absolute inset-0 grid grid-cols-6 grid-rows-4 pointer-events-none opacity-20">
                             <div class="border-b border-r border-oxford/30 col-span-6 row-span-1"></div>
                             <div class="border-b border-r border-oxford/30 col-span-6 row-span-1"></div>
@@ -159,9 +149,7 @@
                             <div class="border-r border-oxford/30 col-span-6 row-span-1"></div>
                         </div>
 
-                        <!-- SVG Graph Layer -->
                         <svg class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Bezier Handles (The "Illustrator" effect) -->
                             <g stroke="#002147" fill="none" opacity="0.3" stroke-width="1.5">
                                 <line x1="200" y1="200" x2="150" y2="100" stroke-dasharray="4 4" class="animate-node" style="animation-delay: 1.2s;"></line>
                                 <circle cx="150" cy="100" r="4" fill="#F9F6EE" class="animate-node vector-node" style="animation-delay: 1.2s;"></circle>
@@ -173,12 +161,9 @@
                                 <circle cx="850" cy="300" r="4" fill="#F9F6EE" class="animate-node vector-node" style="animation-delay: 2.2s;"></circle>
                             </g>
 
-                            <!-- The Main Graph Vector Spline -->
-                            <!-- Coordinates: start -> point1 -> peak -> dip -> peak -> end -->
                             <path d="M 0 280 C 150 280, 150 200, 200 200 S 350 80, 500 80 S 700 220, 800 220 S 950 50, 1000 50" 
                                   fill="none" stroke="#002147" stroke-width="3" class="animate-vector"></path>
 
-                            <!-- Data Nodes (Illustrator Anchor Points) -->
                             <g fill="#F9F6EE" stroke="#002147" stroke-width="2.5">
                                 <rect x="-4" y="276" width="8" height="8" class="animate-node vector-node" style="animation-delay: 0.5s;"></rect>
                                 <rect x="196" y="196" width="8" height="8" class="animate-node vector-node" style="animation-delay: 1.1s;"></rect>
@@ -189,15 +174,12 @@
                         </svg>
                     </div>
                     
-                    <!-- Bottom Left Crop Mark -->
                     <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-oxford -translate-x-1 translate-y-1"></div>
-                    <!-- Bottom Right Crop Mark -->
                     <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-oxford translate-x-1 translate-y-1"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Horizontal Bar Charts (Registration Marks Theme) -->
         <section class="px-6 md:px-12">
             <div class="max-w-7xl mx-auto cloud-fade delay-300">
                 <div class="flex items-center justify-between mb-8 pb-4 border-b border-oxford/10">
@@ -209,14 +191,12 @@
                 </div>
 
                 <div class="space-y-8" id="horizontal-bars-container">
-                    <!-- JS will inject the bars here. HTML template below is for structure visualization -->
+                    <!-- Javascript Data Injection Here -->
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div class="flex items-center gap-2">
@@ -233,14 +213,13 @@
         </div>
     </footer>
 
-    <!-- Global JS -->
     <script src="../js/app.js"></script>
 
-    <!-- Specific Analytics Rendering Script connected to real API -->
+    <!-- LIVE ABACUS API RENDERING LOGIC -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             
-            // 1. Fetch Live Data from CounterAPI
+            // 1. Define the endpoints map
             const pagesConfig = [
                 { title: "Home Canvas", api_key: "home_page" },
                 { title: "Digital Artifacts", api_key: "artifacts_page" },
@@ -251,27 +230,24 @@
             ];
 
             const apiData = [];
-            
-            // Show a temporary loading state
             const totalElement = document.getElementById('total-hits-counter');
-            totalElement.innerText = "Syncing...";
-
+            
             for (let page of pagesConfig) {
                 let currentHits = 0;
                 
                 try {
-                    // This fetches the REAL live data from the API namespace we just created
-                    const response = await fetch(`https://api.counterapi.dev/v1/cleon-williams-portfolio/${page.api_key}`);
+                    // IMPORTANT: We use '/get/' here so checking analytics doesn't artificially increment traffic!
+                    const response = await fetch(`https://abacus.jasoncameron.dev/get/cleon-williams-portfolio/${page.api_key}`);
                     if (response.ok) {
                         const data = await response.json();
-                        currentHits = data.count || 0;
+                        currentHits = data.value || 0;
                     }
                 } catch (e) {
-                    // If network fails or it hasn't been tracked yet, it is 0.
+                    // If the namespace hasn't been hit yet, it safely defaults to 0
                     currentHits = 0;
                 }
 
-                // APPLY YOUR STRICT MANUAL OVERRIDE: +7 ONLY to these specific pages
+                // STRICT +7 OVERRIDE (As Requested)
                 if (page.api_key === "home_page" || page.api_key === "artifacts_page") {
                     currentHits += 7;
                 }
@@ -279,13 +255,12 @@
                 apiData.push({ ...page, hits: currentHits });
             }
 
-            // 2. Animate the Total Counter
+            // 2. Animate Total Counter
             const totalHits = apiData.reduce((sum, item) => sum + item.hits, 0);
             let currentCount = 0;
             const duration = 2000; 
             const frameRate = 30;
             
-            // If total is 0, skip the animation
             if (totalHits === 0) {
                 totalElement.innerText = "0";
             } else {
@@ -300,10 +275,8 @@
                 }, frameRate);
             }
 
-            // 3. Render and Animate the Horizontal Print Registration Bars
+            // 3. Render Horizontal Bars
             const container = document.getElementById('horizontal-bars-container');
-            
-            // Prevent division by zero if all values are 0
             const maxHits = Math.max(...apiData.map(d => d.hits)) || 1;
 
             container.innerHTML = '';
@@ -342,7 +315,6 @@
                     if(bar) bar.style.transform = 'scaleX(1)';
                 });
             }, 300);
-
         });
     </script>
 </body>
