@@ -165,10 +165,20 @@
             </div>
         </div>
 
-        <button onclick="exportJSON()" class="bg-oxford text-bone px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-lg flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-            Export JSON Data
-        </button>
+        <div class="flex items-center gap-3">
+            <!-- Hidden File Input for Importing -->
+            <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importJSON(event)">
+            
+            <button onclick="document.getElementById('import-json-input').click()" class="bg-bone text-oxford border border-oxford/20 px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford hover:text-bone transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Import JSON
+            </button>
+
+            <button onclick="exportJSON()" class="bg-oxford text-bone px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-lg flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Export JSON Data
+            </button>
+        </div>
     </header>
 
     <main class="flex-grow py-16 px-6 relative">
@@ -230,19 +240,48 @@
 
     <script>
         // State Management
-        let blocks = [
-            {
-                id: generateID(),
-                type: 'text',
-                html: '<h2>Welcome to the Visual Editor</h2><p>Click anywhere on this text to start typing. Use the toolbar above to make text <b>bold</b> or create headings!</p>'
+        let blocks = [];
+        const STORAGE_KEY = 'dim_editor_autosave';
+
+        // NEW: Core initialization function that handles persistence
+        function initializeEditor() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            
+            if (savedData) {
+                try {
+                    blocks = JSON.parse(savedData);
+                    console.log("Restored session from Local Storage");
+                } catch (e) {
+                    console.error("Corrupted local storage data. Starting fresh.");
+                    startFresh();
+                }
+            } else {
+                startFresh();
             }
-        ];
+            
+            renderCanvas();
+        }
+
+        function startFresh() {
+            blocks = [
+                {
+                    id: generateID(),
+                    type: 'text',
+                    html: '<h2>Welcome to the Visual Editor</h2><p>Click anywhere on this text to start typing. Use the toolbar above to make text <b>bold</b> or create headings!</p>'
+                }
+            ];
+        }
+
+        // NEW: Auto-save function
+        function autoSave() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks));
+        }
 
         function generateID() {
             return Math.random().toString(36).substr(2, 9);
         }
 
-        // NEW: Upgraded text formatter that handles custom Mono and Quotes
+        // UPGRADED text formatter
         function formatText(command, value = null) {
             if (command === 'mono') {
                 const selection = window.getSelection();
@@ -254,12 +293,14 @@
             }
             if (command === 'quote') {
                 document.execCommand('formatBlock', false, 'BLOCKQUOTE');
+                autoSave(); // Trigger save on format change
                 return;
             }
             document.execCommand(command, false, value);
+            autoSave(); // Trigger save on format change
         }
 
-        // NEW: Logic to make the floating toolbar appear over highlighted text
+        // Logic to make the floating toolbar appear over highlighted text
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             const toolbar = document.getElementById('floating-toolbar');
@@ -378,9 +419,10 @@
                 });
             }
             renderCanvas();
+            autoSave(); // Save state
         }
 
-        // NEW: Intercept Enter Key to break out of Blockquotes
+        // Intercept Enter Key to break out of Blockquotes
         document.addEventListener('keydown', (e) => {
             // Only intercept if we are typing inside one of our rich-text editor blocks
             const isEditor = e.target.closest('.rich-text');
@@ -426,27 +468,35 @@
                         } else {
                             currentNode.remove();
                         }
+                        
+                        // Because this intercepts the normal flow, manually fire update and save
+                        const blockId = e.target.id.replace('content-', '');
+                        updateBlockContent(blockId);
                     }
                 }
             }
         });
 
+        // Add auto-save to the blur event when user clicks off a text block
         function updateBlockContent(id) {
             const el = document.getElementById(`content-${id}`);
             const block = blocks.find(b => b.id === id);
-            if (block && el) block.html = el.innerHTML;
+            if (block && el) {
+                block.html = el.innerHTML;
+                autoSave(); // Save text changes
+            }
         }
 
-        // New Real-Time Image Updater!
+        // Real-Time Image Updater!
         function handleInlineImageUpdate(id, url) {
             const block = blocks.find(b => b.id === id);
             if (block) {
                 block.imageUrl = url;
-                // Directly update the DOM for instant visual feedback without losing focus
                 const imgEl = document.getElementById(`img-${id}`);
                 if (imgEl) {
                     imgEl.src = url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600';
                 }
+                autoSave(); // Save image URL change
             }
         }
 
@@ -455,6 +505,7 @@
             if (block) {
                 block.align = block.align === 'left' ? 'right' : 'left';
                 renderCanvas();
+                autoSave(); // Save alignment change
             }
         }
 
@@ -464,13 +515,47 @@
             blocks[index] = blocks[index + direction];
             blocks[index + direction] = temp;
             renderCanvas();
+            autoSave(); // Save position change
         }
 
         function deleteBlock(id) {
             if (confirm("Delete this block?")) {
                 blocks = blocks.filter(b => b.id !== id);
                 renderCanvas();
+                autoSave(); // Save deletion
             }
+        }
+
+        // NEW: Import JSON Logic
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedBlocks = JSON.parse(e.target.result);
+                    
+                    // Basic validation to ensure it looks like our layout JSON
+                    if (Array.isArray(importedBlocks) && importedBlocks.length > 0 && importedBlocks[0].id) {
+                        blocks = importedBlocks;
+                        renderCanvas();
+                        autoSave(); // Immediately save imported data to persistence
+                        
+                        // Reset the input so the same file can be uploaded again if needed
+                        document.getElementById('import-json-input').value = "";
+                        
+                        alert("Layout imported successfully!");
+                    } else {
+                        alert("Invalid JSON format. Please upload a file generated by this editor.");
+                    }
+                } catch (error) {
+                    alert("Error parsing JSON file. Is the file corrupted?");
+                    console.error(error);
+                }
+            };
+            
+            reader.readAsText(file);
         }
 
         // The Magic Export Function
@@ -501,7 +586,7 @@
         }
 
         // Initial Boot
-        renderCanvas();
+        initializeEditor();
     </script>
 
 </body></html>
