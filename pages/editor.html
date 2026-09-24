@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Editor | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #F9F6EE; color: #002147; }
+        
+        /* The Rich Text Editor Styles (Matches Portfolio Exactly) */
+        .rich-text {
+            min-height: 50px;
+            outline: none;
+        }
+        .rich-text:focus {
+            box-shadow: 0 0 0 2px rgba(0, 33, 71, 0.1);
+            border-radius: 8px;
+            padding: 8px -8px;
+        }
+        .rich-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 2.25rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .rich-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .rich-text p {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            color: rgba(0, 33, 71, 0.8);
+            font-size: 1.125rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .rich-text b, .rich-text strong { font-weight: 600; color: #002147; }
+        .rich-text i, .rich-text em { font-style: italic; }
+        
+        /* Image Wrapping Utilities */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* Editor UI Overlays */
+        .block-hover-controls { opacity: 0; transition: opacity 0.2s; }
+        .editor-block:hover .block-hover-controls { opacity: 1; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-oxford/10 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-6">
+            <div class="font-display font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+                <span class="w-2 h-2 bg-oxford block animate-pulse"></span> Visual Canvas Editor
+            </div>
+            
+            <!-- Rich Text Formatting Tools -->
+            <div class="h-6 w-px bg-oxford/20"></div>
+            <div class="flex gap-2">
+                <button onclick="formatText('bold')" class="w-8 h-8 flex items-center justify-center font-serif font-bold border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Bold">B</button>
+                <button onclick="formatText('italic')" class="w-8 h-8 flex items-center justify-center font-serif italic border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Italic">I</button>
+                <div class="h-8 w-px bg-oxford/20 mx-1"></div>
+                <button onclick="formatText('formatBlock', 'H2')" class="px-3 h-8 flex items-center justify-center font-display font-bold text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Heading 2">H2</button>
+                <button onclick="formatText('formatBlock', 'H3')" class="px-3 h-8 flex items-center justify-center font-display font-bold text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Heading 3">H3</button>
+                <button onclick="formatText('formatBlock', 'P')" class="px-3 h-8 flex items-center justify-center font-sans font-medium text-sm border border-oxford/20 rounded hover:bg-oxford hover:text-bone transition-colors" title="Paragraph">Text</button>
+            </div>
+        </div>
+
+        <button onclick="exportJSON()" class="bg-oxford text-bone px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-lg flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Export JSON Data
+        </button>
+    </header>
+
+    <main class="flex-grow py-16 px-6 relative">
+        <!-- Max-width matches your copyright page exactly -->
+        <div class="max-w-4xl mx-auto" id="editor-canvas">
+            <!-- Blocks are injected here by JS -->
+        </div>
+
+        <!-- Add Block Button -->
+        <div class="max-w-4xl mx-auto mt-12 pt-8 border-t border-oxford/10 flex justify-center gap-4">
+            <button onclick="addBlock('text')" class="flex items-center gap-2 px-4 py-2 border border-oxford/20 text-sm font-semibold hover:bg-oxford/5 transition-colors text-oxford/80">
+                + Add Text Block
+            </button>
+            <button onclick="addBlock('media-wrap')" class="flex items-center gap-2 px-4 py-2 border border-oxford/20 text-sm font-semibold hover:bg-oxford/5 transition-colors text-oxford/80">
+                + Add Image with Wrapped Text
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // State Management
+        let blocks = [
+            {
+                id: generateID(),
+                type: 'text',
+                html: '<h2>Welcome to the Visual Editor</h2><p>Click anywhere on this text to start typing. Use the toolbar above to make text <b>bold</b> or create headings!</p>'
+            }
+        ];
+
+        function generateID() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+        }
+
+        // Renders the entire canvas based on the JSON state
+        function renderCanvas() {
+            const canvas = document.getElementById('editor-canvas');
+            canvas.innerHTML = '';
+
+            blocks.forEach((block, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'editor-block relative mb-10 clearfix group';
+                
+                // Floating Controls (Move Up/Down/Delete)
+                const controls = `
+                    <div class="block-hover-controls absolute -left-16 top-0 flex flex-col gap-1 bg-white border border-oxford/10 p-1 shadow-sm rounded z-10">
+                        <button onclick="moveBlock(${index}, -1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Up">↑</button>
+                        <button onclick="moveBlock(${index}, 1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs" title="Move Down">↓</button>
+                        <button onclick="deleteBlock('${block.id}')" class="w-6 h-6 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs" title="Delete">×</button>
+                    </div>
+                `;
+
+                if (block.type === 'text') {
+                    wrapper.innerHTML = `
+                        ${controls}
+                        <div id="content-${block.id}" contenteditable="true" class="rich-text p-2" onblur="updateBlockContent('${block.id}')">${block.html}</div>
+                    `;
+                } 
+                else if (block.type === 'media-wrap') {
+                    // Premium AABB Graphic Box Wrapper
+                    const alignmentClass = block.align === 'right' ? 'float-right ml-8 mb-4' : 'float-left mr-8 mb-4';
+                    
+                    wrapper.innerHTML = `
+                        ${controls}
+                        
+                        <!-- The Wrapped Image Box -->
+                        <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group/img w-[350px]">
+                            <!-- AABB Crosshairs -->
+                            <div class="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-oxford/40"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-oxford/40"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-oxford/40"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-oxford/40"></div>
+                            
+                            <!-- The Image -->
+                            <img id="img-${block.id}" 
+                                 src="${block.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600'}" 
+                                 class="w-full h-auto object-cover rounded-xl shadow-md transition-transform duration-300 group-hover/img:scale-[1.02]"
+                                 title="Hover to edit image">
+                                 
+                            <!-- Real-Time Alignment & URL Input Overlay -->
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-2xl flex flex-col items-center justify-center gap-3 pointer-events-none p-4">
+                                <button class="pointer-events-auto bg-white text-oxford text-xs px-4 py-2 rounded font-bold shadow-lg hover:bg-gray-200 transition-colors" onclick="toggleAlign('${block.id}')">
+                                    Swap Alignment
+                                </button>
+                                
+                                <!-- Inline URL Input -->
+                                <input type="text" 
+                                       class="pointer-events-auto w-full text-xs p-2.5 rounded bg-white/95 text-oxford placeholder-oxford/50 border-none outline-none focus:ring-2 focus:ring-oxford shadow-lg font-mono transition-all" 
+                                       placeholder="Paste image URL..." 
+                                       value="${block.imageUrl || ''}"
+                                       oninput="handleInlineImageUpdate('${block.id}', this.value)"
+                                       onfocus="this.select()">
+                            </div>
+                        </div>
+
+                        <!-- The Text that wraps around it -->
+                        <div id="content-${block.id}" contenteditable="true" class="rich-text p-2 min-h-[200px]" onblur="updateBlockContent('${block.id}')">${block.html}</div>
+                    `;
+                }
+
+                canvas.appendChild(wrapper);
+            });
+        }
+
+        // Logic Functions
+        function addBlock(type) {
+            if (type === 'text') {
+                blocks.push({ id: generateID(), type: 'text', html: '<p>Start typing here...</p>' });
+            } else if (type === 'media-wrap') {
+                blocks.push({ 
+                    id: generateID(), 
+                    type: 'media-wrap', 
+                    align: 'left',
+                    imageUrl: '', 
+                    html: '<h3>Dynamic Image Wrap</h3><p>This text will perfectly wrap around the bounding box of the image! You can highlight text to bold it, or click the image to swap its URL.</p>' 
+                });
+            }
+            renderCanvas();
+        }
+
+        function updateBlockContent(id) {
+            const el = document.getElementById(`content-${id}`);
+            const block = blocks.find(b => b.id === id);
+            if (block && el) block.html = el.innerHTML;
+        }
+
+        // New Real-Time Image Updater!
+        function handleInlineImageUpdate(id, url) {
+            const block = blocks.find(b => b.id === id);
+            if (block) {
+                block.imageUrl = url;
+                // Directly update the DOM for instant visual feedback without losing focus
+                const imgEl = document.getElementById(`img-${id}`);
+                if (imgEl) {
+                    imgEl.src = url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600';
+                }
+            }
+        }
+
+        function toggleAlign(id) {
+            const block = blocks.find(b => b.id === id);
+            if (block) {
+                block.align = block.align === 'left' ? 'right' : 'left';
+                renderCanvas();
+            }
+        }
+
+        function moveBlock(index, direction) {
+            if (index + direction < 0 || index + direction >= blocks.length) return;
+            const temp = blocks[index];
+            blocks[index] = blocks[index + direction];
+            blocks[index + direction] = temp;
+            renderCanvas();
+        }
+
+        function deleteBlock(id) {
+            if (confirm("Delete this block?")) {
+                blocks = blocks.filter(b => b.id !== id);
+                renderCanvas();
+            }
+        }
+
+        // The Magic Export Function
+        function exportJSON() {
+            // Force save all current active typing before export
+            blocks.forEach(b => updateBlockContent(b.id));
+
+            const dataStr = JSON.stringify(blocks, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            a.href = url;
+            a.download = 'copyright-layout.json'; // The required filename
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+            // Nice little success alert (Using custom UI since window.alert is blocked)
+            const btn = document.querySelector('button[onclick="exportJSON()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "Saved to Downloads!";
+            btn.classList.add('bg-green-600');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-600');
+            }, 2000);
+        }
+
+        // Initial Boot
+        renderCanvas();
+    </script>
+</body>
+</html>
