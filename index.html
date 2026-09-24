@@ -32,7 +32,6 @@
 <body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative">
 
     <div class="absolute top-0 left-0 w-full h-[100vh] overflow-hidden z-0 pointer-events-none">
-        <!-- A strict viewBox guarantees the geometry scales perfectly on every device -->
         <svg id="mograph-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
             <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -45,8 +44,6 @@
             </defs>
             
             <rect width="100%" height="100%" fill="url(#grid)" />
-
-            <!-- The Bezier "Lasers" injected via JS will trace these paths infinitely -->
             <g id="dynamic-paths" clip-path="url(#ribbon-aabb-mask)"></g>
         </svg>
         <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-bone to-transparent z-10"></div>
@@ -78,11 +75,9 @@
 
     <main class="flex-grow pt-20 md:pt-24 content-layer">
         
-        <!-- Replaced existing relative section with this updated block -->
         <section class="relative px-6 md:px-12 pt-12 pb-8 border-b border-oxford/10">
             <div class="max-w-7xl mx-auto w-full relative z-10 flex flex-col justify-start">
                 
-                <!-- FIX: Added max-w-[65%] on mobile to force wrapping and protect the right-side SVG ribbon. Reverts to max-w-3xl on md (desktop) -->
                 <div class="max-w-[65%] md:max-w-3xl cloud-fade delay-100 w-full">
                     <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
                         <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
@@ -102,7 +97,6 @@
                     </p>
                 </div>
                 
-                <!-- FIX: Reduced mt-28 to mt-12 on mobile. The taller wrapping text above will naturally fill this gap without pushing the page down! -->
                 <div class="mt-12 md:mt-32 flex flex-col sm:flex-row items-start sm:items-end gap-10 md:gap-16 w-full relative z-20">
                     
                     <div class="cloud-fade delay-200 flex items-center gap-3 pb-2 sm:pb-8">
@@ -112,7 +106,6 @@
                         <span class="uppercase text-[10px] md:text-xs tracking-widest font-semibold rotate-90 origin-left translate-x-2">Scroll</span>
                     </div>
 
-                    <!-- Kinetic Typography Mask Module -->
                     <div class="w-full max-w-[400px] lg:max-w-lg relative group border-2 border-oxford overflow-hidden bg-bone aspect-[4/3] cloud-fade delay-300">
                         <div class="absolute top-0 left-0 w-full bg-oxford text-bone flex justify-between items-center px-3 py-1.5 z-20">
                             <div class="text-[9px] uppercase font-display tracking-[0.2em] flex items-center gap-2">
@@ -138,7 +131,6 @@
                             </defs>
                             <rect width="100%" height="100%" fill="url(#thick-grid)" />
                             
-                            <!-- BASE LAYER -->
                             <g font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="100" letter-spacing="-0.04em" text-anchor="middle">
                                 <line x1="0" y1="80" x2="500" y2="80" stroke="#002147" stroke-width="14" stroke-dasharray="150 50">
                                      <animate attributeName="stroke-dashoffset" values="0; -400" dur="5s" repeatCount="indefinite" linear />
@@ -151,7 +143,6 @@
                                 <text x="250" y="315" fill="none" stroke="#002147" stroke-width="3">MOTION</text>
                             </g>
 
-                            <!-- MATTE LAYER -->
                             <g clip-path="url(#kinetic-mask)">
                                 <rect width="100%" height="100%" fill="#002147" />
                                 <g font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="100" letter-spacing="-0.04em" text-anchor="middle">
@@ -239,30 +230,28 @@
     </footer>
 
     <script src="js/app.js"></script>
-    
+
 <!-- ========================================== -->
-<!-- REAL ANALYTICS TRACKING SCRIPT             -->
+<!-- REAL ANALYTICS TRACKING SCRIPT (Abacus API)-->
 <!-- ========================================== -->
 <script>
     function recordPageVisit(pageID) {
         const lockKey = `tracked_visit_${pageID}`;
         
-        // Check if user has already visited this specific page in this tab session
+        // Only track if we haven't already tracked this session
         if (!sessionStorage.getItem(lockKey)) {
             
-            // This is the REAL, live CounterAPI endpoint (no account needed).
-            // It strictly pings the 'up' route to increment the count by 1.
-            fetch(`https://api.counterapi.dev/v1/cleon-williams-portfolio/${pageID}/up`)
+            // Abacus API '/hit' endpoint increments the count automatically
+            fetch(`https://abacus.jasoncameron.dev/hit/cleon-williams-portfolio/${pageID}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.count !== undefined) {
-                        // Success! Lock it so reloading doesn't inflate the data.
+                    if (data.value !== undefined) {
                         sessionStorage.setItem(lockKey, 'true');
-                        console.log(`[Analytics] Success! Real hit logged for: ${pageID}. Total count: ${data.count}`);
+                        console.log(`[Analytics] Success! Hit logged for: ${pageID}. Current Count: ${data.value}`);
                     }
                 })
                 .catch(error => {
-                    console.warn("[Analytics] Tracking request failed.", error);
+                    console.warn("[Analytics] Abacus tracking request failed.", error);
                 });
                 
         } else {
@@ -270,7 +259,7 @@
         }
     }
 
-    // Fire the tracker specifically for the Home Page
+    // Fire the tracker immediately for the Home Page
     recordPageVisit('home_page');
 </script>
 
