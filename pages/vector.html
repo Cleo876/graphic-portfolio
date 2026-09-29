@@ -289,27 +289,43 @@
             }
             
             else if (currentTemplate === 'hierarchy') {
-                svg += `<circle cx="0" cy="0" r="70" class="vec-solid" />`;
-                svg += `<circle cx="0" cy="0" r="85" class="vec-line" stroke-width="3" />`;
+                // HIERARCHY: Visual weight mapped directly to layout importance (Title -> Heading -> Body Copy)
                 
-                const subNodes = 3;
-                for(let i=0; i<subNodes; i++) {
-                    const angle = (i / subNodes) * Math.PI * 2 - Math.PI/2;
-                    const nx = Math.cos(angle) * 140;
-                    const ny = Math.sin(angle) * 140;
-                    svg += `<circle cx="${nx}" cy="${ny}" r="25" class="vec-bg" stroke="#002147" stroke-width="2.5" />`;
-                    svg += `<line x1="${Math.cos(angle)*85}" y1="${Math.sin(angle)*85}" x2="${nx}" y2="${ny}" class="vec-line" stroke-width="1.5" />`;
+                // Level 1: The Title (Highest Contrast, Absolute Dominance)
+                svg += `<rect x="-180" y="-160" width="360" height="48" class="vec-solid" />`;
+                // Blueprint framing to emphasize the Title's ultimate importance
+                svg += `<rect x="-190" y="-170" width="380" height="68" class="vec-line" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" />`;
+                svg += `<rect x="-193" y="-173" width="6" height="6" class="vec-solid" />`;
+                
+                // Structural alignment axis guiding the eye downward to lesser elements
+                svg += `<line x1="-160" y1="-102" x2="-160" y2="180" class="vec-line" stroke-width="2" opacity="0.15" />`;
+                
+                // Level 2: Primary Heading / Sub-section (Medium weight)
+                svg += `<rect x="-140" y="-75" width="220" height="24" class="vec-bg" stroke="#002147" stroke-width="3" />`;
+                svg += `<circle cx="-160" cy="-63" r="5" class="vec-solid" />`; // Axis connector node
+                
+                // Level 3: Body Copy (Low weight, repetitive)
+                // Density controls how many lines of "body copy" are generated
+                const bodyLines = Math.min(density, 12);
+                for(let i=0; i<bodyLines; i++) {
+                    const lineY = -25 + (i * 18);
+                    // Ragged right edge logic to authentically simulate text flow
+                    const rag = (i % 4 === 3) ? 70 : (i % 3 === 2) ? 30 : 0;
+                    const w = 320 - rag;
+                    svg += `<line x1="-140" y1="${lineY}" x2="${-140 + w}" y2="${lineY}" class="vec-line" stroke-width="1.5" />`;
                 }
                 
-                const tinyNodes = density * 4;
-                for(let i=0; i<tinyNodes; i++) {
-                    const angle = (i / tinyNodes) * Math.PI * 2;
-                    const radius = 200 + Math.sin(angle * 6) * 15; 
-                    const tx = Math.cos(angle) * radius;
-                    const ty = Math.sin(angle) * radius;
-                    svg += `<circle cx="${tx}" cy="${ty}" r="2" class="vec-solid" opacity="0.6" />`;
-                    if(i % 3 === 0) {
-                        svg += `<line x1="${Math.cos(angle)*165}" y1="${Math.sin(angle)*165}" x2="${tx}" y2="${ty}" class="vec-dash" stroke-width="0.5" opacity="0.3" />`;
+                // Secondary Heading (Shows relational formatting against the primary heading)
+                if (density >= 8) {
+                    const splitY = -25 + (bodyLines * 18) + 20;
+                    // Notice this stroke-width is only 2, establishing it as subordinate to the Level 2 heading
+                    svg += `<rect x="-140" y="${splitY}" width="160" height="24" class="vec-line" stroke-width="2" />`;
+                    svg += `<circle cx="-160" cy="${splitY + 12}" r="5" class="vec-bg" stroke="#002147" stroke-width="2" />`; 
+                    
+                    for(let i=0; i<4; i++) {
+                        const lineY = splitY + 36 + (i * 18);
+                        const w = 280 - (i % 2 === 0 ? 0 : 40);
+                        svg += `<line x1="-140" y1="${lineY}" x2="${-140 + w}" y2="${lineY}" class="vec-line" stroke-width="1.5" opacity="0.6" />`;
                     }
                 }
             }
@@ -522,7 +538,7 @@
 </html>
 ```
 
-The updates applied explicitly mirror the definitions you provided:
-1. **Unity:** You'll now see a highly structured, interconnected circular system. Different shapes (squares, circles, triangles) exist in harmony because they are perfectly aligned to a unifying grid structure.
-2. **Variety:** Instead of scattered chaos, you will now see an ordered grid layout. The vast majority of the cells share a uniform cross/circle pattern, but 2 specific nodes are solid filled circles. This perfectly represents how *variety* provides *emphasis* while maintaining underlying order.
-3. **White Space:** You'll see the exact layout requested. The canvas is split down the middle. Left is labeled "GOOD" with a beautifully spaced wireframe 'A'. Right is labeled "BAD" with an oversized 'A' crammed into a tight bounding box with background noise cluttering the space.
+### Why this nails the definition:
+1. **Title Dominance:** The top element is immediately recognizable as the most important. It is heavy, solid-filled, and wrapped in a secondary bounding box to demand the viewer's attention.
+2. **Relational Headings:** The subheadings are hollow with thick strokes. The secondary heading (which appears if you push the density slider up) is slightly thinner than the first, perfectly demonstrating how headings show importance "in relation to each other."
+3. **Body Copy Abstraction:** The density slider now controls a simulated block of text lines, complete with a ragged-right edge so it intrinsically looks like a flowing paragraph of information sitting subordinate to the structure!
