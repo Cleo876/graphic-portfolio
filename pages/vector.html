@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Studio | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../css/global.css">
+    
+    <style>
+        /* Custom scrollbar for the left panel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 33, 71, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 33, 71, 0.5); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col bg-bone text-oxford">
+
+    <header class="fixed w-full top-0 z-50 bg-bone/95 backdrop-blur shadow-sm border-b border-oxford/10 px-6 py-4 flex justify-between items-center">
+        <div class="font-display font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+            <span class="w-2 h-2 bg-oxford block animate-pulse"></span> Vector Forge Studio
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="editor.html" class="text-xs font-bold uppercase tracking-widest text-oxford/60 hover:text-oxford transition-colors">← Back to Editor</a>
+            <button onclick="copySVGCode()" id="copy-btn" class="bg-oxford text-bone px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-lg flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                Copy Embed Code
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 px-6 pb-12 flex flex-col lg:flex-row gap-8 max-w-[1600px] mx-auto w-full h-[calc(100vh)]">
+        
+        <div class="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 pb-10 h-full">
+            
+            <div class="bg-white border border-oxford/10 p-5 shadow-sm rounded-xl">
+                <h3 class="font-display font-bold uppercase tracking-widest text-sm mb-4">1. Principle Generator</h3>
+                <p class="text-[10px] text-oxford/60 mb-4 leading-relaxed">Select a foundational design principle to automatically generate a parametric, infinitely scalable vector graphic.</p>
+                
+                <div class="grid grid-cols-2 gap-2" id="template-buttons">
+                    <button onclick="setTemplate('contrast')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="contrast">Contrast</button>
+                    <button onclick="setTemplate('balance')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="balance">Balance</button>
+                    <button onclick="setTemplate('emphasis')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="emphasis">Emphasis</button>
+                    <button onclick="setTemplate('proportion')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="proportion">Proportion</button>
+                    <button onclick="setTemplate('hierarchy')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="hierarchy">Hierarchy</button>
+                    <button onclick="setTemplate('repetition')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="repetition">Repetition</button>
+                    <button onclick="setTemplate('rhythm')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="rhythm">Rhythm</button>
+                    <button onclick="setTemplate('pattern')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="pattern">Pattern</button>
+                    <button onclick="setTemplate('whitespace')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="whitespace">White Space</button>
+                    <button onclick="setTemplate('movement')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="movement">Movement</button>
+                    <button onclick="setTemplate('variety')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="variety">Variety</button>
+                    <button onclick="setTemplate('unity')" class="p-2 border border-oxford/20 text-xs font-bold rounded transition-colors" data-template="unity">Unity</button>
+                </div>
+            </div>
+
+            <div class="bg-white border border-oxford/10 p-5 shadow-sm rounded-xl flex-grow">
+                <h3 class="font-display font-bold uppercase tracking-widest text-sm mb-4">2. Vector Mathematics</h3>
+                
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-oxford/70">Structural Complexity (N)</label>
+                            <span id="lbl-density" class="text-[10px] font-mono font-bold bg-oxford/10 px-2 py-0.5 rounded text-oxford">8</span>
+                        </div>
+                        <input type="range" id="param-density" min="1" max="30" value="8" class="w-full" oninput="renderSVG()">
+                        <p class="text-[9px] text-oxford/50 mt-1">Drives loop counts, repetition, and node density.</p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-oxford/70">Scale Multiplier (Z-Space)</label>
+                            <span id="lbl-scale" class="text-[10px] font-mono font-bold bg-oxford/10 px-2 py-0.5 rounded text-oxford">100%</span>
+                        </div>
+                        <input type="range" id="param-scale" min="10" max="200" value="100" class="w-full" oninput="renderSVG()">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-oxford/70 block mb-1">X-Axis Transform</label>
+                            <input type="range" id="param-offset-x" min="-200" max="200" value="0" class="w-full" oninput="renderSVG()">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-oxford/70 block mb-1">Y-Axis Transform</label>
+                            <input type="range" id="param-offset-y" min="-200" max="200" value="0" class="w-full" oninput="renderSVG()">
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-oxford/10 mt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="toggle-grid" checked class="rounded text-oxford focus:ring-oxford" onchange="renderSVG()">
+                            <span class="text-xs font-bold text-oxford/70">Overlay Architect Grid Matrix</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full lg:w-2/3 h-full pb-10">
+            <div class="w-full h-full border-2 border-oxford bg-white relative overflow-hidden flex items-center justify-center shadow-inner">
+                <!-- The Actual SVG Output -->
+                <div id="svg-container" class="w-full h-full absolute inset-0 flex items-center justify-center">
+                    <!-- Dynamic SVG inserted here -->
+                </div>
+
+                <!-- Frame Corner Accents (UI Only) -->
+                <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-oxford/30 pointer-events-none"></div>
+                <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-oxford/30 pointer-events-none"></div>
+                <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-oxford/30 pointer-events-none"></div>
+                <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-oxford/30 pointer-events-none"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentTemplate = 'whitespace'; // Updated default to test the new designs
+
+        function setTemplate(template) {
+            currentTemplate = template;
+            
+            // Highlight active button visually
+            const buttons = document.querySelectorAll('#template-buttons button');
+            buttons.forEach(b => {
+                b.classList.remove('bg-oxford', 'text-bone', 'border-oxford');
+                b.classList.add('bg-transparent', 'text-oxford', 'border-oxford/20', 'hover:bg-oxford/5');
+            });
+            
+            const activeBtn = document.querySelector(`button[data-template="${template}"]`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-oxford', 'text-bone', 'border-oxford');
+                activeBtn.classList.remove('bg-transparent', 'text-oxford', 'border-oxford/20', 'hover:bg-oxford/5');
+            }
+            
+            // Set dynamic default values based on the template's ideal look
+            const densityInput = document.getElementById('param-density');
+            switch(template) {
+                case 'repetition': densityInput.value = 12; break;
+                case 'rhythm': case 'pattern': densityInput.value = 15; break;
+                case 'hierarchy': densityInput.value = 10; break;
+                case 'whitespace': densityInput.value = 15; break;
+                case 'variety': densityInput.value = 16; break;
+                case 'proportion': densityInput.value = 7; break;
+                case 'unity': densityInput.value = 12; break;
+                default: densityInput.value = 8; break;
+            }
+            
+            // Reset offsets
+            document.getElementById('param-offset-x').value = 0;
+            document.getElementById('param-offset-y').value = 0;
+            
+            renderSVG();
+        }
+
+        function renderSVG() {
+            const container = document.getElementById('svg-container');
+            const density = parseInt(document.getElementById('param-density').value);
+            const scale = parseInt(document.getElementById('param-scale').value) / 100;
+            const offsetX = parseInt(document.getElementById('param-offset-x').value);
+            const offsetY = parseInt(document.getElementById('param-offset-y').value);
+            const showGrid = document.getElementById('toggle-grid').checked;
+
+            // Update UI Labels
+            document.getElementById('lbl-density').innerText = density;
+            document.getElementById('lbl-scale').innerText = Math.round(scale * 100) + '%';
+
+            // Strict 500x500 viewBox guarantees it scales flawlessly in the Visual Editor
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">`;
+            
+            // Global Styles injected into the SVG to ensure clean export
+            svg += `<style>
+                .vec-line { fill: none; stroke: #002147; stroke-linecap: round; stroke-linejoin: round; }
+                .vec-dash { fill: none; stroke: #002147; stroke-dasharray: 4 6; stroke-linecap: round; }
+                .vec-solid { fill: #002147; }
+                .vec-bg { fill: #F9F6EE; }
+            </style>`;
+
+            if (showGrid) {
+                svg += `
+                <defs>
+                    <pattern id="arch-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#002147" stroke-width="0.5" opacity="0.15"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#arch-grid)" />
+                `;
+            }
+
+            // Open the main transformed group
+            svg += `<g transform="translate(${250 + offsetX}, ${250 + offsetY}) scale(${scale})">`;
+
+            // ---------------------------------------------------------
+            // THE 12 PRINCIPLES OF DESIGN - PROCEDURAL MATHEMATICS
+            // ---------------------------------------------------------
+
+            if (currentTemplate === 'contrast') {
+                const halfStr = density * 10;
+                svg += `<rect x="-200" y="-200" width="200" height="400" class="vec-solid" />`;
+                svg += `<rect x="0" y="-200" width="200" height="400" fill="none" stroke="#002147" stroke-width="2" />`;
+                svg += `<circle cx="-100" cy="0" r="${halfStr}" class="vec-bg" />`;
+                svg += `<circle cx="100" cy="0" r="${halfStr}" class="vec-solid" />`;
+                svg += `<line x1="-100" y1="0" x2="100" y2="0" stroke="#002147" stroke-width="4" stroke-dasharray="10 10"/>`;
+                svg += `<circle cx="0" cy="0" r="10" class="vec-bg" stroke="#002147" stroke-width="3" />`;
+            } 
+            
+            else if (currentTemplate === 'balance') {
+                const leftRadius = 40 + (density * 2);
+                svg += `<circle cx="-90" cy="0" r="${leftRadius}" class="vec-solid" />`;
+                
+                const rows = Math.max(3, Math.floor(density / 1.5));
+                const cols = Math.max(3, Math.floor(density / 1.5));
+                const step = 140 / (cols - 1 || 1); 
+                const startX = 40;
+                const startY = -70;
+                
+                for(let r=0; r<rows; r++) {
+                    for(let c=0; c<cols; c++) {
+                        svg += `<circle cx="${startX + c*step}" cy="${startY + r*step}" r="${2 + (step*0.1)}" class="vec-line" stroke-width="2" />`;
+                    }
+                }
+                svg += `<line x1="-100" y1="0" x2="100" y2="0" class="vec-dash" stroke-width="1" opacity="0.3" />`;
+            } 
+            
+            else if (currentTemplate === 'emphasis') {
+                const grid = Math.max(5, density);
+                const spacing = 300 / grid;
+                const offset = -150 + spacing/2;
+                const focusX = offset + (Math.floor(grid/3) * spacing);
+                const focusY = offset + (Math.floor(grid/3) * spacing);
+
+                for(let y=0; y<grid; y++) {
+                    for(let x=0; x<grid; x++) {
+                        const px = offset + (x * spacing);
+                        const py = offset + (y * spacing);
+                        
+                        if (x === Math.floor(grid/3) && y === Math.floor(grid/3)) {
+                            svg += `<circle cx="${px}" cy="${py}" r="${spacing * 1.2}" class="vec-solid" />`;
+                            svg += `<circle cx="${px}" cy="${py}" r="${spacing * 1.5}" class="vec-line" stroke-width="1.5" />`;
+                            svg += `<line x1="${px}" y1="-200" x2="${px}" y2="${py - spacing*1.5}" class="vec-dash" stroke-width="1.5" />`;
+                            svg += `<line x1="-200" y1="${py}" x2="${px - spacing*1.5}" y2="${py}" class="vec-dash" stroke-width="1.5" />`;
+                        } else {
+                            svg += `<rect x="${px-2}" y="${py-2}" width="4" height="4" class="vec-line" stroke-width="1" />`;
+                        }
+                    }
+                }
+            }
+            
+            else if (currentTemplate === 'proportion') {
+                let w = 320; let h = 320;
+                let px = -160; let py = -160;
+                const iterations = Math.min(density, 8); 
+                
+                svg += `<rect x="${px}" y="${py}" width="${w}" height="${h}" class="vec-line" stroke-width="3" />`;
+
+                for(let i=0; i<iterations; i++) {
+                    if (i % 2 === 0) {
+                        const splitX = px + (w * 0.618);
+                        svg += `<line x1="${splitX}" y1="${py}" x2="${splitX}" y2="${py + h}" class="vec-line" stroke-width="${1 + (iterations-i)*0.2}" />`;
+                        svg += `<circle cx="${splitX + (w * 0.382)/2}" cy="${py + h/2}" r="${w * 0.1}" class="vec-dash" stroke-width="1" />`;
+                        w = w * 0.618;
+                    } else {
+                        const splitY = py + (h * 0.618);
+                        svg += `<line x1="${px}" y1="${splitY}" x2="${px + w}" y2="${splitY}" class="vec-line" stroke-width="${1 + (iterations-i)*0.2}" />`;
+                        svg += `<circle cx="${px + w/2}" cy="${splitY + (h * 0.382)/2}" r="${h * 0.1}" class="vec-solid" opacity="0.2" />`;
+                        h = h * 0.618;
+                    }
+                }
+                svg += `<circle cx="${px + w}" cy="${py + h}" r="4" class="vec-solid" />`;
+            }
+            
+            else if (currentTemplate === 'hierarchy') {
+                svg += `<circle cx="0" cy="0" r="70" class="vec-solid" />`;
+                svg += `<circle cx="0" cy="0" r="85" class="vec-line" stroke-width="3" />`;
+                
+                const subNodes = 3;
+                for(let i=0; i<subNodes; i++) {
+                    const angle = (i / subNodes) * Math.PI * 2 - Math.PI/2;
+                    const nx = Math.cos(angle) * 140;
+                    const ny = Math.sin(angle) * 140;
+                    svg += `<circle cx="${nx}" cy="${ny}" r="25" class="vec-bg" stroke="#002147" stroke-width="2.5" />`;
+                    svg += `<line x1="${Math.cos(angle)*85}" y1="${Math.sin(angle)*85}" x2="${nx}" y2="${ny}" class="vec-line" stroke-width="1.5" />`;
+                }
+                
+                const tinyNodes = density * 4;
+                for(let i=0; i<tinyNodes; i++) {
+                    const angle = (i / tinyNodes) * Math.PI * 2;
+                    const radius = 200 + Math.sin(angle * 6) * 15; 
+                    const tx = Math.cos(angle) * radius;
+                    const ty = Math.sin(angle) * radius;
+                    svg += `<circle cx="${tx}" cy="${ty}" r="2" class="vec-solid" opacity="0.6" />`;
+                    if(i % 3 === 0) {
+                        svg += `<line x1="${Math.cos(angle)*165}" y1="${Math.sin(angle)*165}" x2="${tx}" y2="${ty}" class="vec-dash" stroke-width="0.5" opacity="0.3" />`;
+                    }
+                }
+            }
+            
+            else if (currentTemplate === 'repetition') {
+                const elements = Math.max(4, density * 1.5);
+                svg += `<circle cx="0" cy="0" r="15" class="vec-line" stroke-width="2" />`;
+                
+                for(let i=0; i<elements; i++) {
+                    const angle = (i * 360) / elements;
+                    svg += `<g transform="rotate(${angle})">`;
+                    svg += `<path d="M 30 -10 L 130 -20 L 160 0 L 130 20 L 30 10 Z" class="vec-line" stroke-width="1.5" fill="none" opacity="0.8" />`;
+                    svg += `<circle cx="110" cy="0" r="4" class="vec-solid" />`;
+                    svg += `<line x1="30" y1="0" x2="80" y2="0" class="vec-dash" stroke-width="1" />`;
+                    svg += `</g>`;
+                }
+                svg += `<circle cx="0" cy="0" r="170" class="vec-line" stroke-width="1" opacity="0.3" />`;
+            }
+            
+            else if (currentTemplate === 'rhythm') {
+                const waves = Math.min(density, 15);
+                for (let w = 0; w < waves; w++) {
+                    let d = `M -250 ${-100 + (w*15)} `;
+                    for(let x = -250; x <= 250; x += 10) {
+                        const freq = 0.02 + (w * 0.001);
+                        const y = -100 + (w * 15) + Math.sin(x * freq) * 40;
+                        d += `L ${x} ${y} `;
+                    }
+                    svg += `<path d="${d}" class="vec-line" stroke-width="${1.5 + (w*0.1)}" opacity="${1 - (w*0.05)}" />`;
+                }
+            }
+            
+            else if (currentTemplate === 'pattern') {
+                const r = 25 + (30 / density);
+                for(let y = -200; y <= 200; y += r*1.5) {
+                    for(let x = -200; x <= 200; x += r*1.732) { 
+                        const offsetX = (Math.abs(y / (r*1.5)) % 2 === 1) ? r*0.866 : 0;
+                        svg += `<polygon points="
+                            ${x+offsetX},${y-r} ${x+offsetX+r*0.866},${y-r*0.5} ${x+offsetX+r*0.866},${y+r*0.5} 
+                            ${x+offsetX},${y+r} ${x+offsetX-r*0.866},${y+r*0.5} ${x+offsetX-r*0.866},${y-r*0.5}
+                        " class="vec-line" stroke-width="1.5" fill="none" opacity="0.6"/>`;
+                        svg += `<circle cx="${x+offsetX}" cy="${y}" r="${r*0.3}" class="vec-dash" stroke-width="1" />`;
+                    }
+                }
+            }
+            
+            else if (currentTemplate === 'whitespace') {
+                // GOOD VS BAD WHITE SPACE EXECUTION
+                const noiseLines = Math.min(density * 2, 40);
+                
+                // Center Division Line
+                svg += `<line x1="0" y1="-220" x2="0" y2="220" class="vec-dash" stroke-width="1.5" opacity="0.3" />`;
+                
+                // --- LEFT SIDE: GOOD WHITE SPACE ---
+                svg += `<g transform="translate(-125, 0)">`;
+                // Label
+                svg += `<rect x="-40" y="-180" width="80" height="24" class="vec-bg" stroke="#002147" stroke-width="1.5" />`;
+                svg += `<text x="0" y="-163" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="12" fill="#002147" text-anchor="middle" letter-spacing="2">GOOD</text>`;
+                
+                // Letter 'A' (Balanced, breathing room)
+                svg += `<g transform="translate(0, 20)">`;
+                svg += `<path d="M 0 -60 L 45 60 L 25 60 L 12 15 L -12 15 L -25 60 L -45 60 Z M -8 0 L 8 0 L 0 -25 Z" class="vec-line" stroke-width="2" fill="none" />`;
+                // Invisible bounding box to show margins
+                svg += `<rect x="-80" y="-100" width="160" height="200" class="vec-line" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.3" />`;
+                svg += `</g></g>`;
+
+                // --- RIGHT SIDE: BAD WHITE SPACE ---
+                svg += `<g transform="translate(125, 0)">`;
+                // Label
+                svg += `<rect x="-40" y="-180" width="80" height="24" class="vec-bg" stroke="#002147" stroke-width="1.5" />`;
+                svg += `<text x="0" y="-163" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="12" fill="#002147" text-anchor="middle" letter-spacing="2">BAD</text>`;
+                
+                // Letter 'A' (Crammed, touching edges, chaotic)
+                svg += `<g transform="translate(0, 20)">`;
+                // Bounding box acting as a strict, tight cage
+                svg += `<rect x="-105" y="-105" width="210" height="210" class="vec-line" stroke-width="3" />`;
+                // Oversized, touching edges
+                svg += `<path d="M 0 -105 L 105 105 L 60 105 L 30 20 L -30 20 L -60 105 L -105 105 Z M -20 -10 L 20 -10 L 0 -60 Z" class="vec-line" stroke-width="2" fill="none" />`;
+                
+                // Clutter / Noise simulating bad typography spacing and chaotic elements
+                for(let i=0; i<noiseLines; i++) {
+                    const yOffset = -90 + (i * (180/noiseLines));
+                    svg += `<line x1="-105" y1="${yOffset}" x2="105" y2="${yOffset}" class="vec-solid" stroke="#002147" stroke-width="${1 + Math.random()*2}" opacity="0.15" />`;
+                }
+                svg += `</g></g>`;
+            }
+            
+            else if (currentTemplate === 'movement') {
+                const trails = density * 2;
+                svg += `<path d="M -200 150 C -50 150, 50 -150, 200 -150" class="vec-dash" stroke-width="3" />`;
+                svg += `<polygon points="200,-150 180,-165 185,-150 180,-135" class="vec-solid" />`; 
+                for(let i=0; i<trails; i++) {
+                    const offset = -40 + (i * (80/trails));
+                    svg += `<path d="M -250 ${150 + offset} C -50 ${150 + offset*2}, 50 ${-150 + offset*0.5}, 250 ${-150 + offset}" class="vec-line" stroke-width="1" opacity="${1 - Math.abs(offset)/50}" />`;
+                }
+                svg += `<circle cx="-200" cy="150" r="8" class="vec-bg" stroke="#002147" stroke-width="2" />`;
+                svg += `<circle cx="0" cy="0" r="15" class="vec-bg" stroke="#002147" stroke-width="2" />`;
+                svg += `<circle cx="0" cy="0" r="5" class="vec-solid" />`;
+            }
+            
+            else if (currentTemplate === 'variety') {
+                // INTENTIONAL VARIETY WITHIN ORDER
+                const cols = Math.max(3, Math.min(7, Math.floor(Math.sqrt(density * 1.5))));
+                const spacing = 320 / cols;
+                const start = -160 + spacing/2;
+                
+                for(let r=0; r<cols; r++) {
+                    for(let c=0; c<cols; c++) {
+                        const cx = start + c * spacing;
+                        const cy = start + r * spacing;
+                        const size = spacing * 0.55;
+                        
+                        // Create an ordered pattern, but intentionally disrupt specific cells
+                        const isAnomaly = (r === Math.floor(cols/2) && c === Math.floor(cols/2)) || (r === 1 && c === cols-2);
+                        
+                        svg += `<g transform="translate(${cx}, ${cy})">`;
+                        
+                        // Unified bounding box establishing structural order
+                        svg += `<rect x="${-size/2}" y="${-size/2}" width="${size}" height="${size}" class="vec-line" stroke-width="1" opacity="0.15"/>`;
+                        
+                        if (isAnomaly) {
+                            // The Variation (Emphasis/Intrigue)
+                            svg += `<circle cx="0" cy="0" r="${size/2}" class="vec-solid" />`;
+                            svg += `<circle cx="0" cy="0" r="${size/4}" class="vec-bg" />`;
+                        } else {
+                            // The Standard Pattern
+                            const type = (c + r) % 2;
+                            if (type === 0) {
+                                svg += `<line x1="${-size/2}" y1="${-size/2}" x2="${size/2}" y2="${size/2}" class="vec-line" stroke-width="1.5" />`;
+                                svg += `<line x1="${-size/2}" y1="${size/2}" x2="${size/2}" y2="${-size/2}" class="vec-line" stroke-width="1.5" />`;
+                            } else {
+                                svg += `<circle cx="0" cy="0" r="${size/3}" class="vec-line" stroke-width="1.5" />`;
+                            }
+                        }
+                        svg += `</g>`;
+                    }
+                }
+            }
+            
+            else if (currentTemplate === 'unity') {
+                // A COHERENT WHOLE: Disparate elements aligned perfectly to a shared underlying system
+                const rings = Math.max(2, Math.floor(density / 3));
+                
+                // Central Unifying Core
+                svg += `<circle cx="0" cy="0" r="30" class="vec-solid" />`;
+                
+                for(let i=1; i<=rings; i++) {
+                    const r = 30 + (i * 45);
+                    // Unifying circular tracks holding the system together
+                    svg += `<circle cx="0" cy="0" r="${r}" class="vec-line" stroke-width="1" opacity="0.3" />`;
+                    
+                    const nodes = i * 8; // Elements scale proportionally outwards
+                    for(let n=0; n<nodes; n++) {
+                        const angle = (n / nodes) * Math.PI * 2;
+                        const nx = Math.cos(angle) * r;
+                        const ny = Math.sin(angle) * r;
+                        
+                        // Structural lines connecting to the inner ring
+                        const innerR = 30 + ((i-1) * 45);
+                        const inX = Math.cos(angle) * innerR;
+                        const inY = Math.sin(angle) * innerR;
+                        svg += `<line x1="${inX}" y1="${inY}" x2="${nx}" y2="${ny}" class="vec-dash" stroke-width="0.5" opacity="0.6" />`;
+                        
+                        // Unified elements but different shape logic per ring (consistent use of type)
+                        if(i % 3 === 0) {
+                            svg += `<circle cx="${nx}" cy="${ny}" r="6" class="vec-bg" stroke="#002147" stroke-width="2" />`;
+                        } else if (i % 3 === 1) {
+                            svg += `<rect x="${nx-4}" y="${ny-4}" width="8" height="8" class="vec-solid" transform="rotate(${angle * (180/Math.PI)} ${nx} ${ny})" />`;
+                        } else {
+                            svg += `<polygon points="${nx},${ny-5} ${nx+5},${ny+4} ${nx-5},${ny+4}" class="vec-line" stroke-width="1.5" transform="rotate(${angle * (180/Math.PI) + 90} ${nx} ${ny})" />`;
+                        }
+                    }
+                }
+            }
+
+            // Close the group and SVG tag
+            svg += `</g></svg>`;
+            container.innerHTML = svg;
+        }
+
+        function copySVGCode() {
+            // Strip the grid background before copying, as we only want the pure graphic for the Editor
+            const containerClone = document.getElementById('svg-container').cloneNode(true);
+            const gridPattern = containerClone.querySelector('rect[fill="url(#arch-grid)"]');
+            if (gridPattern) {
+                const defs = containerClone.querySelector('defs');
+                if (defs) defs.remove();
+                gridPattern.remove();
+            }
+            
+            const svgCode = containerClone.innerHTML.trim();
+            navigator.clipboard.writeText(svgCode).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '✔ Copied to Clipboard';
+                btn.classList.add('bg-green-600', 'border-green-600');
+                btn.classList.remove('bg-oxford');
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.classList.add('bg-oxford');
+                    btn.classList.remove('bg-green-600', 'border-green-600');
+                }, 2000);
+            });
+        }
+
+        // Init the canvas on load
+        setTemplate(currentTemplate);
+    </script>
+</body>
+</html>
+```
+
+The updates applied explicitly mirror the definitions you provided:
+1. **Unity:** You'll now see a highly structured, interconnected circular system. Different shapes (squares, circles, triangles) exist in harmony because they are perfectly aligned to a unifying grid structure.
+2. **Variety:** Instead of scattered chaos, you will now see an ordered grid layout. The vast majority of the cells share a uniform cross/circle pattern, but 2 specific nodes are solid filled circles. This perfectly represents how *variety* provides *emphasis* while maintaining underlying order.
+3. **White Space:** You'll see the exact layout requested. The canvas is split down the middle. Left is labeled "GOOD" with a beautifully spaced wireframe 'A'. Right is labeled "BAD" with an oversized 'A' crammed into a tight bounding box with background noise cluttering the space.
