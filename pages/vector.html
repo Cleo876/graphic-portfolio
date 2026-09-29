@@ -134,7 +134,7 @@
     </main>
 
     <script>
-        let currentTemplate = 'whitespace'; // Updated default to test the new designs
+        let currentTemplate = 'emphasis'; // Updated default to show the new design
 
         function setTemplate(template) {
             currentTemplate = template;
@@ -242,27 +242,80 @@
             } 
             
             else if (currentTemplate === 'emphasis') {
-                const grid = Math.max(5, density);
-                const spacing = 300 / grid;
-                const offset = -150 + spacing/2;
-                const focusX = offset + (Math.floor(grid/3) * spacing);
-                const focusY = offset + (Math.floor(grid/3) * spacing);
+                // SIDE-BY-SIDE FLYER COMPARISON (NO EMPHASIS vs EMPHASIS)
+                // Redesigned to show a severe, obvious contrast in visual entry points
+                
+                // Center Division Line
+                svg += `<line x1="0" y1="-230" x2="0" y2="230" class="vec-dash" stroke-width="1.5" opacity="0.3" />`;
+                
+                const bodyLines = Math.min(density, 8);
 
-                for(let y=0; y<grid; y++) {
-                    for(let x=0; x<grid; x++) {
-                        const px = offset + (x * spacing);
-                        const py = offset + (y * spacing);
-                        
-                        if (x === Math.floor(grid/3) && y === Math.floor(grid/3)) {
-                            svg += `<circle cx="${px}" cy="${py}" r="${spacing * 1.2}" class="vec-solid" />`;
-                            svg += `<circle cx="${px}" cy="${py}" r="${spacing * 1.5}" class="vec-line" stroke-width="1.5" />`;
-                            svg += `<line x1="${px}" y1="-200" x2="${px}" y2="${py - spacing*1.5}" class="vec-dash" stroke-width="1.5" />`;
-                            svg += `<line x1="-200" y1="${py}" x2="${px - spacing*1.5}" y2="${py}" class="vec-dash" stroke-width="1.5" />`;
-                        } else {
-                            svg += `<rect x="${px-2}" y="${py-2}" width="4" height="4" class="vec-line" stroke-width="1" />`;
-                        }
-                    }
+                // --- LEFT SIDE: BAD (CLUTTERED / EVERYTHING SHOUTING) ---
+                // Problem: When every element is thick, bold, and heavily boxed, nothing stands out. 
+                // The viewer doesn't know where to look first.
+                svg += `<g transform="translate(-125, 0)">`;
+                // Label
+                svg += `<rect x="-40" y="-220" width="80" height="24" class="vec-bg" stroke="#002147" stroke-width="1.5" />`;
+                svg += `<text x="0" y="-203" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="12" fill="#002147" text-anchor="middle" letter-spacing="2">BAD</text>`;
+                
+                // Flyer Wireframe Bounding Box (Heavy Border)
+                svg += `<rect x="-100" y="-170" width="200" height="360" class="vec-bg" stroke="#002147" stroke-width="3" />`;
+                
+                // A shouting title block (Thick borders competing with everything else)
+                svg += `<rect x="-85" y="-150" width="170" height="40" fill="none" stroke="#002147" stroke-width="3" />`;
+                svg += `<line x1="-70" y1="-130" x2="70" y2="-130" stroke="#002147" stroke-width="6" stroke-linecap="square"/>`;
+                
+                // A shouting sub-header
+                svg += `<rect x="-85" y="-95" width="120" height="20" fill="none" stroke="#002147" stroke-width="3" />`;
+                
+                // An aggressive, heavily stroked image box
+                svg += `<rect x="-85" y="-60" width="170" height="120" fill="none" stroke="#002147" stroke-width="3" />`;
+                svg += `<line x1="-85" y1="-60" x2="85" y2="60" stroke="#002147" stroke-width="1.5" opacity="0.5" />`;
+                svg += `<line x1="85" y1="-60" x2="-85" y2="60" stroke="#002147" stroke-width="1.5" opacity="0.5" />`;
+                
+                // Heavy, tightly packed body text with thick strokes fighting for attention
+                for(let i=0; i<8; i++) {
+                    const lineY = 80 + (i * 14);
+                    const rag = (i % 3 === 2) ? 30 : 0;
+                    svg += `<line x1="-85" y1="${lineY}" x2="${85 - rag}" y2="${lineY}" stroke="#002147" stroke-width="2.5" />`;
                 }
+                
+                // A massive, heavy footer/button block at the bottom
+                svg += `<rect x="-85" y="195" width="170" height="25" fill="none" stroke="#002147" stroke-width="3" />`;
+                
+                svg += `</g>`;
+
+                // --- RIGHT SIDE: GOOD (EMPHASIS & DE-EMPHASIS APPLIED) ---
+                // Solution: Clear focal point, negative space, and deliberate de-emphasis
+                svg += `<g transform="translate(125, 0)">`;
+                // Label
+                svg += `<rect x="-40" y="-220" width="80" height="24" class="vec-bg" stroke="#002147" stroke-width="1.5" />`;
+                svg += `<text x="0" y="-203" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="12" fill="#002147" text-anchor="middle" letter-spacing="2">GOOD</text>`;
+                
+                // Flyer Wireframe Bounding Box
+                svg += `<rect x="-100" y="-170" width="200" height="360" class="vec-bg" stroke="#002147" stroke-width="2" />`;
+                
+                // CLEAR EMPHASIS: Massive, heavy block instantly capturing attention
+                svg += `<rect x="-85" y="-150" width="170" height="50" class="vec-solid" />`;
+                svg += `<line x1="-70" y1="-125" x2="70" y2="-125" stroke="#F9F6EE" stroke-width="6" stroke-linecap="square"/>`;
+                
+                // Secondary Emphasis (Image)
+                svg += `<rect x="-85" y="-80" width="170" height="110" class="vec-line" stroke-width="1.5" />`;
+                svg += `<circle cx="0" cy="-25" r="25" class="vec-line" stroke-width="1.5" opacity="0.6" />`;
+                svg += `<path d="M -20 -35 L 20 -25 L -10 0 Z" class="vec-line" stroke-width="1.5" opacity="0.6" />`;
+                
+                // Standard Body Copy (Medium weight, easy to read)
+                for(let i=0; i<bodyLines; i++) {
+                    const lineY = 50 + (i * 14);
+                    const rag = (i % 3 === 2) ? 40 : 0;
+                    svg += `<line x1="-85" y1="${lineY}" x2="${85 - rag}" y2="${lineY}" class="vec-line" stroke-width="1" opacity="0.8" />`;
+                }
+                
+                // INTENTIONAL DE-EMPHASIS: The "Fine Print" is pushed down, faint, and thin
+                svg += `<line x1="-85" y1="165" x2="85" y2="165" class="vec-dash" stroke-width="0.5" opacity="0.4" />`;
+                svg += `<line x1="-85" y1="173" x2="40" y2="173" class="vec-dash" stroke-width="0.5" opacity="0.4" />`;
+                
+                svg += `</g>`;
             }
             
             else if (currentTemplate === 'proportion') {
@@ -305,7 +358,6 @@
                 svg += `<circle cx="-160" cy="-63" r="5" class="vec-solid" />`; // Axis connector node
                 
                 // Level 3: Body Copy (Low weight, repetitive)
-                // Density controls how many lines of "body copy" are generated
                 const bodyLines = Math.min(density, 12);
                 for(let i=0; i<bodyLines; i++) {
                     const lineY = -25 + (i * 18);
@@ -517,7 +569,18 @@
             }
             
             const svgCode = containerClone.innerHTML.trim();
-            navigator.clipboard.writeText(svgCode).then(() => {
+            
+            // iFrame Safe Copy Method (Bypasses security block)
+            const textArea = document.createElement("textarea");
+            textArea.value = svgCode;
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0"; // Make it invisible
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
                 const btn = document.getElementById('copy-btn');
                 const orig = btn.innerHTML;
                 btn.innerHTML = '✔ Copied to Clipboard';
@@ -528,7 +591,11 @@
                     btn.classList.add('bg-oxford');
                     btn.classList.remove('bg-green-600', 'border-green-600');
                 }, 2000);
-            });
+            } catch (err) {
+                console.error("Copy failed", err);
+            }
+            
+            document.body.removeChild(textArea); // Clean up
         }
 
         // Init the canvas on load
@@ -536,9 +603,3 @@
     </script>
 </body>
 </html>
-```
-
-### Why this nails the definition:
-1. **Title Dominance:** The top element is immediately recognizable as the most important. It is heavy, solid-filled, and wrapped in a secondary bounding box to demand the viewer's attention.
-2. **Relational Headings:** The subheadings are hollow with thick strokes. The secondary heading (which appears if you push the density slider up) is slightly thinner than the first, perfectly demonstrating how headings show importance "in relation to each other."
-3. **Body Copy Abstraction:** The density slider now controls a simulated block of text lines, complete with a ragged-right edge so it intrinsically looks like a flowing paragraph of information sitting subordinate to the structure!
