@@ -27,70 +27,37 @@
         }
     </script>
 
-    <link rel="stylesheet" href="../css/global.css">
-
     <style>
-        .rich-text h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            color: #002147;
-            font-size: 2.25rem;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
+        body { background-color: #F9F6EE; color: #002147; overflow-x: hidden; }
+        
+        .cloud-fade {
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), filter 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .rich-text h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            color: #002147;
-            font-size: 1.5rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
+        .cloud-fade.is-visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0) scale(1);
         }
-        .rich-text p {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 300;
-            color: rgba(0, 33, 71, 0.8);
-            font-size: 1.125rem;
-            line-height: 1.75;
-            margin-bottom: 1.25rem;
-        }
-        .rich-text b, .rich-text strong {
-            font-weight: 600;
-            color: #002147;
-        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        
+        .rich-text h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #002147; font-size: 2.25rem; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.2; }
+        .rich-text h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #002147; font-size: 1.5rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .rich-text p { font-family: 'Outfit', sans-serif; font-weight: 300; color: rgba(0, 33, 71, 0.8); font-size: 1.125rem; line-height: 1.75; margin-bottom: 1.25rem; }
+        .rich-text b, .rich-text strong { font-weight: 600; color: #002147; }
         .rich-text i, .rich-text em { font-style: italic; }
         
         .rich-text blockquote {
-            border-left: 4px solid #002147;
-            padding: 1rem 1.5rem;
-            margin: 2rem 0;
-            background-color: rgba(0, 33, 71, 0.03);
-            font-family: 'Space Grotesk', sans-serif;
-            font-style: italic;
-            font-weight: 400;
-            font-size: 1.25rem;
-            color: #002147;
-            border-radius: 0 8px 8px 0;
-            display: flow-root; 
-            clear: none;
+            border-left: 4px solid #002147; padding: 1rem 1.5rem; margin: 2rem 0;
+            background-color: rgba(0, 33, 71, 0.03); font-family: 'Space Grotesk', sans-serif;
+            font-style: italic; font-weight: 400; font-size: 1.25rem; color: #002147;
+            border-radius: 0 8px 8px 0; display: flow-root; clear: none;
         }
-        
-        .rich-text code {
-            font-family: monospace;
-            background-color: rgba(0, 33, 71, 0.08);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #002147;
-            font-weight: 600;
-        }
-
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
-        }
+        .rich-text code { font-family: monospace; background-color: rgba(0, 33, 71, 0.08); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; color: #002147; font-weight: 600; }
+        .clearfix::after { content: ""; clear: both; display: table; }
     </style>
 </head>
 <body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative bg-bone text-oxford">
@@ -101,8 +68,7 @@
                 <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
                 Design In Motion
             </a>
-            
-            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide" id="magnetic-nav">
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide">
                 <a href="../index.html" class="nav-link">Home</a>
                 <a href="copyright.html" class="nav-link">Copyright</a>
                 <a href="principles.html" class="nav-link text-oxford/50 pointer-events-none">Principles</a>
@@ -110,27 +76,10 @@
                 <a href="theory.html" class="nav-link">Theory</a>
                 <a href="artifacts.html" class="nav-link">Artifacts</a>
             </nav>
-
-            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
-                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-        </div>
-        
-        <!-- Mobile Dropdown Menu -->
-        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
-            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
-            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
-            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
-            <a href="elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
-            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Theory</a>
-            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
         </div>
     </header>
 
     <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
-        
         <section class="px-6 md:px-12 pt-12 pb-16">
             <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
                 
@@ -164,45 +113,32 @@
                                 <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#002147" stroke-width="0.5" opacity="0.1"/>
                             </pattern>
                         </defs>
-                        
-                        <!-- Grid Background -->
                         <rect width="100%" height="100%" fill="url(#gyro-grid)" />
 
-                        <!-- Rhythm Wave (Passing through background) -->
+                        <!-- Rhythm Wave -->
                         <path d="M -50 187.5 C 100 100, 150 275, 250 187.5 S 400 100, 550 187.5" fill="none" stroke="#002147" stroke-width="2" stroke-dasharray="5 10" opacity="0.3">
                             <animate attributeName="stroke-dashoffset" values="30; 0" dur="2s" repeatCount="indefinite" linear />
                         </path>
 
-                        <!-- Central Gyroscope Assembly -->
+                        <!-- Central Gyroscope -->
                         <g transform="translate(250, 187.5)">
-                            
-                            <!-- Alignment/Proportion Axes -->
                             <line x1="-180" y1="0" x2="180" y2="0" stroke="#002147" stroke-width="1" opacity="0.2" />
                             <line x1="0" y1="-150" x2="0" y2="150" stroke="#002147" stroke-width="1" opacity="0.2" />
                             
-                            <!-- Hierarchy Triangle -->
+                            <!-- Hierarchy -->
                             <polygon points="0,-70 60,35 -60,35" fill="none" stroke="#002147" stroke-width="3" />
                             <circle cx="0" cy="-70" r="5" fill="#002147" />
                             <rect x="56" y="31" width="8" height="8" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
                             <rect x="-64" y="31" width="8" height="8" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
 
-                            <!-- Balance: Orbiting Rings -->
+                            <!-- Balance (Orbiting) -->
                             <g>
                                 <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="25s" repeatCount="indefinite" linear/>
                                 <circle cx="0" cy="0" r="100" fill="none" stroke="#002147" stroke-width="1.5" stroke-dasharray="15 15" opacity="0.6"/>
-                                <!-- Orbiting Nodes representing variety -->
                                 <circle cx="100" cy="0" r="10" fill="#002147" />
                                 <rect x="-106" y="-6" width="12" height="12" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
                             </g>
-
-                            <g>
-                                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="40s" repeatCount="indefinite" linear/>
-                                <circle cx="0" cy="0" r="140" fill="none" stroke="#002147" stroke-width="1" opacity="0.3"/>
-                                <circle cx="-99" cy="-99" r="6" fill="none" stroke="#002147" stroke-width="2" />
-                                <circle cx="99" cy="99" r="4" fill="#002147" />
-                            </g>
                             
-                            <!-- Core Emphasis Node -->
                             <circle cx="0" cy="0" r="15" fill="#F9F6EE" stroke="#002147" stroke-width="4" />
                             <circle cx="0" cy="0" r="4" fill="#002147" />
                         </g>
@@ -214,9 +150,7 @@
         <section class="px-6 md:px-12">
             <div class="max-w-4xl mx-auto space-y-16">
                 
-                <!-- JSON CONTENT INJECTION POINT -->
                 <div id="dynamic-content-mount" class="cloud-fade delay-100 min-h-[400px]">
-                    <!-- Skeleton loader -->
                     <div class="flex items-center justify-center p-8 bg-oxford/5 border border-oxford/10 animate-pulse rounded-xl">
                         <p class="font-display tracking-widest uppercase text-xs text-oxford/50">Assembling Layout Blocks...</p>
                     </div>
@@ -226,62 +160,23 @@
         </section>
     </main>
 
-    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20 mt-12">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-            <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 bg-oxford block rotate-45"></span>
-                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
-            </div>
-            <div class="text-xs md:text-sm text-oxford/60 font-light">
-                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
-            </div>
-            <a href="elements.html" class="text-xs md:text-sm font-bold uppercase tracking-widest text-oxford hover:text-oxford/60 transition-colors flex items-center gap-2 group">
-                Next: Elements 
-                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </a>
-        </div>
-    </footer>
-
-    <!-- Global App Script -->
-    <script src="../js/app.js"></script>
-
     <script>
-        // 1. Analytics Tracker
-        function recordPageVisit(pageID) {
-            const lockKey = `tracked_visit_${pageID}`;
-            if (!sessionStorage.getItem(lockKey)) {
-                fetch(`https://abacus.jasoncameron.dev/hit/cleon-williams-portfolio/${pageID}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.value !== undefined) {
-                            sessionStorage.setItem(lockKey, 'true');
-                            console.log(`[Analytics] Success! Hit logged for: ${pageID}.`);
-                        }
-                    })
-                    .catch(error => console.warn("[Analytics] Tracking request failed.", error));
-            }
-        }
-        recordPageVisit('principles_page');
-
-        // 2. Visual Editor JSON Fetch and Render Logic
         document.addEventListener('DOMContentLoaded', async () => {
+            // Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.cloud-fade').forEach(el => observer.observe(el));
+
             const mountPoint = document.getElementById('dynamic-content-mount');
             
             try {
-                // IMPORTANT: You will need to use your Visual Editor to build the layout, 
-                // export it, and save it as "principles-layout.json" in the "content" folder!
                 const response = await fetch('../content/principles-layout.json');
-                
-                if (!response.ok) {
-                    throw new Error('Layout file not found. Ensure content/principles-layout.json exists.');
-                }
+                if (!response.ok) throw new Error('Layout file not found.');
                 
                 const blocks = await response.json();
-                
-                // Clear the skeleton loader
                 mountPoint.innerHTML = '';
                 
-                // Render the blocks
                 blocks.forEach(block => {
                     const blockDiv = document.createElement('div');
                     blockDiv.className = 'mb-12 clearfix w-full';
@@ -291,9 +186,9 @@
                     } 
                     else if (block.type === 'media-wrap') {
                         const alignmentClass = block.align === 'right' ? 'float-right ml-8 mb-4' : 'float-left mr-8 mb-4';
-                        const defaultImg = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600';
-                        const imgSrc = block.imageUrl && block.imageUrl !== '' ? block.imageUrl : defaultImg;
+                        const imgSrc = block.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600';
 
+                        // UPDATED: w-5 h-5 and rounded corners applied to crosshairs
                         blockDiv.innerHTML = `
                             <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
                                 <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
@@ -307,9 +202,9 @@
                         `;
                     }
                     else if (block.type === 'embed-wrap') {
-                        // Renders the pure mathematical SVG from the Vector Studio
                         const alignmentClass = block.align === 'right' ? 'float-right ml-8 mb-4' : 'float-left mr-8 mb-4';
                         
+                        // UPDATED: w-5 h-5 and rounded corners applied to crosshairs for SVG embeds
                         blockDiv.innerHTML = `
                             <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
                                 <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
@@ -329,13 +224,8 @@
                 });
                 
             } catch (error) {
-                console.warn("[Content] Fetch failed. Rendering placeholder instructions.", error);
-                mountPoint.innerHTML = `
-                    <div class="border border-oxford/20 bg-oxford/5 p-8 rounded-xl text-center">
-                        <h3 class="font-display font-bold text-xl mb-4">No Layout File Detected</h3>
-                        <p class="font-light text-oxford/80">Please use your Visual Canvas Editor to build the Principles of Design page, export the JSON, and save it as <code>content/principles-layout.json</code> in your repository.</p>
-                    </div>
-                `;
+                // SILENT FAILURE: Simply hide the mount point if no JSON exists yet.
+                mountPoint.style.display = 'none';
             }
         });
     </script>
