@@ -32,8 +32,8 @@
     <style>
         /* Academic Hanging Indent for APA Formatting */
         .apa-citation {
-            padding-left: 2rem;
-            text-indent: -2rem;
+            padding-left: 2.5rem;
+            text-indent: -2.5rem;
             line-height: 1.8;
         }
 
@@ -189,14 +189,23 @@
                     </button>
                 </div>
 
-                <!-- Status Monitor (Hidden by default, only shown to public briefly if loading is slow) -->
-                <div id="crawler-status" class="mb-8 p-4 bg-oxford/5 border border-oxford/10 rounded flex items-center gap-3 text-sm font-mono text-oxford/70 cloud-fade delay-300">
-                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    Compiling bibliography...
+                <!-- Sleek Skeleton Loader (Shown while processing in parallel) -->
+                <div id="skeleton-loader" class="space-y-6 cloud-fade delay-300">
+                    <div class="animate-pulse flex flex-col gap-2 opacity-50">
+                        <div class="h-4 bg-oxford/10 w-3/4 rounded"></div>
+                        <div class="h-4 bg-oxford/10 w-1/2 rounded ml-10"></div>
+                    </div>
+                    <div class="animate-pulse flex flex-col gap-2 opacity-50">
+                        <div class="h-4 bg-oxford/10 w-full max-w-2xl rounded"></div>
+                        <div class="h-4 bg-oxford/10 w-2/3 rounded ml-10"></div>
+                    </div>
+                    <div class="animate-pulse flex flex-col gap-2 opacity-50">
+                        <div class="h-4 bg-oxford/10 w-5/6 rounded"></div>
+                    </div>
                 </div>
 
-                <!-- The Actual List -->
-                <div class="space-y-6" id="bibliography-container">
+                <!-- The Actual Academic List -->
+                <div class="space-y-8 pb-12" id="bibliography-container" style="display: none;">
                     <!-- Javascript Data Injection Here -->
                 </div>
 
@@ -236,10 +245,11 @@
     <!-- Global App Script -->
     <script src="../js/app.js"></script>
 
-    <!-- THE CRAWLER ENGINE -->
+    <!-- THE HIGH-PERFORMANCE PARALLEL ENGINE -->
     <script>
         // Data Store
         const referenceDatabase = new Map(); // Maps URL to { metadata, contexts: [{pageName, html}] }
+        const CACHE_KEY = 'dim_biblio_cache_v2';
         
         // Define the ecosystem to crawl
         const ecosystemMap = [
@@ -248,12 +258,32 @@
             { name: "Principles Layout", url: "../content/principles-layout.json", type: "json" },
             { name: "Elements Layout", url: "../content/elements-layout.json", type: "json" },
             { name: "Theory Layout", url: "../content/theory-layout.json", type: "json" },
-            { name: "Artifacts Data", url: "../artifacts/artifacts.json", type: "json" } // Specialized checking needed for this one
+            { name: "Artifacts Data", url: "../artifacts/artifacts.json", type: "json" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
             setupAdminControls();
-            executeAudit();
+            
+            // Step 1: Check if we have perfectly formatted cache ready to deploy instantly
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                try {
+                    const parsedCache = JSON.parse(cachedData);
+                    // Re-populate the map from the array format
+                    parsedCache.forEach(item => referenceDatabase.set(item.metadata.url, item));
+                    
+                    document.getElementById('skeleton-loader').style.display = 'none';
+                    document.getElementById('bibliography-container').style.display = 'block';
+                    renderBibliography();
+                    
+                    // Trigger a silent background audit just in case new links were added since last load
+                    executeAudit(true); 
+                    return;
+                } catch(e) { console.warn("Cache invalidated."); }
+            }
+            
+            // If no cache, perform full initial load
+            executeAudit(false);
         });
 
         // -----------------------------------------------------
@@ -280,7 +310,6 @@
                 }
             });
             
-            // Allow admin to click the red badge to instantly lock the page back down
             lockBtn.addEventListener('click', () => {
                 document.body.classList.remove('admin-mode-active');
             });
@@ -289,15 +318,12 @@
         // -----------------------------------------------------
         // 2. THE CRAWLER LOGIC
         // -----------------------------------------------------
-        async function executeAudit() {
-            const statusBox = document.getElementById('crawler-status');
-            
+        async function executeAudit(isBackgroundSync) {
+            // First, quickly crawl all internal JSON/HTML to find the links
             for (let source of ecosystemMap) {
-                // Keep the status message generic so public users don't see "Scanning JSON"
-                statusBox.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Formatting citations...`;
                 try {
                     const response = await fetch(source.url);
-                    if (!response.ok) continue; // Skip 404s silently (page might not be built yet)
+                    if (!response.ok) continue; 
                     
                     const textContent = await response.text();
                     
@@ -306,49 +332,51 @@
                     } else if (source.type === 'html') {
                         extractFromHtml(textContent, source.name);
                     }
-
                 } catch (error) {
-                    console.warn(`Crawler failed to parse ${source.name}:`, error);
+                    console.warn(`Crawler skipped ${source.name}`);
                 }
             }
 
-            // Now that we have all URLs, fetch their metadata via proxy
-            await populateMetadata();
+            // Now, hit the proxy to grab external metadata in parallel
+            await populateMetadataInParallel();
             
-            statusBox.style.display = 'none'; // Hide status when totally done
-            renderBibliography();
+            // Cache the final structured data so the next visit is instant
+            localStorage.setItem(CACHE_KEY, JSON.stringify(Array.from(referenceDatabase.values())));
+
+            // If this wasn't a silent background sync, fade out skeleton and show real data
+            if (!isBackgroundSync) {
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('bibliography-container').style.display = 'block';
+                renderBibliography();
+            }
         }
 
         function isExternalLink(url) {
             if (!url) return false;
-            // Ignore internal hashes, mailto, javascript, or local relative paths
             if (url.startsWith('#') || url.startsWith('mailto:') || url.startsWith('javascript:')) return false;
             if (url.startsWith('/') || url.startsWith('.')) return false;
-            if (url.includes('cleonwilliams.com')) return false; // Replace with your actual domain eventually
+            if (url.includes('cleonwilliams.com')) return false; 
             return true;
         }
 
         function logDiscoveredLink(url, pageName, contextString) {
             if (!isExternalLink(url)) return;
 
-            // Clean the URL
             const cleanUrl = new URL(url).href;
 
             if (!referenceDatabase.has(cleanUrl)) {
                 referenceDatabase.set(cleanUrl, {
-                    metadata: null, // Will fetch later
+                    metadata: null, 
                     contexts: []
                 });
             }
             
-            // Avoid duplicate contexts from the exact same page
             const existingContexts = referenceDatabase.get(cleanUrl).contexts;
             if (!existingContexts.some(c => c.pageName === pageName)) {
                 existingContexts.push({ pageName, text: contextString });
             }
         }
 
-        // Parse standard HTML pages (like index.html)
         function extractFromHtml(htmlString, pageName) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
@@ -357,7 +385,6 @@
             links.forEach(link => {
                 const url = link.getAttribute('href');
                 if (isExternalLink(url)) {
-                    // Get the parent paragraph or block as context
                     const block = link.closest('p, div, section');
                     const context = block ? block.innerHTML : link.outerHTML;
                     logDiscoveredLink(url, pageName, context);
@@ -365,15 +392,12 @@
             });
         }
 
-        // Parse Visual Editor layout JSONs
         function extractFromJson(jsonString, pageName) {
             try {
                 const data = JSON.parse(jsonString);
-                // Standard layout blocks { type: 'text', html: '...' }
                 if (Array.isArray(data)) {
                     data.forEach(block => {
                         if (block.html) {
-                            // Render the block's HTML string to a fake DOM element to easily extract links
                             const tempDiv = document.createElement('div');
                             tempDiv.innerHTML = block.html;
                             const links = tempDiv.querySelectorAll('a');
@@ -387,52 +411,63 @@
                         }
                     });
                 }
-            } catch (e) { console.warn("JSON Parse Error", e); }
+            } catch (e) {}
         }
 
         // -----------------------------------------------------
-        // 3. METADATA SCRAPING & APA FORMATTING
+        // 3. HIGH-SPEED PARALLEL METADATA SCRAPING
         // -----------------------------------------------------
-        async function populateMetadata() {
+        async function populateMetadataInParallel() {
             const keys = Array.from(referenceDatabase.keys());
             
-            // Process concurrently for speed
-            await Promise.all(keys.map(async (url) => {
-                const meta = await fetchExternalMetadata(url);
+            // Fetch all metadata asynchronously AT THE SAME TIME
+            const fetchPromises = keys.map(async (url) => {
+                // If we already scraped this via cache, skip it
+                if (referenceDatabase.get(url).metadata !== null) return;
+                
+                const meta = await fetchWithTimeout(url);
                 referenceDatabase.get(url).metadata = meta;
-            }));
+            });
+            
+            // Await the entire batch
+            await Promise.all(fetchPromises);
         }
 
-        async function fetchExternalMetadata(url) {
-            // Using a free CORS proxy to fetch the raw HTML of the target site
+        // Custom fetch wrapper with a strict 2.5 second timeout to prevent hanging
+        async function fetchWithTimeout(url) {
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s strict timeout
+
             try {
-                const response = await fetch(proxyUrl);
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
                 const data = await response.json();
                 
                 if (data.contents) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(data.contents, 'text/html');
                     
-                    // Scrape Data
                     let title = doc.querySelector('title')?.innerText || '';
                     let siteName = doc.querySelector('meta[property="og:site_name"]')?.content || '';
                     let author = doc.querySelector('meta[name="author"]')?.content || '';
                     
-                    // Fallback to domain name if siteName is missing
                     if (!siteName) {
                         try { siteName = new URL(url).hostname.replace('www.', ''); } catch(e){}
                     }
 
                     return { title: cleanText(title), siteName: cleanText(siteName), author: cleanText(author), url };
                 }
-            } catch(e) { console.warn(`Metadata fetch failed for ${url}`); }
+            } catch(e) {
+                // If it times out or CORS fails completely, catch it instantly and construct fallback
+                clearTimeout(timeoutId);
+            }
 
-            // Extreme Fallback if proxy fails entirely
+            // High-Speed Fallback generation directly from the URL string
             let backupSite = "";
             try { backupSite = new URL(url).hostname.replace('www.', ''); } catch(e){}
-            return { title: url, siteName: backupSite, author: '', url };
+            return { title: '', siteName: backupSite, author: '', url };
         }
 
         function cleanText(str) {
@@ -440,16 +475,12 @@
         }
 
         function generateAPACitation(meta) {
-            // Standard APA 7th Edition for Websites:
-            // Author, A. A. (Year, Month Date). Title of page. Site name. URL
-            
+            // Standard APA 7th Edition for Websites
             let citation = "";
             let inText = "";
             
-            // 1. Author or Site Name as Author
             let authorStr = meta.author ? meta.author : (meta.siteName || "Unknown Author");
             
-            // Format Author name (Last, F. M.) if it looks like a real person's name (2 or 3 words)
             let words = authorStr.split(' ');
             if (meta.author && words.length >= 2 && words.length <= 3) {
                 const last = words.pop();
@@ -461,27 +492,23 @@
                 inText = `(${authorStr}, n.d.)`;
             }
 
-            // 2. Date (Websites often lack strict publish dates in standard meta tags, defaulting to n.d.)
             citation += `(n.d.). `;
 
-            // 3. Title (Italicized)
-            if (meta.title) {
+            if (meta.title && meta.title !== meta.siteName) {
                 citation += `<i>${meta.title}</i>. `;
             }
 
-            // 4. Site Name (if Author wasn't already the site name)
             if (meta.siteName && meta.siteName !== authorStr) {
                 citation += `${meta.siteName}. `;
             }
 
-            // 5. URL
             citation += `<a href="${meta.url}" target="_blank" class="text-oxford underline decoration-1 underline-offset-2 hover:opacity-70 break-all">${meta.url}</a>`;
 
             return { html: citation, inText: inText };
         }
 
         // -----------------------------------------------------
-        // 4. RENDERING & MODAL LOGIC
+        // 4. RENDERING (ACADEMIC LAYOUT)
         // -----------------------------------------------------
         function renderBibliography() {
             const container = document.getElementById('bibliography-container');
@@ -489,68 +516,64 @@
 
             if (referenceDatabase.size === 0) {
                 container.innerHTML = `
-                    <div class="p-8 text-center border border-oxford/10 rounded-xl bg-white">
+                    <div class="p-8 text-center">
                         <p class="font-display text-lg text-oxford/60">No external references cited at this time.</p>
                     </div>`;
                 return;
             }
 
-            // Convert to array and sort alphabetically by citation text
             let refs = Array.from(referenceDatabase.values());
             
-            // Generate APA strings first to allow sorting
             refs = refs.map(ref => {
                 const apa = generateAPACitation(ref.metadata);
                 return { ...ref, apaHtml: apa.html, inText: apa.inText };
             });
 
-            // Sort Alphabetically
+            // Sort Alphabetically by Author/Site
             refs.sort((a, b) => a.apaHtml.replace(/(<([^>]+)>)/gi, "").localeCompare(b.apaHtml.replace(/(<([^>]+)>)/gi, "")));
 
             refs.forEach((ref, index) => {
-                // We assume the first context is primary for the modal
                 const primaryContext = ref.contexts[0];
                 const encodedHtml = encodeURIComponent(primaryContext.text);
                 const encodedUrl = encodeURIComponent(ref.metadata.url);
 
                 const item = document.createElement('div');
-                item.className = 'border border-oxford/10 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cloud-fade is-visible relative overflow-hidden';
-                item.style.transitionDelay = `${index * 50}ms`;
+                // Academic Layout: No boxes, no shadows. Just clean text with hanging indents and subtle dividers.
+                item.className = 'pb-6 border-b border-oxford/5 last:border-0 cloud-fade is-visible relative';
+                item.style.transitionDelay = `${index * 30}ms`;
 
                 item.innerHTML = `
-                    <div class="flex flex-col md:flex-row justify-between items-start gap-6 relative z-10">
-                        <!-- Public View: APA Citation -->
-                        <div class="flex-grow public-ui w-full">
-                            <p class="apa-citation font-sans text-lg text-oxford/90">${ref.apaHtml}</p>
+                    <!-- Public View: APA Citation -->
+                    <div class="public-ui w-full">
+                        <p class="apa-citation font-sans text-base md:text-lg text-oxford/90">${ref.apaHtml}</p>
+                    </div>
+                    
+                    <!-- Secret Admin View: The Data Engine -->
+                    <div class="admin-ui flex-col w-full bg-oxford/5 p-4 rounded mt-2">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest border border-red-200">Admin Source View</span>
+                            <span class="text-xs font-mono text-oxford/50 truncate w-48 md:w-auto">Target: ${ref.metadata.url}</span>
                         </div>
                         
-                        <!-- Secret Admin View: The Data Engine -->
-                        <div class="flex-grow admin-ui flex-col w-full">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest border border-red-200">Admin Source View</span>
-                                <span class="text-xs font-mono text-oxford/50">Target: ${ref.metadata.url}</span>
+                        <p class="apa-citation font-sans text-base md:text-lg text-oxford/90 mb-4 opacity-70">${ref.apaHtml}</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-oxford/10 pt-4">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">In-Text Citation (Copy)</p>
+                                <div class="flex items-center gap-2">
+                                    <code class="bg-white px-2 py-1 rounded text-sm text-oxford font-semibold border border-oxford/10">${ref.inText}</code>
+                                    <button onclick="navigator.clipboard.writeText('${ref.inText}')" class="text-xs hover:bg-oxford hover:text-bone border border-oxford px-2 py-1 rounded transition-colors" title="Copy to clipboard">Copy</button>
+                                </div>
                             </div>
                             
-                            <p class="apa-citation font-sans text-lg text-oxford/90 mb-6 opacity-50">${ref.apaHtml}</p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-oxford/10 pt-4 mt-2">
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">In-Text Citation (Copy)</p>
-                                    <div class="flex items-center gap-2">
-                                        <code class="bg-oxford/5 px-2 py-1 rounded text-sm text-oxford font-semibold border border-oxford/10">${ref.inText}</code>
-                                        <button onclick="navigator.clipboard.writeText('${ref.inText}')" class="text-xs hover:bg-oxford hover:text-bone border border-oxford px-2 py-1 rounded transition-colors" title="Copy to clipboard">Copy</button>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">Source Locator</p>
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-sm font-semibold">${primaryContext.pageName}</span>
-                                        <button onclick="openModal('${primaryContext.pageName}', '${encodedHtml}', '${encodedUrl}')" class="flex items-center gap-1 text-xs bg-oxford text-bone px-3 py-1.5 rounded hover:bg-oxford/80 transition-colors shadow">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                            View Context
-                                        </button>
-                                    </div>
+                            <div>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">Source Locator</p>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-semibold">${primaryContext.pageName}</span>
+                                    <button onclick="openModal('${primaryContext.pageName}', '${encodedHtml}', '${encodedUrl}')" class="flex items-center gap-1 text-xs bg-oxford text-bone px-3 py-1.5 rounded hover:bg-oxford/80 transition-colors shadow">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        View Context
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -567,8 +590,6 @@
             
             document.getElementById('modal-page-name').innerText = pageName;
             
-            // Clean the HTML of excess layout code to make it readable, but keep the core text
-            // Also, dynamically inject a CSS class into the specific <a> tag that triggered this to highlight it
             const parser = new DOMParser();
             const doc = parser.parseFromString(rawHtml, 'text/html');
             
@@ -577,8 +598,6 @@
                 anchor.classList.add('context-highlight');
             }
             
-            // If the chunk is massive, we might just want to grab its text content, 
-            // but innerHTML preserves the bolding/italics which is nice.
             let displayHtml = doc.body.innerHTML;
             if (displayHtml.length > 500) {
                 displayHtml = displayHtml.substring(0, 500) + '... <i class="opacity-50">(truncated)</i>';
