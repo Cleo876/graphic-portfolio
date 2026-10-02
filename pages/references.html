@@ -58,6 +58,8 @@
             border-bottom: 2px solid #002147;
             font-weight: 600;
             padding: 0 4px;
+            color: #002147 !important;
+            text-decoration: none !important;
         }
     </style>
 </head>
@@ -215,7 +217,7 @@
 
     <!-- THE CONTEXT MODAL OVERLAY -->
     <div id="context-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-bone/60">
-        <div class="modal-card w-full max-w-2xl bg-white border border-oxford/20 shadow-2xl rounded-2xl overflow-hidden relative">
+        <div class="modal-card w-full max-w-2xl bg-white border border-oxford/20 shadow-2xl rounded-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
             <div class="bg-oxford p-4 flex justify-between items-center text-bone">
                 <div class="font-display font-bold uppercase tracking-widest text-sm flex items-center gap-2">
                     <span class="w-1.5 h-1.5 bg-bone block rounded-full animate-pulse"></span> Context Locator
@@ -225,7 +227,7 @@
                 </button>
             </div>
             
-            <div class="p-8">
+            <div class="p-8 overflow-y-auto flex-grow">
                 <div class="flex items-center gap-3 mb-6">
                     <span class="text-xs uppercase tracking-widest font-bold text-oxford/50">Found on Page:</span>
                     <span id="modal-page-name" class="font-mono text-sm bg-oxford/10 px-2 py-1 rounded text-oxford font-semibold">Home Canvas</span>
@@ -233,10 +235,11 @@
                 
                 <h3 class="font-display font-bold text-lg mb-3">Extracted Paragraph:</h3>
                 
-                <div class="bg-bone border-l-4 border-oxford p-5 rounded-r">
-                    <p id="modal-context-text" class="font-sans text-lg font-light leading-relaxed text-oxford/90">
+                <!-- FIX: Changed from <p> to <div> to prevent nesting validation errors -->
+                <div class="bg-bone border-l-4 border-oxford p-5 rounded-r rich-text">
+                    <div id="modal-context-text" class="font-sans text-lg font-light leading-relaxed text-oxford/90">
                         Loading context...
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -249,7 +252,9 @@
     <script>
         // Data Store
         const referenceDatabase = new Map(); // Maps URL to { metadata, contexts: [{pageName, html}] }
-        const CACHE_KEY = 'dim_biblio_cache_v2';
+        
+        // Cache Key bumped to v3 to trigger a fresh scrape using the new logic
+        const CACHE_KEY = 'dim_biblio_cache_v3';
         
         // Define the ecosystem to crawl
         const ecosystemMap = [
@@ -316,10 +321,10 @@
         }
 
         // -----------------------------------------------------
-        // 2. THE CRAWLER LOGIC
+        // 2. THE CRAWLER & EXTRACTION LOGIC (UPDATED)
         // -----------------------------------------------------
         async function executeAudit(isBackgroundSync) {
-            // First, quickly crawl all internal JSON/HTML to find the links
+            // Quickly crawl all internal JSON/HTML to find the links
             for (let source of ecosystemMap) {
                 try {
                     const response = await fetch(source.url);
@@ -359,11 +364,7 @@
             return true;
         }
 
-        function logDiscoveredLink(url, pageName, contextString) {
-            if (!isExternalLink(url)) return;
-
-            const cleanUrl = new URL(url).href;
-
+        function logDiscoveredLink(cleanUrl, pageName, contextString) {
             if (!referenceDatabase.has(cleanUrl)) {
                 referenceDatabase.set(cleanUrl, {
                     metadata: null, 
@@ -372,8 +373,47 @@
             }
             
             const existingContexts = referenceDatabase.get(cleanUrl).contexts;
-            if (!existingContexts.some(c => c.pageName === pageName)) {
+            
+            // Prevent identical exact paragraphs from clustering if mentioned multiple times in the same block
+            if (!existingContexts.some(c => c.text === contextString)) {
                 existingContexts.push({ pageName, text: contextString });
+            }
+        }
+
+        function processLinkExtraction(link, pageName) {
+            const url = link.getAttribute('href');
+            if (isExternalLink(url)) {
+                
+                // Safe URL parsing: prevents a bad URL from crashing the whole crawler
+                let cleanUrl = "";
+                try {
+                    cleanUrl = new URL(url, window.location.origin).href;
+                } catch(e) {
+                    return; // Skip malformed URLs seamlessly
+                }
+
+                // Target the closest wrapper so we capture the paragraph, list item, or rich-text div
+                const block = link.closest('p, li, div.rich-text') || link.parentElement;
+                
+                if (block) {
+                    // Clone the block so we can manipulate it without destroying the live page
+                    const clone = block.cloneNode(true);
+                    
+                    // Find the exact link inside our cloned block
+                    const clonedLink = clone.querySelector(`a[href="${url}"]`);
+                    if (clonedLink) {
+                        // Apply permanent highlight classes
+                        clonedLink.classList.add('context-highlight');
+                        // Remove the href and disable pointer events so the user can't accidentally click away
+                        clonedLink.removeAttribute('href');
+                        clonedLink.style.pointerEvents = 'none';
+                    }
+                    
+                    logDiscoveredLink(cleanUrl, pageName, clone.outerHTML);
+                } else {
+                    // Fallback
+                    logDiscoveredLink(cleanUrl, pageName, link.outerHTML);
+                }
             }
         }
 
@@ -382,14 +422,7 @@
             const doc = parser.parseFromString(htmlString, 'text/html');
             const links = doc.querySelectorAll('a');
             
-            links.forEach(link => {
-                const url = link.getAttribute('href');
-                if (isExternalLink(url)) {
-                    const block = link.closest('p, div, section');
-                    const context = block ? block.innerHTML : link.outerHTML;
-                    logDiscoveredLink(url, pageName, context);
-                }
-            });
+            links.forEach(link => processLinkExtraction(link, pageName));
         }
 
         function extractFromJson(jsonString, pageName) {
@@ -402,12 +435,7 @@
                             tempDiv.innerHTML = block.html;
                             const links = tempDiv.querySelectorAll('a');
                             
-                            links.forEach(link => {
-                                const url = link.getAttribute('href');
-                                if (isExternalLink(url)) {
-                                    logDiscoveredLink(url, pageName, block.html);
-                                }
-                            });
+                            links.forEach(link => processLinkExtraction(link, pageName));
                         }
                     });
                 }
@@ -533,14 +561,24 @@
             refs.sort((a, b) => a.apaHtml.replace(/(<([^>]+)>)/gi, "").localeCompare(b.apaHtml.replace(/(<([^>]+)>)/gi, "")));
 
             refs.forEach((ref, index) => {
-                const primaryContext = ref.contexts[0];
-                const encodedHtml = encodeURIComponent(primaryContext.text);
-                const encodedUrl = encodeURIComponent(ref.metadata.url);
-
                 const item = document.createElement('div');
                 // Academic Layout: No boxes, no shadows. Just clean text with hanging indents and subtle dividers.
                 item.className = 'pb-6 border-b border-oxford/5 last:border-0 cloud-fade is-visible relative';
                 item.style.transitionDelay = `${index * 30}ms`;
+
+                let contextsHtml = '';
+                ref.contexts.forEach((ctx, ctxIndex) => {
+                    const encodedHtml = encodeURIComponent(ctx.text);
+                    contextsHtml += `
+                        <div class="flex items-center justify-between py-2 ${ctxIndex > 0 ? 'border-t border-oxford/5' : ''}">
+                            <span class="text-sm font-semibold">${ctx.pageName}</span>
+                            <button onclick="openModal('${ctx.pageName}', '${encodedHtml}')" class="flex items-center gap-1 text-xs bg-oxford text-bone px-3 py-1.5 rounded hover:bg-oxford/80 transition-colors shadow">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                View Context
+                            </button>
+                        </div>
+                    `;
+                });
 
                 item.innerHTML = `
                     <!-- Public View: APA Citation -->
@@ -557,9 +595,9 @@
                         
                         <p class="apa-citation font-sans text-base md:text-lg text-oxford/90 mb-4 opacity-70">${ref.apaHtml}</p>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-oxford/10 pt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-oxford/10 pt-4">
                             <div>
-                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">In-Text Citation (Copy)</p>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-2">In-Text Citation (Copy)</p>
                                 <div class="flex items-center gap-2">
                                     <code class="bg-white px-2 py-1 rounded text-sm text-oxford font-semibold border border-oxford/10">${ref.inText}</code>
                                     <button onclick="navigator.clipboard.writeText('${ref.inText}')" class="text-xs hover:bg-oxford hover:text-bone border border-oxford px-2 py-1 rounded transition-colors" title="Copy to clipboard">Copy</button>
@@ -567,13 +605,9 @@
                             </div>
                             
                             <div>
-                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">Source Locator</p>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-semibold">${primaryContext.pageName}</span>
-                                    <button onclick="openModal('${primaryContext.pageName}', '${encodedHtml}', '${encodedUrl}')" class="flex items-center gap-1 text-xs bg-oxford text-bone px-3 py-1.5 rounded hover:bg-oxford/80 transition-colors shadow">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                        View Context
-                                    </button>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-2">Source Locators</p>
+                                <div class="flex flex-col">
+                                    ${contextsHtml}
                                 </div>
                             </div>
                         </div>
@@ -583,27 +617,14 @@
             });
         }
 
-        // Modal Logic
-        function openModal(pageName, encodedHtml, encodedUrl) {
+        // Modal Logic updated to receive pre-highlighted HTML safely
+        function openModal(pageName, encodedHtml) {
             const rawHtml = decodeURIComponent(encodedHtml);
-            const targetUrl = decodeURIComponent(encodedUrl);
             
             document.getElementById('modal-page-name').innerText = pageName;
             
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(rawHtml, 'text/html');
-            
-            const anchor = doc.querySelector(`a[href="${targetUrl}"]`);
-            if (anchor) {
-                anchor.classList.add('context-highlight');
-            }
-            
-            let displayHtml = doc.body.innerHTML;
-            if (displayHtml.length > 500) {
-                displayHtml = displayHtml.substring(0, 500) + '... <i class="opacity-50">(truncated)</i>';
-            }
-            
-            document.getElementById('modal-context-text').innerHTML = displayHtml;
+            // Insert the pre-processed cloned HTML directly into the div
+            document.getElementById('modal-context-text').innerHTML = rawHtml;
             document.getElementById('context-modal').classList.add('active');
         }
 
