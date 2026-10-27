@@ -114,5 +114,31 @@
     
     <!-- 2. Artifacts Specific Script -->
     <script src="../js/artifacts.js"></script>
+
+    <!-- ========================================== -->
+    <!-- REAL ANALYTICS TRACKING SCRIPT (Abacus API)-->
+    <!-- ========================================== -->
+    <script>
+        function recordPageVisit(pageID) {
+            const lockKey = `tracked_visit_${pageID}`;
+            
+            if (!sessionStorage.getItem(lockKey)) {
+                fetch(`https://abacus.jasoncameron.dev/hit/cleon-williams-portfolio/${pageID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.value !== undefined) {
+                            sessionStorage.setItem(lockKey, 'true');
+                            console.log(`[Analytics] Success! Hit logged for: ${pageID}. Current Count: ${data.value}`);
+                        }
+                    })
+                    .catch(error => console.warn("[Analytics] Abacus tracking request failed.", error));
+            } else {
+                console.log(`[Analytics] Ignored duplicate visit for: ${pageID}`);
+            }
+        }
+
+        // Fire the tracker immediately for the Artifacts Page
+        recordPageVisit('artifacts_page');
+    </script>
 </body>
 </html>
