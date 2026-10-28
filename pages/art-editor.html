@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artifact Matrix Inline Editor | Design In Motion</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/artifacts.css">
+
+    <style>
+        body { background-color: #F9F6EE; color: #002147; }
+
+        /* Inline Editable Field Highlights */
+        .inline-editable {
+            outline: none;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .inline-editable:hover {
+            box-shadow: 0 0 0 2px rgba(0, 33, 71, 0.15);
+            background-color: rgba(0, 33, 71, 0.02);
+        }
+        .inline-editable:focus {
+            box-shadow: 0 0 0 2px rgba(0, 33, 71, 0.4);
+            background-color: white;
+        }
+
+        /* Floating Rich Text Toolbar */
+        #floating-toolbar {
+            position: absolute;
+            z-index: 1000;
+            display: none;
+            background-color: #002147;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 33, 71, 0.3);
+            transform: translateY(10px) scale(0.95);
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+        }
+        #floating-toolbar.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .toolbar-btn {
+            color: #F9F6EE;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .toolbar-btn:hover { background-color: rgba(249, 246, 238, 0.2); }
+        .toolbar-divider { width: 1px; height: 20px; background-color: rgba(249, 246, 238, 0.2); margin: 0 4px; }
+
+        /* Card Hover Controls */
+        .card-editor-wrap { position: relative; }
+        .card-controls { opacity: 0; transition: opacity 0.2s ease; }
+        .card-editor-wrap:hover .card-controls { opacity: 1; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Floating Rich Text Formatting Toolbar -->
+    <div id="floating-toolbar" class="flex items-center gap-1">
+        <button onclick="formatText('bold')" class="toolbar-btn font-serif font-bold" title="Bold">B</button>
+        <button onclick="formatText('italic')" class="toolbar-btn font-serif italic" title="Italic">I</button>
+        <button onclick="formatText('underline')" class="toolbar-btn font-serif underline" title="Underline">U</button>
+        <button onclick="formatText('mono')" class="toolbar-btn font-mono font-bold" title="Monospace">&lt;/&gt;</button>
+        <div class="toolbar-divider"></div>
+        <button onclick="formatText('formatBlock', 'H2')" class="toolbar-btn font-display font-bold text-xs" title="Heading">H</button>
+        <button onclick="formatText('formatBlock', 'P')" class="toolbar-btn font-sans text-xs" title="Paragraph">¶</button>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-oxford/10 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-6">
+            <div class="font-display font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+                <span class="w-2 h-2 bg-oxford block animate-pulse"></span> Artifact Matrix Inline Editor
+            </div>
+            
+            <div class="hidden md:flex items-center bg-oxford/5 rounded px-2 py-1.5 border border-transparent focus-within:border-oxford/20 transition-all group" title="Export Filename">
+                <input type="text" id="doc-filename" value="artifacts" class="bg-transparent text-sm font-mono text-oxford/80 outline-none w-24 focus:w-36 transition-all" placeholder="filename">
+                <span class="text-sm font-mono text-oxford/40">.json</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importJSON(event)">
+            
+            <button onclick="document.getElementById('import-json-input').click()" class="bg-bone text-oxford border border-oxford/20 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford hover:text-bone transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Import JSON
+            </button>
+
+            <button onclick="exportJSON()" class="bg-oxford text-bone px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-lg flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Export JSON Data
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-grow py-16 px-6 max-w-7xl mx-auto w-full">
+        <div class="mb-10 flex justify-between items-center border-b border-oxford/10 pb-6">
+            <div>
+                <h1 class="text-3xl font-display font-bold">Interactive Portfolio Canvas</h1>
+                <p class="text-sm text-oxford/70">Click directly into any card title, tool, skill, description, or image URL to edit inline in real-time.</p>
+            </div>
+            <button onclick="addArtifact()" class="bg-oxford text-bone px-5 py-3 text-xs font-bold uppercase tracking-widest hover:bg-oxford/90 transition-colors shadow-md rounded-lg flex items-center gap-2">
+                + Add Artifact Card
+            </button>
+        </div>
+
+        <div id="inline-gallery-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            <!-- Inline Cards Injected Here -->
+        </div>
+    </main>
+
+    <script>
+        let artifacts = [];
+        const STORAGE_KEY = 'dim_art_inline_autosave';
+
+        const defaultArtifacts = [
+            {
+                "id": "1",
+                "title": "House with Lines",
+                "tools": "G.I.M.P - Brush tool,<br> Paint Bucket Tool,",
+                "skills": "Vector paths, Line weight hierarchy, Bucket & Color Picking",
+                "image": "../artifacts/house-lines.png",
+                "message": "This artifact allows us to practice foundational drawing skills by creating a simple house illustration using basic lines and shapes."
+            },
+            {
+                "id": "2",
+                "title": "Space Theme Wallpaper",
+                "tools": "Selection Tool,<br> Scale, <br>Rotate",
+                "skills": "Layer Compositing, Sourcing Elements, Layer Arrangement, Overlay Compositing",
+                "image": "../artifacts/Spce Composition - Assignment 1.png",
+                "message": "This artifact challenges us to arrange and composit a space themed wallpaper representing what we would like to experience about space."
+            }
+        ];
+
+        function initEditor() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    artifacts = JSON.parse(saved);
+                } catch(e) {
+                    artifacts = defaultArtifacts;
+                }
+            } else {
+                artifacts = defaultArtifacts;
+            }
+            renderCanvas();
+        }
+
+        function autoSave() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(artifacts));
+        }
+
+        function renderCanvas() {
+            const container = document.getElementById('inline-gallery-container');
+            container.innerHTML = '';
+
+            artifacts.forEach((artifact, index) => {
+                const artifactNum = String(index + 1).padStart(2, '0');
+                const isInteractive = !!artifact.interactiveUrl;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'card-editor-wrap';
+
+                wrapper.innerHTML = `
+                    <!-- Floating Card Controls (Move Up/Down/Delete) -->
+                    <div class="card-controls absolute -left-14 top-0 flex flex-col gap-1 bg-white border border-oxford/10 p-1 shadow-sm rounded z-20">
+                        <button onclick="moveCard(${index}, -1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs font-bold" title="Move Up">↑</button>
+                        <button onclick="moveCard(${index}, 1)" class="w-6 h-6 hover:bg-oxford/10 flex items-center justify-center text-xs font-bold" title="Move Down">↓</button>
+                        <button onclick="deleteCard(${index})" class="w-6 h-6 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold" title="Delete">×</button>
+                    </div>
+
+                    <article class="artifact-card border border-oxford/10 bg-bone flex flex-col relative group">
+                        <!-- Top Bar -->
+                        <div class="flex justify-between items-center p-4 md:p-6 border-b border-oxford/10 bg-white/50">
+                            <span class="font-display font-bold text-xl md:text-2xl">${artifactNum}.</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs uppercase font-semibold text-oxford/50">ID:</span>
+                                <span contenteditable="true" onblur="updateField(${index}, 'id', this.innerText)" class="inline-editable px-2 py-0.5 text-xs font-mono font-bold">${artifact.id}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Image & Inline Image/URL Editor Overlay -->
+                        <div class="w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden max-h-[280px] relative group/img">
+                            <img src="${artifact.image}" alt="${artifact.title}" class="w-full h-auto object-cover object-top" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
+                            
+                            <div class="absolute inset-0 bg-black/70 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 p-6 z-10">
+                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold">Edit Image Source Path</span>
+                                <input type="text" value="${artifact.image}" oninput="updateField(${index}, 'image', this.value)" class="w-full text-xs font-mono p-2.5 rounded bg-white text-oxford outline-none shadow-lg">
+                                
+                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold mt-2">Interactive URL (Optional)</span>
+                                <input type="text" value="${artifact.interactiveUrl || ''}" oninput="updateField(${index}, 'interactiveUrl', this.value)" class="w-full text-xs font-mono p-2.5 rounded bg-white text-oxford outline-none shadow-lg" placeholder="../artifacts/interactive.html">
+                            </div>
+                        </div>
+
+                        <!-- Card Body Content -->
+                        <div class="p-6 md:p-8 flex-grow flex flex-col justify-between">
+                            <div>
+                                <!-- Title Inline Editable -->
+                                <h2 contenteditable="true" onblur="updateField(${index}, 'title', this.innerText)" class="inline-editable text-2xl md:text-3xl font-display font-bold mb-4 p-1">${artifact.title || 'Untitled Exhibit'}</h2>
+                                
+                                <!-- Message Rich Text Inline Editable -->
+                                <div contenteditable="true" onblur="updateRichMessage(${index}, this.innerHTML)" onkeydown="handleEnterKey(event)" class="inline-editable rich-text space-y-2 mb-6 text-sm md:text-base text-oxford/80 font-light p-2">${artifact.message || ''}</div>
+                            </div>
+
+                            <!-- Footer Metadata: Tools & Skills Inline Editables -->
+                            <div class="pt-6 border-t border-oxford/10 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/40 p-4 rounded-xl">
+                                <div>
+                                    <h4 class="text-[10px] uppercase tracking-widest font-bold text-oxford/50 mb-1">Tools Utilized (Enter = &lt;br&gt;)</h4>
+                                    <div contenteditable="true" onblur="updateField(${index}, 'tools', this.innerHTML)" onkeydown="handleEnterKey(event)" class="inline-editable text-sm font-medium p-1">${artifact.tools || ''}</div>
+                                </div>
+                                <div>
+                                    <h4 class="text-[10px] uppercase tracking-widest font-bold text-oxford/50 mb-1">Skills Demonstrated</h4>
+                                    <div contenteditable="true" onblur="updateField(${index}, 'skills', this.innerText)" class="inline-editable text-sm font-medium leading-tight p-1">${artifact.skills || ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        function updateField(index, field, value) {
+            artifacts[index][field] = value.trim();
+            autoSave();
+        }
+
+        function updateRichMessage(index, html) {
+            artifacts[index].message = html;
+            autoSave();
+        }
+
+        function handleEnterKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                document.execCommand('insertLineBreak', false, null);
+                e.preventDefault();
+            }
+        }
+
+        function addArtifact() {
+            artifacts.push({
+                id: String(artifacts.length + 1),
+                title: "New Exhibit Piece",
+                tools: "Tool 1,<br> Tool 2",
+                skills: "Skill set description",
+                image: "../artifacts/house-lines.png",
+                message: "Describe your creative process and the design principles applied here."
+            });
+            renderCanvas();
+            autoSave();
+        }
+
+        function deleteCard(index) {
+            if (confirm("Remove this artifact record?")) {
+                artifacts.splice(index, 1);
+                renderCanvas();
+                autoSave();
+            }
+        }
+
+        function moveCard(index, direction) {
+            if (index + direction < 0 || index + direction >= artifacts.length) return;
+            const temp = artifacts[index];
+            artifacts[index] = artifacts[index + direction];
+            artifacts[index + direction] = temp;
+            renderCanvas();
+            autoSave();
+        }
+
+        // --- FLOATING RICH TEXT TOOLBAR ---
+        function formatText(command, value = null) {
+            if (command === 'mono') {
+                const sel = window.getSelection();
+                if (!sel.isCollapsed) {
+                    document.execCommand('insertHTML', false, `<code>${sel.toString()}</code>`);
+                }
+                return;
+            }
+            document.execCommand(command, false, value);
+        }
+
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            const toolbar = document.getElementById('floating-toolbar');
+            if (sel.rangeCount > 0 && !sel.isCollapsed) {
+                const container = sel.getRangeAt(0).commonAncestorContainer;
+                const isRich = container.nodeType === 1 ? container.closest('.rich-text') : container.parentElement.closest('.rich-text');
+                if (isRich) {
+                    const rect = sel.getRangeAt(0).getBoundingClientRect();
+                    toolbar.style.display = 'flex';
+                    toolbar.style.top = `${rect.top + window.scrollY - toolbar.offsetHeight - 10}px`;
+                    toolbar.style.left = `${rect.left + window.scrollX + (rect.width / 2) - (toolbar.offsetWidth / 2)}px`;
+                    setTimeout(() => toolbar.classList.add('active'), 10);
+                    return;
+                }
+            }
+            toolbar.classList.remove('active');
+            setTimeout(() => { if(!toolbar.classList.contains('active')) toolbar.style.display = 'none'; }, 150);
+        });
+
+        // --- IMPORT / EXPORT ---
+        function importJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    if (Array.isArray(data)) {
+                        artifacts = data;
+                        renderCanvas();
+                        autoSave();
+                        alert("Artifact JSON imported successfully!");
+                    } else {
+                        alert("Invalid JSON schema structure.");
+                    }
+                } catch(err) {
+                    alert("Failed to parse JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportJSON() {
+            const dataStr = JSON.stringify(artifacts, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            let filename = document.getElementById('doc-filename').value.trim() || 'artifacts';
+            if (!filename.endsWith('.json')) filename += '.json';
+            
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        initEditor();
+    </script>
+</body>
+</html>
