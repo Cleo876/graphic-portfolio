@@ -149,6 +149,7 @@
     <script>
         let artifacts = [];
         const STORAGE_KEY = 'dim_art_inline_autosave';
+        const GITHUB_PAGES_BASE = 'https://cleo876.github.io/graphic-portfolio/';
 
         const defaultArtifacts = [
             {
@@ -160,12 +161,13 @@
                 "message": "This artifact allows us to practice foundational drawing skills by creating a simple house illustration using basic lines and shapes."
             },
             {
-                "id": "2",
-                "title": "Space Theme Wallpaper",
-                "tools": "Selection Tool,<br> Scale, <br>Rotate",
-                "skills": "Layer Compositing, Sourcing Elements, Layer Arrangement, Overlay Compositing",
-                "image": "../artifacts/Spce Composition - Assignment 1.png",
-                "message": "This artifact challenges us to arrange and composit a space themed wallpaper representing what we would like to experience about space."
+                "id": "4",
+                "title": "Interactive Presentation Module",
+                "tools": "Web Technologies, UI/UX",
+                "skills": "Interactive UI, Digital Layout, Data Presentation",
+                "image": "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=800",
+                "message": "This artifact is a fully interactive, web-based presentation. Click the launch button on the image to view the live experience in a new tab.",
+                "interactiveUrl": "../artifacts/interactive-lesson.html"
             }
         ];
 
@@ -187,6 +189,15 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(artifacts));
         }
 
+        // Helper to convert relative paths to absolute GitHub Pages URLs for testing/previewing
+        function resolveInteractiveUrl(relPath) {
+            if (!relPath) return '';
+            if (relPath.startsWith('http://') || relPath.startsWith('https://')) return relPath;
+            // Clean up relative prefix '../'
+            const cleanPath = relPath.replace(/^(\.\.\/)+/, '');
+            return GITHUB_PAGES_BASE + cleanPath;
+        }
+
         function renderCanvas() {
             const container = document.getElementById('inline-gallery-container');
             container.innerHTML = '';
@@ -194,6 +205,7 @@
             artifacts.forEach((artifact, index) => {
                 const artifactNum = String(index + 1).padStart(2, '0');
                 const isInteractive = !!artifact.interactiveUrl;
+                const absoluteInteractiveUrl = resolveInteractiveUrl(artifact.interactiveUrl);
 
                 const wrapper = document.createElement('div');
                 wrapper.className = 'card-editor-wrap';
@@ -216,16 +228,27 @@
                             </div>
                         </div>
                         
-                        <!-- Image & Inline Image/URL Editor Overlay -->
+                        <!-- Image & Interactive Overlay Preview -->
                         <div class="w-full border-b border-oxford/10 bg-oxford/5 overflow-hidden max-h-[280px] relative group/img">
                             <img src="${artifact.image}" alt="${artifact.title}" class="w-full h-auto object-cover object-top" onerror="this.src='https://via.placeholder.com/800x600.png?text=Image+Not+Found'">
                             
-                            <div class="absolute inset-0 bg-black/70 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 p-6 z-10">
-                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold">Edit Image Source Path</span>
-                                <input type="text" value="${artifact.image}" oninput="updateField(${index}, 'image', this.value)" class="w-full text-xs font-mono p-2.5 rounded bg-white text-oxford outline-none shadow-lg">
+                            <!-- Dynamic Interactive Button Overlay -->
+                            ${isInteractive ? `
+                                <div class="absolute inset-0 bg-oxford/60 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 backdrop-blur-sm z-10">
+                                    <a href="${absoluteInteractiveUrl}" target="_blank" class="bg-bone text-oxford px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-white hover:scale-105 transition-all flex items-center gap-2 shadow-xl cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        Launch Interactive Module
+                                    </a>
+                                </div>
+                            ` : ''}
+
+                            <!-- Edit Settings Panel on Hover -->
+                            <div class="absolute inset-0 bg-black/80 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 p-6 z-20 ${isInteractive ? 'pointer-events-none' : ''}">
+                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold pointer-events-auto">Edit Image Source Path</span>
+                                <input type="text" value="${artifact.image}" oninput="updateField(${index}, 'image', this.value)" class="pointer-events-auto w-full text-xs font-mono p-2 rounded bg-white text-oxford outline-none shadow-lg">
                                 
-                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold mt-2">Interactive URL (Optional)</span>
-                                <input type="text" value="${artifact.interactiveUrl || ''}" oninput="updateField(${index}, 'interactiveUrl', this.value)" class="w-full text-xs font-mono p-2.5 rounded bg-white text-oxford outline-none shadow-lg" placeholder="../artifacts/interactive.html">
+                                <span class="text-[10px] uppercase font-mono tracking-widest text-bone/70 font-bold mt-1 pointer-events-auto">Interactive URL (Optional)</span>
+                                <input type="text" value="${artifact.interactiveUrl || ''}" oninput="updateField(${index}, 'interactiveUrl', this.value)" class="pointer-events-auto w-full text-xs font-mono p-2 rounded bg-white text-oxford outline-none shadow-lg" placeholder="../artifacts/interactive-lesson.html">
                             </div>
                         </div>
 
@@ -260,6 +283,10 @@
         function updateField(index, field, value) {
             artifacts[index][field] = value.trim();
             autoSave();
+            // Re-render to instantly update the interactive overlay button state if URL was added/removed
+            if (field === 'interactiveUrl') {
+                renderCanvas();
+            }
         }
 
         function updateRichMessage(index, html) {
