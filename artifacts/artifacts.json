@@ -28,7 +28,7 @@
     "title": "Interactive Presentation Module",
     "tools": "Visual Studio, <br>HTML, CSS,<br>JavaScript,<br>UI/UX",
     "skills": "Interactive UI, Digital Layout, Data Presentation, \nProgramming,\nLesson Planning",
-    "image": "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=800",
+    "image": "https://github.com/Cleo876/graphic-portfolio/blob/main/artifacts/image_2026-10-28_095109303.png?raw=true",
     "message": "This artifact is a fully interactive, web-based presentation. For it's creation, we looked at developing the outline for the lesson and what would be necessary for the students to engage with, what topic and subject area we would focus on, and eventually how we would create the engagement with the content.<br>Upon it's creation, we tested it with person's who were both weaker in the subject matter and stronger so we could have a good assessment on what is made, so that we can fine tune it even more.<br><b>Click the launch button</b> on the <i>image</i> to view and interact with the live experience in a new tab.",
     "interactiveUrl": "../artifacts/interactive-lesson.html"
   }
