@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Author | Cleon Williams — Design In Motion</title>
+    
+    <!-- Google Fonts: Outfit & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Portfolio Design Tokens -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Global Portfolio Stylesheet -->
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            background-color: #F9F6EE;
+            color: #002147;
+            overflow-x: hidden;
+        }
+
+        /* Cloud-Fade Entrance Transitions */
+        .cloud-fade {
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 1s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .cloud-fade.is-visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0) scale(1);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        /* Visual Canvas Editor Rich-Text Parity Styles */
+        .rich-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 2.25rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .rich-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .rich-text p {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            color: rgba(0, 33, 71, 0.85);
+            font-size: 1.125rem;
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+        .rich-text b, .rich-text strong {
+            font-weight: 600;
+            color: #002147;
+        }
+        .rich-text i, .rich-text em {
+            font-style: italic;
+        }
+        .rich-text blockquote {
+            border-left: 4px solid #002147;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background-color: rgba(0, 33, 71, 0.03);
+            font-family: 'Space Grotesk', sans-serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 1.25rem;
+            color: #002147;
+            border-radius: 0 8px 8px 0;
+            display: flow-root;
+            clear: none;
+        }
+        .rich-text code {
+            font-family: monospace;
+            background-color: rgba(0, 33, 71, 0.08);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #002147;
+            font-weight: 600;
+        }
+        .rich-text a {
+            color: #002147;
+            text-decoration: underline;
+            text-decoration-thickness: 1.5px;
+            text-underline-offset: 3px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .rich-text a:hover {
+            opacity: 0.7;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative bg-bone text-oxford">
+
+    <!-- Persistent Navigation Header -->
+    <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+            <a href="../index.html" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
+                <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
+                Design In Motion
+            </a>
+            
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide" id="magnetic-nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="copyright.html" class="nav-link">Copyright</a>
+                <a href="principles.html" class="nav-link">Principles</a>
+                <a href="elements.html" class="nav-link">Elements</a>
+                <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link">Artifacts</a>
+                <a href="author.html" class="nav-link text-oxford/50 pointer-events-none">Author</a>
+            </nav>
+
+            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown Navigation -->
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
+            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Theory</a>
+            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+            <a href="author.html" class="text-oxford/50 pointer-events-none py-1">Author</a>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
+        
+        <!-- Hero Section -->
+        <section class="px-6 md:px-12 pt-12 pb-16">
+            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+                
+                <!-- Left Column: Author Identity -->
+                <div class="w-full lg:w-1/2 cloud-fade delay-100">
+                    <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                        <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
+                        <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
+                            User Experience Designer <span class="mx-2 md:mx-3 text-oxford/40">|</span> <span class="tracking-[0.25em] text-[10px] md:text-xs">ID: 20191424</span>
+                        </p>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6">
+                        Cleon <br> Williams.
+                    </h1>
+                    <p class="text-lg text-oxford/80 max-w-xl font-light leading-relaxed">
+                        The User Experience Designer behind <span class="font-medium text-oxford">Design In Motion</span>—crafting intuitive, human-centered digital experiences through thoughtful interaction design, visual hierarchy, and purposeful motion.
+                    </p>
+                </div>
+
+                <!-- Right Column: Unique UX Prototype Flow Motion Graphics Animation -->
+                <div class="w-full lg:w-1/2 max-w-[500px] aspect-[4/3] relative group border-2 border-oxford overflow-hidden bg-bone cloud-fade delay-200 shadow-inner">
+                    <!-- Studio Frame Header Bar -->
+                    <div class="absolute top-0 left-0 w-full bg-oxford text-bone flex justify-between items-center px-3 py-1.5 z-20">
+                        <div class="text-[9px] uppercase font-display tracking-[0.2em] flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-bone rounded-full animate-pulse"></span>
+                            UX_Prototype_Flow.aep
+                        </div>
+                        <div class="text-[9px] uppercase font-display tracking-widest opacity-60">INTERACTION</div>
+                    </div>
+
+                    <!-- Bespoke Interactive UX Wireframe & User Journey SVG -->
+                    <svg viewBox="0 0 500 375" class="w-full h-full absolute inset-0 mt-6 overflow-hidden" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Architectural Blueprint Grid -->
+                            <pattern id="ux-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#002147" stroke-width="0.5" opacity="0.12"/>
+                            </pattern>
+                        </defs>
+
+                        <!-- Background Grid -->
+                        <rect width="100%" height="100%" fill="url(#ux-grid)" />
+
+                        <!-- Prototyping Connector 1: Persona Node -> Wireframe Artboard -->
+                        <path d="M 110 175 C 132 175, 130 132, 152 132" fill="none" stroke="#002147" stroke-width="1.5" opacity="0.25" />
+                        <path d="M 110 175 C 132 175, 130 132, 152 132" fill="none" stroke="#002147" stroke-width="1.5" stroke-dasharray="5 7">
+                            <animate attributeName="stroke-dashoffset" values="24; 0" dur="1.5s" repeatCount="indefinite" />
+                        </path>
+                        <circle cx="110" cy="175" r="3.5" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                        <circle cx="152" cy="132" r="3.5" fill="#002147" />
+
+                        <!-- Prototyping Connector 2: Wireframe Toggle -> Validated Outcome Node -->
+                        <path d="M 348 258 C 370 258, 368 175, 390 175" fill="none" stroke="#002147" stroke-width="1.5" opacity="0.25" />
+                        <path d="M 348 258 C 370 258, 368 175, 390 175" fill="none" stroke="#002147" stroke-width="1.5" stroke-dasharray="5 7">
+                            <animate attributeName="stroke-dashoffset" values="24; 0" dur="1.5s" repeatCount="indefinite" />
+                        </path>
+                        <circle cx="348" cy="258" r="3.5" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                        <circle cx="390" cy="175" r="3.5" fill="#002147" />
+
+                        <!-- NODE 01: USER / PERSONA (Left) -->
+                        <g>
+                            <rect x="34" y="130" width="76" height="90" rx="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                            <text x="72" y="146" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#002147" opacity="0.55">01. USER</text>
+                            <!-- Geometric Human Silhouette -->
+                            <circle cx="72" cy="167" r="9" fill="none" stroke="#002147" stroke-width="1.8" />
+                            <path d="M 56 196 C 56 184, 88 184, 88 196" fill="none" stroke="#002147" stroke-width="1.8" stroke-linecap="round" />
+                            <!-- Subtle Empathy Pulse Ring -->
+                            <circle cx="72" cy="167" r="9" fill="none" stroke="#002147" stroke-width="1">
+                                <animate attributeName="r" values="9; 19" dur="3s" repeatCount="indefinite" />
+                                <animate attributeName="opacity" values="0.5; 0" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <line x1="50" y1="208" x2="94" y2="208" stroke="#002147" stroke-width="1.5" opacity="0.3" stroke-linecap="round" />
+                        </g>
+
+                        <!-- NODE 02: CENTRAL INTERACTIVE WIREFRAME ARTBOARD -->
+                        <g>
+                            <!-- Spacing Measurement Dimension Guide Above Artboard -->
+                            <line x1="152" y1="44" x2="348" y2="44" stroke="#002147" stroke-width="0.75" opacity="0.4" />
+                            <line x1="152" y1="40" x2="152" y2="48" stroke="#002147" stroke-width="0.75" opacity="0.4" />
+                            <line x1="348" y1="40" x2="348" y2="48" stroke="#002147" stroke-width="0.75" opacity="0.4" />
+                            <rect x="223" y="37" width="54" height="13" rx="2" fill="#F9F6EE" />
+                            <text x="250" y="46.5" text-anchor="middle" font-family="monospace" font-size="8" font-weight="600" fill="#002147" opacity="0.75">02. UI</text>
+
+                            <!-- Main Wireframe Window -->
+                            <rect x="152" y="54" width="196" height="246" rx="8" fill="#F9F6EE" stroke="#002147" stroke-width="2" />
+                            <!-- Window Header Divider -->
+                            <line x1="152" y1="76" x2="348" y2="76" stroke="#002147" stroke-width="1.2" opacity="0.25" />
+                            <!-- Window Controls -->
+                            <circle cx="165" cy="65" r="2.5" fill="#002147" opacity="0.4" />
+                            <circle cx="175" cy="65" r="2.5" fill="#002147" opacity="0.4" />
+                            <circle cx="185" cy="65" r="2.5" fill="#002147" opacity="0.4" />
+                            <rect x="285" y="62.5" width="50" height="5" rx="2.5" fill="#002147" opacity="0.2" />
+
+                            <!-- Interactive Hero Card inside Wireframe -->
+                            <rect x="166" y="88" width="168" height="82" rx="5" fill="#002147" fill-opacity="0.04" stroke="#002147" stroke-width="1.2">
+                                <animate attributeName="fill-opacity" values="0.04; 0.04; 0.1; 0.1; 0.04; 0.04" keyTimes="0; 0.19; 0.22; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </rect>
+                            <!-- Wireframe Text Lines inside Hero Card -->
+                            <rect x="178" y="100" width="96" height="7" rx="2" fill="#002147" opacity="0.85" />
+                            <rect x="178" y="114" width="136" height="4" rx="2" fill="#002147" opacity="0.35" />
+                            <rect x="178" y="123" width="110" height="4" rx="2" fill="#002147" opacity="0.35" />
+
+                            <!-- Interactive CTA Button (Triggered at t=0.20) -->
+                            <rect x="218" y="138" width="64" height="20" rx="4" fill="#F9F6EE" stroke="#002147" stroke-width="1.5">
+                                <animate attributeName="fill" values="#F9F6EE; #F9F6EE; #002147; #002147; #F9F6EE; #F9F6EE" keyTimes="0; 0.19; 0.21; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </rect>
+                            <rect x="232" y="146" width="36" height="4" rx="2" fill="#002147">
+                                <animate attributeName="fill" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.19; 0.21; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </rect>
+
+                            <!-- Two Modular Layout Cards -->
+                            <rect x="166" y="182" width="78" height="46" rx="4" fill="none" stroke="#002147" stroke-width="1.2" opacity="0.55" />
+                            <line x1="176" y1="196" x2="216" y2="196" stroke="#002147" stroke-width="2" opacity="0.5" stroke-linecap="round" />
+                            <line x1="176" y1="206" x2="232" y2="206" stroke="#002147" stroke-width="1.5" opacity="0.25" stroke-linecap="round" />
+                            <line x1="176" y1="215" x2="220" y2="215" stroke="#002147" stroke-width="1.5" opacity="0.25" stroke-linecap="round" />
+
+                            <rect x="256" y="182" width="78" height="46" rx="4" fill="none" stroke="#002147" stroke-width="1.2" opacity="0.55" />
+                            <circle cx="272" cy="205" r="9" fill="none" stroke="#002147" stroke-width="1.5" opacity="0.45" />
+                            <line x1="288" y1="200" x2="322" y2="200" stroke="#002147" stroke-width="2" opacity="0.5" stroke-linecap="round" />
+                            <line x1="288" y1="210" x2="314" y2="210" stroke="#002147" stroke-width="1.5" opacity="0.25" stroke-linecap="round" />
+
+                            <!-- Bottom Interactive Control Bar with Animated Toggle Switch -->
+                            <rect x="166" y="240" width="168" height="42" rx="5" fill="#002147" fill-opacity="0.03" stroke="#002147" stroke-width="1.2" opacity="0.7" />
+                            <rect x="178" y="253" width="66" height="5" rx="2" fill="#002147" opacity="0.65" />
+                            <rect x="178" y="264" width="44" height="3.5" rx="1.75" fill="#002147" opacity="0.3" />
+
+                            <!-- Toggle Track (Triggered at t=0.55) -->
+                            <rect x="278" y="251" width="44" height="20" rx="10" fill="#F9F6EE" stroke="#002147" stroke-width="1.5">
+                                <animate attributeName="fill" values="#F9F6EE; #F9F6EE; #002147; #002147; #F9F6EE; #F9F6EE" keyTimes="0; 0.54; 0.57; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </rect>
+                            <!-- Toggle Knob -->
+                            <circle cx="288" cy="261" r="6.5" fill="#002147">
+                                <animate attributeName="cx" values="288; 288; 312; 312; 288; 288" keyTimes="0; 0.54; 0.58; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                                <animate attributeName="fill" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.54; 0.57; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </circle>
+
+                            <!-- Framing Corner Selection Handles around Central Artboard -->
+                            <rect x="149" y="51" width="6" height="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                            <rect x="345" y="51" width="6" height="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                            <rect x="149" y="297" width="6" height="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                            <rect x="345" y="297" width="6" height="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                        </g>
+
+                        <!-- NODE 03: VALIDATED EXPERIENCE / OUTCOME (Right) -->
+                        <g>
+                            <rect x="390" y="130" width="76" height="90" rx="6" fill="#F9F6EE" stroke="#002147" stroke-width="1.5">
+                                <animate attributeName="fill" values="#F9F6EE; #F9F6EE; #002147; #002147; #F9F6EE; #F9F6EE" keyTimes="0; 0.58; 0.62; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </rect>
+                            <text x="428" y="146" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#002147" opacity="0.6">
+                                03. FLOW
+                                <animate attributeName="fill" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.58; 0.62; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </text>
+                            <!-- Outcome Checkmark Badge -->
+                            <circle cx="428" cy="178" r="16" fill="none" stroke="#002147" stroke-width="1.8">
+                                <animate attributeName="stroke" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.58; 0.62; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </circle>
+                            <path d="M 421 178 L 426 183 L 436 172" fill="none" stroke="#002147" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <animate attributeName="stroke" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.58; 0.62; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </path>
+                            <line x1="406" y1="208" x2="450" y2="208" stroke="#002147" stroke-width="1.5" opacity="0.35" stroke-linecap="round">
+                                <animate attributeName="stroke" values="#002147; #002147; #F9F6EE; #F9F6EE; #002147; #002147" keyTimes="0; 0.58; 0.62; 0.85; 0.89; 1" dur="8s" repeatCount="indefinite" />
+                            </line>
+                        </g>
+
+                        <!-- CLICK RIPPLE 1 (On CTA Button at t=0.20) -->
+                        <circle cx="250" cy="148" r="4" fill="none" stroke="#002147" stroke-width="1.5" opacity="0">
+                            <animate attributeName="r" values="4; 4; 24; 24; 4" keyTimes="0; 0.19; 0.27; 0.28; 1" dur="8s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" values="0; 0; 0.7; 0; 0" keyTimes="0; 0.19; 0.21; 0.28; 1" dur="8s" repeatCount="indefinite" />
+                        </circle>
+
+                        <!-- CLICK RIPPLE 2 (On Toggle Switch at t=0.55) -->
+                        <circle cx="300" cy="261" r="4" fill="none" stroke="#002147" stroke-width="1.5" opacity="0">
+                            <animate attributeName="r" values="4; 4; 24; 24; 4" keyTimes="0; 0.54; 0.62; 0.63; 1" dur="8s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" values="0; 0; 0.7; 0; 0" keyTimes="0; 0.54; 0.56; 0.63; 1" dur="8s" repeatCount="indefinite" />
+                        </circle>
+
+                        <!-- KINETIC INTERACTION CURSOR -->
+                        <g>
+                            <animateTransform
+                                attributeName="transform"
+                                type="translate"
+                                values="195,105; 250,148; 250,148; 300,261; 300,261; 412,185; 412,185; 195,105"
+                                keyTimes="0; 0.16; 0.30; 0.50; 0.64; 0.78; 0.88; 1"
+                                dur="8s"
+                                repeatCount="indefinite"
+                                calcMode="spline"
+                                keySplines="0.4 0 0.2 1; 0 0 1 1; 0.4 0 0.2 1; 0 0 1 1; 0.4 0 0.2 1; 0 0 1 1; 0.4 0 0.2 1"
+                            />
+                            <!-- Crisp Vector Cursor Pointer -->
+                            <path d="M 0 0 L 0 18 L 4.5 14 L 8 21 L 10.8 19.6 L 7.3 12.8 L 13 12.8 Z" fill="#002147" stroke="#F9F6EE" stroke-width="1.4" stroke-linejoin="round" />
+                            <!-- Subtle UX Tag Attached to Cursor -->
+                            <rect x="14" y="14" width="24" height="12" rx="2" fill="#002147" />
+                            <text x="26" y="22.5" text-anchor="middle" font-family="monospace" font-size="7" font-weight="700" fill="#F9F6EE">UX</text>
+                        </g>
+
+                        <!-- Bottom Registration Telemetry Text -->
+                        <text x="16" y="346" font-family="monospace" font-size="9" fill="#002147" opacity="0.45">FLOW: 01 &#8594; 03</text>
+                        <text x="484" y="346" text-anchor="end" font-family="monospace" font-size="9" fill="#002147" opacity="0.45">HUMAN.CENTERED</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Section -->
+        <section class="px-6 md:px-12">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Subtle Section Divider -->
+                <div class="flex items-center justify-between mb-10 pb-4 border-b border-oxford/10 cloud-fade delay-200">
+                    <span class="font-display text-xs uppercase tracking-[0.25em] font-bold text-oxford/60">Author Statement &amp; Profile</span>
+                    <span class="font-mono text-[10px] uppercase tracking-widest text-oxford/40">BIOGRAPHY</span>
+                </div>
+
+                <!-- Dynamic Content Mount Point -->
+                <div id="dynamic-content-mount" class="cloud-fade delay-300 min-h-[320px]">
+                    <div class="flex items-center justify-center p-10 bg-oxford/5 border border-oxford/10 animate-pulse rounded-xl">
+                        <p class="font-display tracking-widest uppercase text-xs text-oxford/50">Loading Author Profile...</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Consistent Portfolio Footer -->
+    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 bg-oxford block rotate-45"></span>
+                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
+            </div>
+            <div class="text-xs md:text-sm text-oxford/60 font-light">
+                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
+            </div>
+            <a href="../index.html" class="text-xs md:text-sm font-bold uppercase tracking-widest text-oxford hover:text-oxford/60 transition-colors flex items-center gap-2 group">
+                Return Home
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Global App Script -->
+    <script src="../js/app.js"></script>
+
+    <!-- Dynamic Layout Renderer (1:1 Compatible with pages/editor.html) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Mobile Menu Fallback Toggle (Safe if app.js is unavailable during standalone preview)
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu && !mobileBtn.dataset.bound) {
+                mobileBtn.dataset.bound = 'true';
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+                });
+            }
+
+            // 2. Scroll Reveal Observer for Cloud-Fade Elements
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.cloud-fade').forEach(el => observer.observe(el));
+
+            // 3. Fetch & Render Dynamic Editor Layout (../content/author-layout.json)
+            const mountPoint = document.getElementById('dynamic-content-mount');
+
+            try {
+                const response = await fetch('../content/author-layout.json');
+                if (!response.ok) throw new Error('Author layout file not found.');
+                
+                const blocks = await response.json();
+                if (!Array.isArray(blocks) || blocks.length === 0) {
+                    throw new Error('Author layout JSON is empty.');
+                }
+
+                renderBlocks(blocks, mountPoint);
+
+            } catch (error) {
+                console.warn('[Author Page] Could not load ../content/author-layout.json. Rendering default profile placeholder.', error);
+                
+                // Clean default fallback so the page remains polished before author-layout.json is exported
+                const fallbackBlocks = [
+                    {
+                        type: 'text',
+                        html: `
+                            <h2>About the Author</h2>
+                            <p><b>Cleon Williams</b> is a User Experience (UX) Designer focused on crafting intuitive, human-centered digital products—blending interaction design, visual hierarchy, and purposeful motion into seamless experiences.</p>
+                            <blockquote>"Great user experience is not just how an interface looks—it is how effortlessly a person moves from intent to clarity."</blockquote>
+                        `
+                    }
+                ];
+                renderBlocks(fallbackBlocks, mountPoint);
+            }
+        });
+
+        /**
+         * Renders Visual Canvas Editor JSON blocks (text, media-wrap, embed-wrap)
+         * identically to Elements, Principles, and Copyright pages.
+         */
+        function renderBlocks(blocks, mountPoint) {
+            mountPoint.innerHTML = '';
+
+            blocks.forEach(block => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'mb-12 clearfix w-full';
+
+                if (block.type === 'text') {
+                    blockDiv.innerHTML = `<div class="rich-text">${block.html || ''}</div>`;
+                }
+                else if (block.type === 'media-wrap') {
+                    // Responsive float: stacked cleanly on small mobile, floated left/right on sm+
+                    const alignmentClass = block.align === 'right'
+                        ? 'sm:float-right sm:ml-8 mb-6 sm:mb-4 mx-auto'
+                        : 'sm:float-left sm:mr-8 mb-6 sm:mb-4 mx-auto';
+                    const imgSrc = block.imageUrl && block.imageUrl.trim() !== ''
+                        ? block.imageUrl
+                        : 'https://placehold.co/600x600/002147/F9F6EE?text=Author+Media';
+
+                    blockDiv.innerHTML = `
+                        <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
+                            <!-- AABB Crosshairs -->
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            
+                            <img src="${imgSrc}" alt="Author Visual Asset" class="w-full h-auto object-cover rounded-xl shadow-md transition-transform duration-500 group-hover:scale-[1.02]" onerror="this.src='https://placehold.co/600x600/002147/F9F6EE?text=Image+Not+Found'">
+                        </div>
+                        <div class="rich-text">${block.html || ''}</div>
+                    `;
+                }
+                else if (block.type === 'embed-wrap') {
+                    const alignmentClass = block.align === 'right'
+                        ? 'sm:float-right sm:ml-8 mb-6 sm:mb-4 mx-auto'
+                        : 'sm:float-left sm:mr-8 mb-6 sm:mb-4 mx-auto';
+
+                    blockDiv.innerHTML = `
+                        <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
+                            <!-- AABB Crosshairs -->
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                ${block.embedCode || '<span class="text-xs font-mono opacity-50 text-oxford">Missing SVG</span>'}
+                            </div>
+                        </div>
+                        <div class="rich-text">${block.html || ''}</div>
+                    `;
+                }
+
+                mountPoint.appendChild(blockDiv);
+            });
+        }
+    </script>
+
+    <!-- ========================================== -->
+    <!-- REAL ANALYTICS TRACKING SCRIPT (Abacus API)-->
+    <!-- ========================================== -->
+    <script>
+        function recordPageVisit(pageID) {
+            const lockKey = `tracked_visit_${pageID}`;
+            
+            if (!sessionStorage.getItem(lockKey)) {
+                fetch(`https://abacus.jasoncameron.dev/hit/cleon-williams-portfolio/${pageID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.value !== undefined) {
+                            sessionStorage.setItem(lockKey, 'true');
+                            console.log(`[Analytics] Success! Hit logged for: ${pageID}. Current Count: ${data.value}`);
+                        }
+                    })
+                    .catch(error => console.warn("[Analytics] Abacus tracking request failed.", error));
+            } else {
+                console.log(`[Analytics] Ignored duplicate visit for: ${pageID}`);
+            }
+        }
+
+        // Fire the tracker immediately for the Author Page
+        recordPageVisit('author_page');
+    </script>
+</body>
+</html>
