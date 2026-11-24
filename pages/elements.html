@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elements of Design | Design In Motion</title>
+    
+    <!-- Google Fonts: Outfit & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Portfolio Design Tokens -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oxford': '#002147',
+                        'bone': '#F9F6EE',
+                    },
+                    fontFamily: {
+                        'sans': ['Outfit', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Global Portfolio Stylesheet -->
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            background-color: #F9F6EE;
+            color: #002147;
+            overflow-x: hidden;
+        }
+
+        /* Cloud-Fade Entrance Transitions */
+        .cloud-fade {
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 1s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .cloud-fade.is-visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0) scale(1);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        /* Visual Canvas Editor Rich-Text Parity Styles */
+        .rich-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 2rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .rich-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #002147;
+            font-size: 1.5rem;
+            margin-top: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .rich-text p {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            color: rgba(0, 33, 71, 0.85);
+            font-size: 1.075rem;
+            line-height: 1.8;
+            margin-bottom: 1.15rem;
+        }
+        .rich-text b, .rich-text strong {
+            font-weight: 600;
+            color: #002147;
+        }
+        .rich-text i, .rich-text em {
+            font-style: italic;
+        }
+        .rich-text blockquote {
+            border-left: 4px solid #002147;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background-color: rgba(0, 33, 71, 0.03);
+            font-family: 'Space Grotesk', sans-serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 1.25rem;
+            color: #002147;
+            border-radius: 0 8px 8px 0;
+            display: flow-root;
+            clear: none;
+        }
+        .rich-text code {
+            font-family: monospace;
+            background-color: rgba(0, 33, 71, 0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.88em;
+            color: #002147;
+            font-weight: 600;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-oxford selection:text-bone min-h-screen flex flex-col relative bg-bone text-oxford">
+
+    <!-- Persistent Navigation Header -->
+    <header class="fixed w-full top-0 z-50 bg-bone/80 backdrop-blur-md border-b border-oxford/10 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+            <a href="../index.html" class="font-display font-bold text-xl md:text-2xl tracking-tighter uppercase flex items-center gap-2 group">
+                <span class="w-2.5 h-2.5 md:w-3 md:h-3 bg-oxford block transform group-hover:rotate-45 transition-transform duration-300"></span>
+                Design In Motion
+            </a>
+            
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide" id="magnetic-nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="copyright.html" class="nav-link">Copyright</a>
+                <a href="principles.html" class="nav-link">Principles</a>
+                <a href="elements.html" class="nav-link text-oxford/50 pointer-events-none">Elements</a>
+                <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link">Artifacts</a>
+                <a href="author.html" class="nav-link">Author</a>
+            </nav>
+
+            <button class="lg:hidden text-oxford focus:outline-none p-2 -mr-2" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown Navigation -->
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="elements.html" class="text-oxford/50 pointer-events-none py-1">Elements</a>
+            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Theory</a>
+            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+            <a href="author.html" class="hover:text-oxford/70 transition-colors py-1">Author</a>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 md:pt-32 content-layer pb-24">
+
+        <!-- Hero Section -->
+        <section class="px-6 md:px-12 pt-12 pb-16">
+            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+                
+                <!-- Left Column: Page Identity -->
+                <div class="w-full lg:w-1/2 cloud-fade delay-100">
+                    <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                        <div class="h-[1px] w-8 md:w-12 bg-oxford"></div>
+                        <p class="font-display uppercase tracking-widest text-xs md:text-sm font-semibold flex items-center flex-wrap">
+                            Visual Vocabulary <span class="mx-2 md:mx-3 text-oxford/40">|</span> <span class="tracking-[0.25em] text-[10px] md:text-xs">CORE PRIMITIVES</span>
+                        </p>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6">
+                        Elements of <br> Design.
+                    </h1>
+                    <p class="text-lg text-oxford/80 max-w-xl font-light leading-relaxed">
+                        The seven foundational building blocks of every visual composition—from a single directional line to volumetric form, surface texture, and intentional negative space.
+                    </p>
+                </div>
+
+                <!-- Right Column: Unique Kinetic Primitives Assembly Animation -->
+                <div class="w-full lg:w-1/2 max-w-[500px] aspect-[4/3] relative group border-2 border-oxford overflow-hidden bg-bone cloud-fade delay-200 shadow-inner">
+                    <div class="absolute top-0 left-0 w-full bg-oxford text-bone flex justify-between items-center px-3 py-1.5 z-20">
+                        <div class="text-[9px] uppercase font-display tracking-[0.2em] flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-bone rounded-full animate-pulse"></span>
+                            Elements_Primitives.aep
+                        </div>
+                        <div class="text-[9px] uppercase font-display tracking-widest opacity-60">07 UNITS</div>
+                    </div>
+
+                    <svg viewBox="0 0 500 375" class="w-full h-full absolute inset-0 mt-6 overflow-hidden" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="el-hero-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#002147" stroke-width="0.5" opacity="0.12"/>
+                            </pattern>
+                            <pattern id="hero-dots" width="6" height="6" patternUnits="userSpaceOnUse">
+                                <circle cx="3" cy="3" r="1.2" fill="#002147" opacity="0.55" />
+                            </pattern>
+                            <radialGradient id="hero-sphere" cx="35%" cy="30%" r="65%">
+                                <stop offset="0%" stop-color="#38BDF8" />
+                                <stop offset="55%" stop-color="#0284C7" />
+                                <stop offset="100%" stop-color="#002147" />
+                            </radialGradient>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#el-hero-grid)" />
+
+                        <!-- Architectural Alignment Crosshairs -->
+                        <line x1="250" y1="24" x2="250" y2="334" stroke="#002147" stroke-width="1" stroke-dasharray="3 5" opacity="0.22" />
+                        <line x1="40" y1="180" x2="460" y2="180" stroke="#002147" stroke-width="1" stroke-dasharray="3 5" opacity="0.22" />
+
+                        <!-- Element 1: Animated Bezier Line -->
+                        <path d="M 55 265 C 125 90, 215 290, 290 120 S 410 190, 445 95" fill="none" stroke="#E63946" stroke-width="2.5" stroke-dasharray="600" stroke-dashoffset="600">
+                            <animate attributeName="stroke-dashoffset" values="600; 0; 0; -600" keyTimes="0; 0.35; 0.75; 1" dur="7s" repeatCount="indefinite" />
+                        </path>
+
+                        <!-- Element 2: Floating Geometric Shape Frame (Left) -->
+                        <g>
+                            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-12; 0,0" dur="5s" repeatCount="indefinite" />
+                            <rect x="78" y="108" width="76" height="76" fill="#FDE047" fill-opacity="0.85" stroke="#002147" stroke-width="2" />
+                            <rect x="74" y="104" width="8" height="8" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                            <rect x="150" y="180" width="8" height="8" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                        </g>
+
+                        <!-- Element 3: Shaded 3D Form Sphere (Center) -->
+                        <g transform="translate(250, 178)">
+                            <!-- Cast Shadow -->
+                            <ellipse cx="14" cy="58" rx="44" ry="10" fill="#002147" opacity="0.18">
+                                <animate attributeName="rx" values="44; 34; 44" dur="4.5s" repeatCount="indefinite" />
+                            </ellipse>
+                            <!-- Levitating Sphere -->
+                            <g>
+                                <animateTransform attributeName="transform" type="translate" values="0,0; 0,-14; 0,0" dur="4.5s" repeatCount="indefinite" />
+                                <circle cx="0" cy="0" r="46" fill="url(#hero-sphere)" stroke="#002147" stroke-width="2.5" />
+                                <ellipse cx="-14" cy="-16" rx="10" ry="6" fill="#FFFFFF" opacity="0.55" transform="rotate(-25 -14 -16)" />
+                            </g>
+                        </g>
+
+                        <!-- Element 4: Textured Isometric Plane (Right) -->
+                        <g>
+                            <animateTransform attributeName="transform" type="translate" values="0,0; 0,10; 0,0" dur="6s" repeatCount="indefinite" />
+                            <polygon points="348,140 424,140 424,216 348,216" fill="url(#hero-dots)" stroke="#002147" stroke-width="2" />
+                            <circle cx="386" cy="178" r="20" fill="#0D9488" fill-opacity="0.85" stroke="#002147" stroke-width="2" />
+                        </g>
+
+                        <!-- Element 5: Value Bar Strip (Bottom Center) -->
+                        <g transform="translate(130, 278)" stroke="#002147" stroke-width="1.5">
+                            <rect x="0" y="0" width="48" height="18" fill="#F9F6EE" />
+                            <rect x="48" y="0" width="48" height="18" fill="#CBD5E1" />
+                            <rect x="96" y="0" width="48" height="18" fill="#64748B" />
+                            <rect x="144" y="0" width="48" height="18" fill="#1E3A8A" />
+                            <rect x="192" y="0" width="48" height="18" fill="#002147" />
+                        </g>
+
+                        <!-- Telemetry Labels -->
+                        <text x="16" y="346" font-family="monospace" font-size="9" fill="#002147" opacity="0.55">LINE / SHAPE / FORM / SPACE</text>
+                        <text x="484" y="346" text-anchor="end" font-family="monospace" font-size="9" fill="#002147" opacity="0.55">PRIMITIVES.SYS</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core 7 Elements of Design Curriculum & Bespoke SVG Diagrams -->
+        <section class="px-6 md:px-12">
+            <div class="max-w-5xl mx-auto">
+
+                <!-- Section Header -->
+                <div class="flex items-center justify-between mb-12 pb-4 border-b border-oxford/10 cloud-fade delay-200">
+                    <span class="font-display text-xs uppercase tracking-[0.25em] font-bold text-oxford/60">Foundational Visual Primitives</span>
+                    <span class="font-mono text-[10px] uppercase tracking-widest text-oxford/40">07 ELEMENTS</span>
+                </div>
+
+                <!-- Optional Dynamic Editor Layout Mount (Renders if ../content/elements-layout.json exists) -->
+                <div id="dynamic-content-mount" class="hidden mb-16 pb-12 border-b border-oxford/15"></div>
+
+                <!-- Structured Elements Modules -->
+                <div class="space-y-16 md:space-y-24">
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 01: LINE                                          -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-12 border-b border-oxford/10">
+                        <!-- AABB Diagram Box (Left) -->
+                        <div class="sm:float-left sm:mr-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[420px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <pattern id="g-line" width="21" height="21" patternUnits="userSpaceOnUse">
+                                            <path d="M 21 0 L 0 0 0 21" fill="none" stroke="#002147" stroke-width="0.5" opacity="0.1"/>
+                                        </pattern>
+                                    </defs>
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <rect width="420" height="420" fill="url(#g-line)" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 01 // LINE ANATOMY &amp; DIRECTION</text>
+
+                                    <!-- 1. Structural / Horizontal & Vertical -->
+                                    <g transform="translate(22, 54)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">STABLE // STRUCTURAL WEIGHTS</text>
+                                        <line x1="0" y1="18" x2="376" y2="18" stroke="#002147" stroke-width="1.5" />
+                                        <line x1="0" y1="34" x2="376" y2="34" stroke="#002147" stroke-width="4" />
+                                        <line x1="0" y1="54" x2="376" y2="54" stroke="#2563EB" stroke-width="8" stroke-linecap="round" />
+                                    </g>
+
+                                    <!-- 2. Organic / Curved Motion -->
+                                    <g transform="translate(22, 148)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">ORGANIC // FLUID BEZIER FLOW</text>
+                                        <path d="M 0 42 C 75 -6, 130 84, 210 38 S 310 -4, 376 34" fill="none" stroke="#0D9488" stroke-width="4.5" stroke-linecap="round" />
+                                        <!-- Anchor & Tangent Handle -->
+                                        <line x1="158" y1="62" x2="262" y2="14" stroke="#002147" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.65" />
+                                        <circle cx="158" cy="62" r="4" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                                        <circle cx="262" cy="14" r="4" fill="#F9F6EE" stroke="#002147" stroke-width="1.5" />
+                                        <rect x="205" y="33" width="10" height="10" fill="#002147" />
+                                    </g>
+
+                                    <!-- 3. Diagonal / Kinetic Tension -->
+                                    <g transform="translate(22, 246)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">DIAGONAL // KINETIC ENERGY</text>
+                                        <polyline points="0,56 48,14 96,56 144,14 192,56 240,14 288,56 336,14 376,50" fill="none" stroke="#E63946" stroke-width="4" stroke-linejoin="round" />
+                                    </g>
+
+                                    <!-- 4. Implied Line (Dashed / Dotted Path) -->
+                                    <g transform="translate(22, 344)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">IMPLIED // GUIDED EYE TRAJECTORY</text>
+                                        <line x1="10" y1="28" x2="348" y2="28" stroke="#F59E0B" stroke-width="3.5" stroke-dasharray="8 10" stroke-linecap="round" />
+                                        <circle cx="10" cy="28" r="7" fill="#002147" />
+                                        <polygon points="374,28 352,18 352,38" fill="#E63946" />
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">01 // Path &amp; Trajectory</span>
+                            <h2>Line</h2>
+                            <p>
+                                A <b>Line</b> is the simplest visual connector between two points, yet its weight, angle, and curvature immediately dictate the mood and reading path of a layout. <b>Horizontal and vertical lines</b> establish calm architectural structure and grid alignment, <b>curved Bezier lines</b> inject organic warmth and graceful rhythm, and <b>sharp diagonals</b> create dynamic tension and forward motion. Designers also harness <i>implied lines</i>—invisible sightlines formed by aligned text edges or repeating icons—to steer the viewer's eye directly toward a focal point without cluttering the canvas with literal dividers.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 02: SHAPE                                         -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-12 border-b border-oxford/10">
+                        <!-- AABB Diagram Box (Right) -->
+                        <div class="sm:float-right sm:ml-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[440px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 02 // GEOMETRIC VS. ORGANIC SHAPE</text>
+
+                                    <!-- Top Panel: Geometric Shapes (Blue / Yellow / Green) -->
+                                    <rect x="20" y="42" width="380" height="166" rx="8" fill="#FFFFFF" stroke="#002147" stroke-width="1.8" />
+                                    <text x="34" y="64" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">GEOMETRIC // PRECISION &amp; ORDER</text>
+
+                                    <!-- Column 1: Blue Square -->
+                                    <g transform="translate(46, 84)">
+                                        <rect x="0" y="0" width="76" height="76" fill="#2563EB" stroke="#002147" stroke-width="2.5" />
+                                        <text x="38" y="98" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">STABILITY</text>
+                                    </g>
+                                    <!-- Column 2: Yellow Circle -->
+                                    <g transform="translate(172, 84)">
+                                        <circle cx="38" cy="38" r="38" fill="#FDE047" stroke="#002147" stroke-width="2.5" />
+                                        <text x="38" y="98" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">UNITY</text>
+                                    </g>
+                                    <!-- Column 3: Green Triangle -->
+                                    <g transform="translate(298, 84)">
+                                        <polygon points="38,0 76,76 0,76" fill="#10B981" stroke="#002147" stroke-width="2.5" stroke-linejoin="round" />
+                                        <text x="38" y="98" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">DIRECTION</text>
+                                    </g>
+
+                                    <!-- Subtle Vertical Comparison Connectors -->
+                                    <line x1="84" y1="208" x2="84" y2="224" stroke="#2563EB" stroke-width="2" stroke-dasharray="3 3" opacity="0.65" />
+                                    <line x1="210" y1="208" x2="210" y2="224" stroke="#D97706" stroke-width="2" stroke-dasharray="3 3" opacity="0.65" />
+                                    <line x1="336" y1="208" x2="336" y2="224" stroke="#10B981" stroke-width="2" stroke-dasharray="3 3" opacity="0.65" />
+
+                                    <!-- Bottom Panel: 3 Matching Organic Shapes (Blue / Yellow / Green) -->
+                                    <rect x="20" y="224" width="380" height="174" rx="8" fill="#FFFFFF" stroke="#002147" stroke-width="1.8" />
+                                    <text x="34" y="246" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">ORGANIC // NATURAL &amp; APPROACHABLE</text>
+
+                                    <!-- Column 1: Blue Organic Stone / Grounded Mass (Matches Square) -->
+                                    <g transform="translate(42, 266)">
+                                        <path d="M 14 26 C 24 6, 62 4, 74 22 C 86 40, 82 68, 64 74 C 42 80, 12 78, 6 60 C 2 48, 4 36, 14 26 Z" fill="#2563EB" stroke="#002147" stroke-width="2.5" stroke-linejoin="round" />
+                                        <path d="M 22 56 C 38 62, 54 60, 66 52" fill="none" stroke="#93C5FD" stroke-width="1.8" stroke-linecap="round" opacity="0.7" />
+                                        <text x="42" y="102" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">GROUNDED</text>
+                                    </g>
+
+                                    <!-- Column 2: Yellow Fluid Blob (Matches Circle) -->
+                                    <g transform="translate(168, 266)">
+                                        <path d="M 38 6 C 62 2, 82 18, 76 42 C 70 64, 54 78, 30 74 C 8 70, 0 48, 10 28 C 18 14, 24 8, 38 6 Z" fill="#FDE047" stroke="#002147" stroke-width="2.5" />
+                                        <text x="42" y="102" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">FLUID</text>
+                                    </g>
+
+                                    <!-- Column 3: Green Botanical Leaf (Matches Triangle) -->
+                                    <g transform="translate(294, 266)">
+                                        <path d="M 8 74 C 6 34, 38 6, 76 8 C 74 48, 46 76, 8 74 Z" fill="#10B981" stroke="#002147" stroke-width="2.5" stroke-linejoin="round" />
+                                        <path d="M 8 74 C 30 52, 52 30, 70 14" fill="none" stroke="#002147" stroke-width="2" stroke-linecap="round" />
+                                        <text x="42" y="102" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">BOTANICAL</text>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">02 // Enclosed 2D Area</span>
+                            <h2>Shape</h2>
+                            <p>
+                                Whenever a line loops back to enclose a two-dimensional area—or a distinct field of color contrasts against its background—it creates a <b>Shape</b>, which carries instant psychological symbolism. <b>Geometric shapes</b> like squares, circles, and triangles communicate engineered stability, completeness, and directional focus, forming the backbone of icons, buttons, and modular UI cards. <b>Organic shapes</b>—from grounded river stones to fluid curves and botanical leaves—translate those same structural roles into asymmetrical, nature-inspired contours that soften rigid grids and evoke human warmth.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 03: FORM                                          -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-12 border-b border-oxford/10">
+                        <!-- AABB Diagram Box (Left) -->
+                        <div class="sm:float-left sm:mr-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[440px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <!-- Gamma Radiance Sphere Gradient -->
+                                        <radialGradient id="sphere-form" cx="32%" cy="28%" r="68%">
+                                            <stop offset="0%" stop-color="#FEF08A" />
+                                            <stop offset="35%" stop-color="#F97316" />
+                                            <stop offset="78%" stop-color="#9A3412" />
+                                            <stop offset="100%" stop-color="#002147" />
+                                        </radialGradient>
+
+                                        <!-- Matching Gamma Radiance Cube Face Gradients (Lit from Top-Left) -->
+                                        <radialGradient id="cube-top-grad" cx="28%" cy="30%" r="85%">
+                                            <stop offset="0%" stop-color="#F0F9FF" />
+                                            <stop offset="38%" stop-color="#93C5FD" />
+                                            <stop offset="82%" stop-color="#3B82F6" />
+                                            <stop offset="100%" stop-color="#1D4ED8" />
+                                        </radialGradient>
+                                        <linearGradient id="cube-left-grad" x1="15%" y1="0%" x2="85%" y2="100%">
+                                            <stop offset="0%" stop-color="#60A5FA" />
+                                            <stop offset="42%" stop-color="#2563EB" />
+                                            <stop offset="85%" stop-color="#1E3A8A" />
+                                            <stop offset="100%" stop-color="#0F172A" />
+                                        </linearGradient>
+                                        <linearGradient id="cube-right-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#1E3A8A" />
+                                            <stop offset="55%" stop-color="#002147" />
+                                            <stop offset="100%" stop-color="#0B2545" />
+                                        </linearGradient>
+                                        <radialGradient id="soft-shadow" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stop-color="#002147" stop-opacity="0.32" />
+                                            <stop offset="70%" stop-color="#002147" stop-opacity="0.14" />
+                                            <stop offset="100%" stop-color="#002147" stop-opacity="0" />
+                                        </radialGradient>
+                                    </defs>
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 03 // 2D SHAPE TO 3D FORM</text>
+
+                                    <!-- Unified Top-Left Light Source Indicator for 3D Column -->
+                                    <g transform="translate(212, 54)">
+                                        <circle cx="0" cy="0" r="10" fill="#FDE047" stroke="#002147" stroke-width="1.8" />
+                                        <line x1="12" y1="10" x2="28" y2="24" stroke="#F59E0B" stroke-width="2" stroke-dasharray="3 3" />
+                                        <text x="0" y="-14" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="700" fill="#002147">LIGHT</text>
+                                    </g>
+
+                                    <!-- Row 1: Flat Circle -> 3D Sphere -->
+                                    <g transform="translate(24, 62)">
+                                        <circle cx="64" cy="64" r="46" fill="#F97316" stroke="#002147" stroke-width="2.5" />
+                                        <text x="64" y="130" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">2D CIRCLE</text>
+
+                                        <!-- Arrow -->
+                                        <line x1="136" y1="64" x2="188" y2="64" stroke="#002147" stroke-width="2" />
+                                        <polygon points="196,64 184,58 184,70" fill="#002147" />
+                                        <text x="164" y="54" text-anchor="middle" font-family="monospace" font-size="8" fill="#002147" opacity="0.65">+ DEPTH</text>
+
+                                        <!-- Soft Cast Shadow + Shaded Sphere -->
+                                        <ellipse cx="294" cy="108" rx="50" ry="13" fill="url(#soft-shadow)" />
+                                        <circle cx="272" cy="64" r="48" fill="url(#sphere-form)" stroke="#002147" stroke-width="2.5" />
+                                        <ellipse cx="256" cy="46" rx="11" ry="6" fill="#FFFFFF" opacity="0.65" transform="rotate(-25 256 46)" />
+                                        <text x="272" y="132" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">3D SPHERE (VOLUME)</text>
+                                    </g>
+
+                                    <!-- Divider -->
+                                    <line x1="24" y1="218" x2="396" y2="218" stroke="#002147" stroke-width="1" stroke-dasharray="4 4" opacity="0.25" />
+
+                                    <!-- Row 2: Flat Square -> Gamma-Lit 3D Isometric Cube -->
+                                    <g transform="translate(24, 240)">
+                                        <rect x="22" y="24" width="84" height="84" fill="#2563EB" stroke="#002147" stroke-width="2.5" />
+                                        <text x="64" y="132" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">2D SQUARE</text>
+
+                                        <!-- Arrow -->
+                                        <line x1="136" y1="66" x2="188" y2="66" stroke="#002147" stroke-width="2" />
+                                        <polygon points="196,66 184,60 184,72" fill="#002147" />
+                                        <text x="164" y="56" text-anchor="middle" font-family="monospace" font-size="8" fill="#002147" opacity="0.65">+ RADIANCE</text>
+
+                                        <!-- Soft Diffused Cast Shadow -->
+                                        <ellipse cx="302" cy="112" rx="54" ry="16" fill="url(#soft-shadow)" />
+
+                                        <!-- Isometric Cube with Gamma-Radiance Shading -->
+                                        <!-- Top Face (Radiant Specular Catch) -->
+                                        <polygon points="272,14 326,42 272,70 218,42" fill="url(#cube-top-grad)" stroke="#002147" stroke-width="2.2" stroke-linejoin="round" />
+                                        <!-- Left Face (Lit Midtone Falloff) -->
+                                        <polygon points="218,42 272,70 272,124 218,96" fill="url(#cube-left-grad)" stroke="#002147" stroke-width="2.2" stroke-linejoin="round" />
+                                        <!-- Right Face (Core Shadow + Ambient Bounce) -->
+                                        <polygon points="272,70 326,42 326,96 272,124" fill="url(#cube-right-grad)" stroke="#002147" stroke-width="2.2" stroke-linejoin="round" />
+
+                                        <!-- Crisp Specular Bevel Highlights along Lit Edges -->
+                                        <polyline points="221,42 272,68 323,42" fill="none" stroke="#FFFFFF" stroke-width="1.8" opacity="0.65" stroke-linecap="round" stroke-linejoin="round" />
+                                        <line x1="272" y1="69" x2="272" y2="120" stroke="#93C5FD" stroke-width="1.4" opacity="0.45" stroke-linecap="round" />
+                                        <!-- Subtle Specular Sheen on Top Plane -->
+                                        <ellipse cx="256" cy="40" rx="14" ry="5" fill="#FFFFFF" opacity="0.42" transform="rotate(-12 256 40)" />
+                                        <!-- Subtle Ambient Bounce Rim on Shadow Side -->
+                                        <line x1="276" y1="120" x2="322" y2="95" stroke="#38BDF8" stroke-width="1.2" opacity="0.35" stroke-linecap="round" />
+
+                                        <text x="272" y="148" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">3D CUBE (X / Y / Z)</text>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">03 // Three-Dimensional Volume</span>
+                            <h2>Form</h2>
+                            <p>
+                                <b>Form</b> is what happens when a flat two-dimensional shape gains perceived depth, height, and width along the Z-axis—transforming a circle into a sphere or a square into a cube. On flat digital screens, designers simulate three-dimensional form through directional lighting, tonal gradients, specular edge highlights, and soft cast shadows. Using form purposefully gives interactive elements like elevated modals, floating action buttons, and product mockups unmistakable physical weight and tactile affordance.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 04: COLOR (EXPANDED 12-COLOR SPECTRUM SHOWCASE)   -->
+                    <!-- ========================================================= -->
+                    <article class="cloud-fade pb-12 border-b border-oxford/10 space-y-10">
+                        <!-- Top Row: Explanation + Chroma Isolation Diagram -->
+                        <div class="clearfix">
+                            <!-- AABB Diagram Box (Right): Chroma Isolation Demo -->
+                            <div class="sm:float-right sm:ml-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[380px]">
+                                <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                                <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                                <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                                <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                                <div class="w-full aspect-[4/3] bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                    <svg viewBox="0 0 420 300" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="420" height="300" fill="#F9F6EE" />
+                                        <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 04A // CHROMA ISOLATION</text>
+
+                                        <rect x="20" y="42" width="380" height="224" rx="8" fill="#FFFFFF" stroke="#002147" stroke-width="1.8" />
+                                        <!-- Grid of neutral dots with one high-chroma focal target -->
+                                        <g transform="translate(58, 92)">
+                                            <circle cx="0" cy="0" r="15" fill="#CBD5E1" />
+                                            <circle cx="60" cy="0" r="15" fill="#CBD5E1" />
+                                            <circle cx="120" cy="0" r="15" fill="#CBD5E1" />
+                                            <circle cx="180" cy="0" r="15" fill="#CBD5E1" />
+                                            <circle cx="240" cy="0" r="15" fill="#CBD5E1" />
+                                            <circle cx="300" cy="0" r="15" fill="#CBD5E1" />
+
+                                            <circle cx="0" cy="62" r="15" fill="#CBD5E1" />
+                                            <circle cx="60" cy="62" r="15" fill="#CBD5E1" />
+                                            <circle cx="120" cy="62" r="15" fill="#CBD5E1" />
+                                            <!-- High-Chroma Focal Target -->
+                                            <circle cx="180" cy="62" r="22" fill="#E63946" stroke="#002147" stroke-width="2.5" />
+                                            <circle cx="180" cy="62" r="30" fill="none" stroke="#E63946" stroke-width="1.6" stroke-dasharray="4 4" />
+                                            <circle cx="240" cy="62" r="15" fill="#CBD5E1" />
+                                            <circle cx="300" cy="62" r="15" fill="#CBD5E1" />
+
+                                            <circle cx="0" cy="124" r="15" fill="#CBD5E1" />
+                                            <circle cx="60" cy="124" r="15" fill="#CBD5E1" />
+                                            <circle cx="120" cy="124" r="15" fill="#CBD5E1" />
+                                            <circle cx="180" cy="124" r="15" fill="#CBD5E1" />
+                                            <circle cx="240" cy="124" r="15" fill="#CBD5E1" />
+                                            <circle cx="300" cy="124" r="15" fill="#CBD5E1" />
+                                        </g>
+                                        <text x="210" y="286" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147" opacity="0.65">SINGLE ACCENT COMMANDS INSTANT ATTENTION</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Concise, Detailed Single-Paragraph Explanation -->
+                            <div class="rich-text">
+                                <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">04 // Chromatic Signal</span>
+                                <h2>Color</h2>
+                                <p>
+                                    <b>Color</b> is the fastest emotional and functional communicator in a designer's toolkit, operating through hue, saturation, and temperature to set brand tone before a single word is read. Beyond aesthetics, color acts as a high-speed visual filter—grouping related information, signaling system states like success or error, and isolating key actions against quiet neutral backgrounds. When deployed with restraint, a single high-chroma accent draws the eye effortlessly across an entire screen.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Full-Width AABB Showcase Card: 12-Color Emotional Spectrum -->
+                        <div class="relative p-3 md:p-4 border border-oxford/15 rounded-2xl bg-oxford/5 group">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="bg-bone rounded-xl shadow-md border border-oxford/10 p-5 md:p-7">
+                                <!-- Card Header -->
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 mb-6 border-b border-oxford/10">
+                                    <div>
+                                        <p class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-oxford/60">FIG 04B // PSYCHOLOGICAL COLOR MATRIX</p>
+                                        <h3 class="font-display font-bold text-xl md:text-2xl text-oxford mt-0.5">12-Color Emotional &amp; Functional Spectrum</h3>
+                                    </div>
+                                    <span class="font-mono text-[10px] uppercase tracking-widest px-2.5 py-1 bg-oxford/5 border border-oxford/15 rounded text-oxford/70 self-start sm:self-auto">12 SWATCHES</span>
+                                </div>
+
+                                <!-- Responsive 12-Swatch Grid (2 cols mobile, 3 cols tablet, 4 cols desktop) -->
+                                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-4">
+                                    <!-- 01. Crimson Red -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #E63946;">
+                                            <span class="font-mono text-[9px] font-bold text-white/80">01 // RED</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#E63946</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Urgency &amp; Passion</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">High-arousal focal cues, alerts, and primary CTAs.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 02. Tangerine Orange -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #F97316;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">02 // ORANGE</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#F97316</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Energy &amp; Creativity</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Friendly momentum, playful accents, and action badges.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 03. Amber Gold -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #F59E0B;">
+                                            <span class="font-mono text-[9px] font-bold text-oxford/80">03 // AMBER</span>
+                                            <span class="font-mono text-[10px] font-bold text-oxford">#F59E0B</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Warmth &amp; Caution</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Warning banners, ratings, and inviting highlights.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 04. Solar Yellow -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #FDE047;">
+                                            <span class="font-mono text-[9px] font-bold text-oxford/75">04 // YELLOW</span>
+                                            <span class="font-mono text-[10px] font-bold text-oxford">#FDE047</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Optimism &amp; Clarity</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Instant eye-catchers, sticky notes, and youthfulness.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 05. Lime Chartreuse -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #84CC16;">
+                                            <span class="font-mono text-[9px] font-bold text-oxford/80">05 // LIME</span>
+                                            <span class="font-mono text-[10px] font-bold text-oxford">#84CC16</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Freshness &amp; Vitality</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Modern tech energy, active status, and innovation.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 06. Emerald Green -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #10B981;">
+                                            <span class="font-mono text-[9px] font-bold text-oxford/80">06 // EMERALD</span>
+                                            <span class="font-mono text-[10px] font-bold text-oxford">#10B981</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Growth &amp; Harmony</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Success confirmations, wellness, and sustainability.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 07. Deep Teal -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #0D9488;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">07 // TEAL</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#0D9488</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Calm &amp; Precision</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Balanced clarity, medical/fintech UI, and focus.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 08. Sky Cyan -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #0EA5E9;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">08 // CYAN</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#0EA5E9</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Openness &amp; Flow</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Informational notices, hyperlinks, and airy interfaces.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 09. Oxford Navy -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #002147;">
+                                            <span class="font-mono text-[9px] font-bold text-bone/80">09 // OXFORD</span>
+                                            <span class="font-mono text-[10px] font-bold text-bone">#002147</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Trust &amp; Authority</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Structural anchors, enterprise credibility, and stability.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 10. Royal Violet -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #7C3AED;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">10 // VIOLET</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#7C3AED</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Luxury &amp; Vision</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Premium tiers, imaginative branding, and depth.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 11. Magenta Rose -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #DB2777;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">11 // MAGENTA</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#DB2777</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Bold &amp; Expressive</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Creative disruption, human warmth, and vibrancy.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 12. Warm Slate / Neutral -->
+                                    <div class="rounded-xl border border-oxford/15 bg-white overflow-hidden shadow-sm hover:-translate-y-0.5 transition-transform">
+                                        <div class="h-16 px-3 py-2 flex flex-col justify-between" style="background-color: #475569;">
+                                            <span class="font-mono text-[9px] font-bold text-white/85">12 // SLATE</span>
+                                            <span class="font-mono text-[10px] font-bold text-white">#475569</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <p class="font-display font-bold text-xs uppercase tracking-wide text-oxford">Neutral &amp; Balance</p>
+                                            <p class="text-[11px] text-oxford/70 mt-1 leading-snug">Quiet utility, secondary text, and visual breathing room.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 05: VALUE                                         -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-12 border-b border-oxford/10">
+                        <!-- AABB Diagram Box (Left) -->
+                        <div class="sm:float-left sm:mr-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[420px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 05 // TONAL VALUE &amp; DEPTH</text>
+
+                                    <!-- 7-Step Value Scale -->
+                                    <g transform="translate(20, 48)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">7-STEP LUMINANCE SCALE</text>
+                                        <g transform="translate(0, 14)" stroke="#002147" stroke-width="1.6">
+                                            <rect x="0" y="0" width="54" height="58" fill="#F9F6EE" />
+                                            <rect x="54" y="0" width="54" height="58" fill="#DCE3EC" />
+                                            <rect x="108" y="0" width="54" height="58" fill="#A6B7CC" />
+                                            <rect x="162" y="0" width="54" height="58" fill="#6B85A6" />
+                                            <rect x="216" y="0" width="54" height="58" fill="#3B5B84" />
+                                            <rect x="270" y="0" width="54" height="58" fill="#183A63" />
+                                            <rect x="324" y="0" width="56" height="58" fill="#002147" />
+                                        </g>
+                                        <text x="0" y="88" font-family="monospace" font-size="9" font-weight="700" fill="#002147" opacity="0.7">HIGH KEY (LIGHT)</text>
+                                        <text x="380" y="88" text-anchor="end" font-family="monospace" font-size="9" font-weight="700" fill="#002147" opacity="0.7">LOW KEY (DARK)</text>
+                                    </g>
+
+                                    <!-- Comparison: Flat Value vs. Dynamic Value Range -->
+                                    <g transform="translate(20, 174)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">ATMOSPHERIC DEPTH IN ACTION</text>
+
+                                        <!-- Left: Flat Midtones (Muddy) -->
+                                        <g transform="translate(0, 16)">
+                                            <rect x="0" y="0" width="182" height="184" rx="8" fill="#8B9BB0" stroke="#002147" stroke-width="2" />
+                                            <path d="M 0 132 L 58 84 L 122 122 L 182 78 L 182 184 L 0 184 Z" fill="#7C8EA5" />
+                                            <path d="M 0 156 L 76 116 L 146 148 L 182 126 L 182 184 L 0 184 Z" fill="#6F8299" />
+                                            <circle cx="136" cy="46" r="18" fill="#99A8BC" />
+                                            <text x="91" y="204" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#B91C1C">✕ FLAT VALUE (NO DEPTH)</text>
+                                        </g>
+
+                                        <!-- Right: Full Value Contrast (Crisp Planes) -->
+                                        <g transform="translate(198, 16)">
+                                            <rect x="0" y="0" width="182" height="184" rx="8" fill="#E2EBF5" stroke="#002147" stroke-width="2" />
+                                            <circle cx="136" cy="46" r="18" fill="#FDE047" stroke="#002147" stroke-width="1.5" />
+                                            <!-- Far Mountain (Light Value) -->
+                                            <path d="M 0 124 L 62 74 L 128 116 L 182 72 L 182 184 L 0 184 Z" fill="#6B85A6" />
+                                            <!-- Mid Mountain (Mid-Dark Value) -->
+                                            <path d="M 0 148 L 82 104 L 148 140 L 182 118 L 182 184 L 0 184 Z" fill="#183A63" />
+                                            <!-- Foreground Silhouette (Deepest Value) -->
+                                            <path d="M 0 164 L 54 146 L 118 170 L 182 150 L 182 184 L 0 184 Z" fill="#002147" />
+                                            <text x="91" y="204" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#15803D">✓ FULL VALUE SEPARATION</text>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">05 // Relative Lightness</span>
+                            <h2>Value</h2>
+                            <p>
+                                <b>Value</b> measures how light or dark a color appears, independent of its hue. Because the human eye reads contrast in light and shadow before it processes color, strong value separation is the true engine of legibility and spatial depth—pushing lighter, low-contrast planes into the background while pulling rich dark silhouettes to the foreground. Testing a layout in grayscale immediately reveals whether its value range is crisp enough to stand on its own.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 06: TEXTURE                                       -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-12 border-b border-oxford/10">
+                        <!-- AABB Diagram Box (Right) -->
+                        <div class="sm:float-right sm:ml-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[420px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <!-- Texture 1: Halftone Dot Matrix -->
+                                        <pattern id="tex-halftone" width="10" height="10" patternUnits="userSpaceOnUse">
+                                            <circle cx="5" cy="5" r="2.6" fill="#E63946" />
+                                        </pattern>
+                                        <!-- Texture 2: Crosshatch Engraving -->
+                                        <pattern id="tex-hatch" width="12" height="12" patternUnits="userSpaceOnUse">
+                                            <path d="M 0 12 L 12 0 M -3 3 L 3 -3 M 9 15 L 15 9" stroke="#002147" stroke-width="1.3" />
+                                            <path d="M 0 0 L 12 12" stroke="#002147" stroke-width="0.7" opacity="0.45" />
+                                        </pattern>
+                                        <!-- Texture 3: Topographic Contour Ripples -->
+                                        <pattern id="tex-waves" width="32" height="16" patternUnits="userSpaceOnUse">
+                                            <path d="M 0 8 Q 8 0 16 8 T 32 8" fill="none" stroke="#0D9488" stroke-width="2" />
+                                        </pattern>
+                                        <!-- Texture 4: Ribbed Architectural Fluting -->
+                                        <pattern id="tex-flute" width="10" height="10" patternUnits="userSpaceOnUse">
+                                            <rect x="0" y="0" width="4" height="10" fill="#1E3A8A" />
+                                            <rect x="4" y="0" width="6" height="10" fill="#3B82F6" opacity="0.35" />
+                                        </pattern>
+                                    </defs>
+
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 06 // IMPLIED VISUAL TEXTURES</text>
+
+                                    <!-- 2x2 Tactile Swatch Matrix -->
+                                    <!-- Tile 1: Halftone Print -->
+                                    <g transform="translate(22, 46)">
+                                        <rect x="0" y="0" width="178" height="148" rx="8" fill="#FFF1F2" stroke="#002147" stroke-width="2" />
+                                        <rect x="10" y="10" width="158" height="104" rx="4" fill="url(#tex-halftone)" />
+                                        <text x="89" y="135" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">HALFTONE SCREEN</text>
+                                    </g>
+
+                                    <!-- Tile 2: Crosshatch Engraving -->
+                                    <g transform="translate(220, 46)">
+                                        <rect x="0" y="0" width="178" height="148" rx="8" fill="#FEF3C7" stroke="#002147" stroke-width="2" />
+                                        <rect x="10" y="10" width="158" height="104" rx="4" fill="url(#tex-hatch)" />
+                                        <text x="89" y="135" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">ETCHED CROSSHATCH</text>
+                                    </g>
+
+                                    <!-- Tile 3: Organic Wave Grain -->
+                                    <g transform="translate(22, 214)">
+                                        <rect x="0" y="0" width="178" height="148" rx="8" fill="#ECFEFF" stroke="#002147" stroke-width="2" />
+                                        <rect x="10" y="10" width="158" height="104" rx="4" fill="url(#tex-waves)" />
+                                        <text x="89" y="135" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">ORGANIC RIPPLE</text>
+                                    </g>
+
+                                    <!-- Tile 4: Fluted Architectural Surface -->
+                                    <g transform="translate(220, 214)">
+                                        <rect x="0" y="0" width="178" height="148" rx="8" fill="#EFF6FF" stroke="#002147" stroke-width="2" />
+                                        <rect x="10" y="10" width="158" height="104" rx="4" fill="url(#tex-flute)" />
+                                        <text x="89" y="135" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147">FLUTED RIBBING</text>
+                                    </g>
+
+                                    <text x="210" y="394" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#002147" opacity="0.65">TACTILE CHARACTER ON FLAT DIGITAL SURFACES</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">06 // Surface &amp; Tactility</span>
+                            <h2>Texture</h2>
+                            <p>
+                                <b>Texture</b> describes the perceived surface quality of an object—whether it feels coarse, glossy, matte, woven, or metallic. While print design utilizes physical <i>tactile texture</i> through embossed stocks and uncoated papers, digital designers create <i>visual texture</i> using micro-patterns, subtle paper grain, halftone dots, and frosted glass blurs. Applied thoughtfully, texture breaks the sterile flatness of vector screens and adds unmistakable craft and sensory depth.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================= -->
+                    <!-- ELEMENT 07: SPACE                                         -->
+                    <!-- ========================================================= -->
+                    <article class="clearfix cloud-fade pb-4">
+                        <!-- AABB Diagram Box (Left) -->
+                        <div class="sm:float-left sm:mr-10 mb-6 sm:mb-4 mx-auto relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[420px]">
+                            <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl transition-transform group-hover:-translate-x-1 group-hover:translate-y-1"></div>
+                            <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl transition-transform group-hover:translate-x-1 group-hover:translate-y-1"></div>
+
+                            <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                                <svg viewBox="0 0 420 420" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="420" height="420" fill="#F9F6EE" />
+                                    <text x="18" y="26" font-family="monospace" font-size="10.5" font-weight="700" fill="#002147" opacity="0.7">FIG 07 // POSITIVE &amp; NEGATIVE SPACE</text>
+
+                                    <!-- Top Panel: Figure-Ground Negative Space Illusion (Hidden Arrow) -->
+                                    <g transform="translate(20, 46)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">FIGURE-GROUND REVERSAL</text>
+                                        <rect x="0" y="14" width="380" height="128" rx="8" fill="#002147" stroke="#002147" stroke-width="2" />
+                                        
+                                        <!-- Two Positive Blocks forming a crisp Negative-Space Arrow in between -->
+                                        <path d="M 52 38 L 194 38 L 228 78 L 194 118 L 52 118 L 86 78 Z" fill="#F9F6EE" />
+                                        <path d="M 220 38 L 328 38 L 328 118 L 220 118 L 254 78 Z" fill="#38BDF8" />
+                                        
+                                        <!-- Subtle labels -->
+                                        <text x="132" y="82" text-anchor="middle" font-family="monospace" font-size="10" font-weight="700" fill="#002147">POSITIVE</text>
+                                        <text x="288" y="82" text-anchor="middle" font-family="monospace" font-size="10" font-weight="700" fill="#002147">POSITIVE</text>
+                                        <text x="225" y="136" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="700" fill="#FDE047">▲ NEGATIVE SPACE FORMS CHEVRON</text>
+                                    </g>
+
+                                    <!-- Bottom Panel: Macro / Micro Whitespace Comparison -->
+                                    <g transform="translate(20, 212)">
+                                        <text x="0" y="0" font-family="'Space Grotesk', sans-serif" font-size="11.5" font-weight="700" fill="#002147">BREATHING ROOM (UX CLARITY)</text>
+
+                                        <!-- Cramped Card -->
+                                        <g transform="translate(0, 16)">
+                                            <rect x="0" y="0" width="180" height="148" rx="8" fill="#FFFFFF" stroke="#002147" stroke-width="2" />
+                                            <rect x="6" y="6" width="168" height="22" fill="#002147" />
+                                            <rect x="6" y="34" width="168" height="12" fill="#94A3B8" />
+                                            <rect x="6" y="50" width="168" height="12" fill="#94A3B8" />
+                                            <rect x="6" y="66" width="168" height="12" fill="#94A3B8" />
+                                            <rect x="6" y="82" width="168" height="12" fill="#94A3B8" />
+                                            <rect x="6" y="100" width="168" height="42" fill="#E63946" />
+                                            <text x="90" y="168" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#B91C1C">✕ CRAMPED (NO SPACE)</text>
+                                        </g>
+
+                                        <!-- Generous Whitespace Card -->
+                                        <g transform="translate(200, 16)">
+                                            <rect x="0" y="0" width="180" height="148" rx="8" fill="#FFFFFF" stroke="#002147" stroke-width="2" />
+                                            <!-- Subtle Padding Guide Tint -->
+                                            <rect x="2" y="2" width="176" height="22" rx="6" fill="#10B981" opacity="0.14" />
+                                            <rect x="2" y="124" width="176" height="22" rx="6" fill="#10B981" opacity="0.14" />
+                                            
+                                            <rect x="22" y="28" width="94" height="12" rx="2" fill="#002147" />
+                                            <rect x="22" y="50" width="136" height="6" rx="2" fill="#64748B" opacity="0.5" />
+                                            <rect x="22" y="64" width="112" height="6" rx="2" fill="#64748B" opacity="0.5" />
+                                            <rect x="22" y="90" width="84" height="26" rx="4" fill="#10B981" />
+                                            <text x="64" y="106" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="700" fill="#002147">FOCUSED</text>
+                                            <text x="90" y="168" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="#15803D">✓ ACTIVE WHITESPACE</text>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Concise, Detailed Single-Paragraph Explanation -->
+                        <div class="rich-text">
+                            <span class="font-mono text-xs uppercase tracking-[0.2em] text-oxford/50 font-bold">07 // Positive &amp; Negative Bounds</span>
+                            <h2>Space</h2>
+                            <p>
+                                <b>Space</b> is the active area surrounding, separating, and defining every element on a canvas—divided into <b>Positive Space</b> (the focal subjects) and <b>Negative Space</b> (the open breathing room around them). Far from being "empty" or wasted, generous negative space reduces cognitive load, groups related interface controls cleanly, and gives headlines and imagery room to command attention. Masterful use of figure-ground relationships even allows negative space itself to form clever secondary shapes and icons.
+                            </p>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Consistent Portfolio Footer -->
+    <footer class="border-t border-oxford/10 bg-bone py-8 md:py-12 px-6 md:px-12 relative z-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 bg-oxford block rotate-45"></span>
+                <span class="font-display font-bold uppercase tracking-tight text-sm md:text-base">Design In Motion</span>
+            </div>
+            <div class="text-xs md:text-sm text-oxford/60 font-light">
+                &copy; 2026 Cleon Williams. Graphic Design Portfolio. All rights reserved.
+            </div>
+            <a href="theory.html" class="text-xs md:text-sm font-bold uppercase tracking-widest text-oxford hover:text-oxford/60 transition-colors flex items-center gap-2 group">
+                Next: Color Theory
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Global App Script -->
+    <script src="../js/app.js"></script>
+
+    <!-- Scroll Reveal, Mobile Fallback & Optional Dynamic Editor Layout Mount -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Mobile Menu Fallback Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu && !mobileBtn.dataset.bound) {
+                mobileBtn.dataset.bound = 'true';
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+                });
+            }
+
+            // Intersection Observer for Cloud-Fade Reveals
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.cloud-fade').forEach(el => observer.observe(el));
+
+            // Optional Visual Canvas Editor Extension (../content/elements-layout.json)
+            const mountPoint = document.getElementById('dynamic-content-mount');
+            try {
+                const response = await fetch('../content/elements-layout.json');
+                if (!response.ok) return;
+                const blocks = await response.json();
+                if (!Array.isArray(blocks) || blocks.length === 0) return;
+
+                mountPoint.classList.remove('hidden');
+                mountPoint.innerHTML = '';
+
+                blocks.forEach(block => {
+                    const blockDiv = document.createElement('div');
+                    blockDiv.className = 'mb-10 clearfix w-full';
+
+                    if (block.type === 'text') {
+                        blockDiv.innerHTML = `<div class="rich-text">${block.html || ''}</div>`;
+                    } else if (block.type === 'media-wrap') {
+                        const alignmentClass = block.align === 'right'
+                            ? 'sm:float-right sm:ml-8 mb-6 sm:mb-4 mx-auto'
+                            : 'sm:float-left sm:mr-8 mb-6 sm:mb-4 mx-auto';
+                        blockDiv.innerHTML = `
+                            <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
+                                <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl"></div>
+                                <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl"></div>
+                                <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl"></div>
+                                <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl"></div>
+                                <img src="${block.imageUrl || ''}" class="w-full h-auto object-cover rounded-xl shadow-md">
+                            </div>
+                            <div class="rich-text">${block.html || ''}</div>
+                        `;
+                    } else if (block.type === 'embed-wrap') {
+                        const alignmentClass = block.align === 'right'
+                            ? 'sm:float-right sm:ml-8 mb-6 sm:mb-4 mx-auto'
+                            : 'sm:float-left sm:mr-8 mb-6 sm:mb-4 mx-auto';
+                        blockDiv.innerHTML = `
+                            <div class="${alignmentClass} relative p-2.5 border border-oxford/15 rounded-2xl bg-oxford/5 group w-full max-w-[300px] sm:max-w-[350px]">
+                                <div class="absolute -top-[1px] -left-[1px] w-5 h-5 border-t-2 border-l-2 border-oxford/40 rounded-tl-2xl"></div>
+                                <div class="absolute -top-[1px] -right-[1px] w-5 h-5 border-t-2 border-r-2 border-oxford/40 rounded-tr-2xl"></div>
+                                <div class="absolute -bottom-[1px] -left-[1px] w-5 h-5 border-b-2 border-l-2 border-oxford/40 rounded-bl-2xl"></div>
+                                <div class="absolute -bottom-[1px] -right-[1px] w-5 h-5 border-b-2 border-r-2 border-oxford/40 rounded-br-2xl"></div>
+                                <div class="w-full aspect-square bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center">
+                                    ${block.embedCode || ''}
+                                </div>
+                            </div>
+                            <div class="rich-text">${block.html || ''}</div>
+                        `;
+                    }
+                    mountPoint.appendChild(blockDiv);
+                });
+            } catch (e) {
+                // Silent fallback: built-in curriculum renders cleanly on its own
+            }
+        });
+    </script>
+
+    <!-- ========================================== -->
+    <!-- REAL ANALYTICS TRACKING SCRIPT (Abacus API)-->
+    <!-- ========================================== -->
+    <script>
+        function recordPageVisit(pageID) {
+            const lockKey = `tracked_visit_${pageID}`;
+            
+            if (!sessionStorage.getItem(lockKey)) {
+                fetch(`https://abacus.jasoncameron.dev/hit/cleon-williams-portfolio/${pageID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.value !== undefined) {
+                            sessionStorage.setItem(lockKey, 'true');
+                            console.log(`[Analytics] Success! Hit logged for: ${pageID}. Current Count: ${data.value}`);
+                        }
+                    })
+                    .catch(error => console.warn("[Analytics] Abacus tracking request failed.", error));
+            } else {
+                console.log(`[Analytics] Ignored duplicate visit for: ${pageID}`);
+            }
+        }
+
+        // Fire the tracker immediately for the Elements Page
+        recordPageVisit('elements_page');
+    </script>
+</body>
+</html>
