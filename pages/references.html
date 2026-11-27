@@ -30,11 +30,11 @@
     <link rel="stylesheet" href="../css/global.css">
     
     <style>
-        /* Academic Hanging Indent for APA Formatting */
+        /* Compact Academic Hanging Indent for APA 7th Edition Formatting */
         .apa-citation {
-            padding-left: 2.5rem;
-            text-indent: -2.5rem;
-            line-height: 1.8;
+            padding-left: 2rem;
+            text-indent: -2rem;
+            line-height: 1.45;
         }
 
         /* Stealth Input Styling */
@@ -52,13 +52,13 @@
         .modal-card { transform: scale(0.95) translateY(20px); transition: all 0.4s cubic-bezier(0.25, 1, 0.25, 1); }
         #context-modal.active .modal-card { transform: scale(1) translateY(0); }
 
-        /* Highlight the exact link inside the modal text */
+        /* Highlight the exact link or 2-sentence excerpt inside the modal text */
         .context-highlight {
             background-color: rgba(0, 33, 71, 0.1);
             border-bottom: 2px solid #002147;
             font-weight: 600;
             padding: 0 4px;
-            pointer-events: none; /* Prevents accidental clicking inside modal */
+            pointer-events: none;
         }
     </style>
 </head>
@@ -87,6 +87,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
+        </div>
+
+        <div class="lg:hidden absolute top-20 md:top-24 left-0 w-full bg-bone border-b border-oxford/10 hidden flex-col px-6 py-6 gap-5 text-base font-medium shadow-2xl" id="mobile-menu">
+            <a href="../index.html" class="hover:text-oxford/70 transition-colors py-1">Home</a>
+            <a href="copyright.html" class="hover:text-oxford/70 transition-colors py-1">Copyright</a>
+            <a href="principles.html" class="hover:text-oxford/70 transition-colors py-1">Principles</a>
+            <a href="elements.html" class="hover:text-oxford/70 transition-colors py-1">Elements</a>
+            <a href="theory.html" class="hover:text-oxford/70 transition-colors py-1">Theory</a>
+            <a href="artifacts.html" class="hover:text-oxford/70 transition-colors py-1">Artifacts</a>
+            <a href="author.html" class="hover:text-oxford/70 transition-colors py-1">Author</a>
+            <a href="references.html" class="text-oxford/50 pointer-events-none py-1">References</a>
         </div>
     </header>
 
@@ -174,7 +185,7 @@
             <div class="max-w-7xl mx-auto">
                 
                 <!-- Section Header with Stealth Admin Trigger -->
-                <div class="flex items-center justify-between mb-8 pb-4 border-b border-oxford/10 cloud-fade delay-200">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-oxford/10 cloud-fade delay-200">
                     <h2 class="text-2xl font-display font-bold flex items-center">
                         Verified External Sources
                         <!-- STEALTH TRIGGER: Looks like a geometric accent mark -->
@@ -192,24 +203,24 @@
                     </button>
                 </div>
 
-                <!-- Sleek Skeleton Loader (Shown while processing in parallel) -->
-                <div id="skeleton-loader" class="space-y-6 cloud-fade delay-300">
-                    <p id="crawler-status" class="font-mono text-xs uppercase tracking-widest text-oxford/60">Scanning portfolio pages &amp; extracting citations...</p>
+                <!-- Sleek Skeleton Loader -->
+                <div id="skeleton-loader" class="space-y-5 cloud-fade delay-300">
+                    <p id="crawler-status" class="font-mono text-xs uppercase tracking-widest text-oxford/60">Retrieving references from portfolio pages...</p>
                     <div class="animate-pulse flex flex-col gap-2 opacity-50">
                         <div class="h-4 bg-oxford/10 w-3/4 rounded"></div>
-                        <div class="h-4 bg-oxford/10 w-1/2 rounded ml-10"></div>
+                        <div class="h-4 bg-oxford/10 w-1/2 rounded ml-8"></div>
                     </div>
                     <div class="animate-pulse flex flex-col gap-2 opacity-50">
                         <div class="h-4 bg-oxford/10 w-full max-w-2xl rounded"></div>
-                        <div class="h-4 bg-oxford/10 w-2/3 rounded ml-10"></div>
+                        <div class="h-4 bg-oxford/10 w-2/3 rounded ml-8"></div>
                     </div>
                     <div class="animate-pulse flex flex-col gap-2 opacity-50">
                         <div class="h-4 bg-oxford/10 w-5/6 rounded"></div>
                     </div>
                 </div>
 
-                <!-- The Actual Academic List -->
-                <div class="space-y-8 pb-12" id="bibliography-container" style="display: none;">
+                <!-- The Compact Academic List -->
+                <div class="space-y-2.5 pb-10" id="bibliography-container" style="display: none;">
                     <!-- Javascript Data Injection Here -->
                 </div>
 
@@ -254,7 +265,7 @@
         // Data Store
         const referenceDatabase = new Map(); // Maps URL to { metadata, sourceType, contexts: [{pageName, text}] }
         const unlinkedParagraphQueue = [];   // Queue of 2-sentence excerpts from unlinked <p> tags
-        const CACHE_KEY = 'dim_biblio_cache_v7'; // Bumped cache key to trigger 2-sentence auto-discovery
+        const CACHE_KEY = 'dim_biblio_cache_v9'; // Bumped cache key to clear any old wiki entries
         
         // Define the full ecosystem to crawl (hardcoded HTML pages + dynamic JSON files)
         // autoDiscover: true enables 2-sentence extraction & source matching on unlinked <p> tags
@@ -286,6 +297,17 @@
         ]);
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Fallback Toggle (Safe if app.js is unavailable)
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu && !mobileBtn.dataset.bound) {
+                mobileBtn.dataset.bound = 'true';
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+                });
+            }
+
             setupAdminControls();
 
             // Step 1: Check if we have perfectly formatted cache ready to deploy instantly
@@ -300,7 +322,12 @@
                 try {
                     const parsedCache = JSON.parse(cachedData);
                     parsedCache.forEach(item => {
-                        if (item && item.metadata && item.metadata.url) {
+                        if (
+                            item &&
+                            item.metadata &&
+                            item.metadata.url &&
+                            !isWikiSource(item.metadata.url, item.metadata.siteName, item.metadata.author)
+                        ) {
                             referenceDatabase.set(item.metadata.url, item);
                         }
                     });
@@ -379,35 +406,45 @@
                 }
             }
 
-            // Step B: Run 2-sentence source discovery in parallel for paragraphs without direct links
+            // Step B: Run 2-sentence source lookup in parallel for paragraphs without direct links
             if (unlinkedParagraphQueue.length > 0) {
                 if (statusEl && !isBackgroundSync) {
-                    statusEl.innerText = `Researching ${unlinkedParagraphQueue.length} unlinked topic excerpts for APA 7th sources...`;
+                    statusEl.innerText = 'Compiling cited references from portfolio pages...';
                 }
                 await discoverReferencesForParagraphs();
             }
 
             // Step C: Scrape metadata for any directly linked external URLs in parallel
             if (statusEl && !isBackgroundSync) {
-                statusEl.innerText = 'Formatting APA 7th Edition bibliography...';
+                statusEl.innerText = 'Formatting portfolio references in APA 7th Edition...';
             }
             await populateMetadataInParallel();
             
-            // Cache the final structured data so the next visit is instant
+            // Cache the final structured data (strictly excluding any wiki entries)
+            const cleanRecords = Array.from(referenceDatabase.values()).filter(
+                item => item.metadata && !isWikiSource(item.metadata.url, item.metadata.siteName, item.metadata.author)
+            );
             try {
-                localStorage.setItem(CACHE_KEY, JSON.stringify(Array.from(referenceDatabase.values())));
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cleanRecords));
             } catch (e) {}
 
-            // If this wasn't a silent background sync, fade out skeleton and show real data
             if (!isBackgroundSync) {
                 document.getElementById('skeleton-loader').style.display = 'none';
                 document.getElementById('bibliography-container').style.display = 'block';
                 renderBibliography();
+            } else {
+                renderBibliography();
             }
+        }
+
+        function isWikiSource(url = '', siteName = '', author = '') {
+            const combined = `${url} ${siteName} ${author}`.toLowerCase();
+            return /\bwiki|wikipedia|wikimedia|wiktionary|wikibooks|wikiquote|wikisource|wikiversity|wikidata|fandom\.com/i.test(combined);
         }
 
         function isExternalLink(url) {
             if (!url || !/^https?:\/\//i.test(url.trim())) return false;
+            if (isWikiSource(url)) return false;
             const ignoredHosts = [
                 'cleonwilliams.com',
                 'cleo876.github.io/graphic-portfolio',
@@ -424,7 +461,6 @@
         function extractFromHtml(htmlString, pageName, allowAutoDiscover = false) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
-            // Focus on main content so navbars, footers, scripts, and stylesheets are skipped
             const scope = doc.querySelector('main') || doc.body;
             if (!scope) return;
 
@@ -439,19 +475,18 @@
                 data.forEach(item => {
                     if (item._comment) return;
 
-                    // 1. Visual Canvas Editor blocks (copyright, principles, elements, theory, author)
                     if (item.html) {
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = item.html;
                         scanContainerForReferences(tempDiv, pageName, allowAutoDiscover);
                     }
 
-                    // 2. Artifacts JSON records (message HTML + external interactiveUrl)
                     if (item.message) {
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = `<p>${item.message}</p>`;
                         scanContainerForReferences(tempDiv, pageName, false);
                     }
+
                     if (item.interactiveUrl && isExternalLink(item.interactiveUrl)) {
                         const label = item.title ? `<strong>${item.title}:</strong> ` : '';
                         storeReference(
@@ -465,12 +500,10 @@
             } catch (e) {}
         }
 
-        // Extracts up to 2 clean sentences from a paragraph string
         function extractTwoSentences(rawText) {
             const cleaned = (rawText || '').replace(/\s+/g, ' ').trim();
             if (!cleaned) return '';
 
-            // Protect common abbreviations from false sentence breaks
             const protectedText = cleaned
                 .replace(/\b(e\.g|i\.e|vs|Dr|Mr|Ms|Prof|Inc|Ltd|U\.S|B\.Ed|n\.d)\./gi, '$1__DOT__');
 
@@ -482,11 +515,9 @@
             return sentences.slice(0, 2).join(' ');
         }
 
-        // Builds a focused academic search query from the nearest heading + 2-sentence keywords
         function buildSearchQuery(heading, twoSentences) {
             const cleanHeading = (heading || '').replace(/[^a-zA-Z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
 
-            // Extract domain-rich keywords from the 2 sentences
             const words = (twoSentences || '')
                 .replace(/[^a-zA-Z0-9\s-]/g, ' ')
                 .split(/\s+/)
@@ -508,7 +539,6 @@
             return combined.trim();
         }
 
-        // Finds the nearest preceding H2/H3 heading for a paragraph so searches stay on-topic
         function findNearestHeading(pElement) {
             const articleOrSection = pElement.closest('article, .rich-text, section');
             if (articleOrSection) {
@@ -520,7 +550,6 @@
             return '';
         }
 
-        // Scans a DOM container for direct links, plain-text URLs, and unlinked 2-sentence paragraphs
         function scanContainerForReferences(container, pageName, allowAutoDiscover = false) {
             // A. Direct <a> hyperlinks
             const links = container.querySelectorAll('a[href]');
@@ -531,7 +560,7 @@
                 }
             });
 
-            // B. Plain-text external URLs (e.g., pasted inside a paragraph or <u> tag without an <a> wrapper)
+            // B. Plain-text external URLs
             const urlRegex = /https?:\/\/[^\s<>"')]+/gi;
             const blocks = container.querySelectorAll('p, li, blockquote, div.rich-text > div');
             blocks.forEach(block => {
@@ -557,12 +586,10 @@
             if (allowAutoDiscover) {
                 const paragraphs = container.querySelectorAll('p');
                 paragraphs.forEach(p => {
-                    // Skip short eyebrows, captions, skeleton placeholders, or hero blurbs
                     const text = (p.textContent || '').replace(/\s+/g, ' ').trim();
                     if (text.length < 110) return;
                     if (p.closest('#skeleton-loader, #dynamic-content-mount')) return;
 
-                    // Skip paragraphs that already have an external link
                     const hasExternalAnchor = Array.from(p.querySelectorAll('a[href]'))
                         .some(a => isExternalLink(a.getAttribute('href')));
                     if (hasExternalAnchor || urlRegex.test(text)) return;
@@ -574,7 +601,6 @@
                     const searchQuery = buildSearchQuery(heading, twoSentences);
                     if (!searchQuery) return;
 
-                    // Deduplicate by searchQuery so we don't fire identical lookups
                     if (!unlinkedParagraphQueue.some(q => q.searchQuery.toLowerCase() === searchQuery.toLowerCase())) {
                         unlinkedParagraphQueue.push({
                             pageName,
@@ -587,14 +613,12 @@
             }
         }
 
-        // The core extraction logic that isolates the specific paragraph and highlights it
         function processFoundLink(anchorElement, url, pageName) {
             const parentBlock = anchorElement.closest('p, div.rich-text, li, blockquote') || anchorElement.parentElement;
             if (!parentBlock) return;
 
             const clonedBlock = parentBlock.cloneNode(true);
-            const clonedAnchor = clonedBlock.querySelector(`a[href="${CSS.escape ? anchorElement.getAttribute('href') : url}"]`)
-                || Array.from(clonedBlock.querySelectorAll('a')).find(a => a.getAttribute('href') === url);
+            const clonedAnchor = Array.from(clonedBlock.querySelectorAll('a')).find(a => a.getAttribute('href') === url);
             
             if (clonedAnchor) {
                 clonedAnchor.classList.add('context-highlight');
@@ -609,6 +633,10 @@
             try {
                 cleanUrl = new URL(url.trim()).href;
             } catch (e) {
+                return;
+            }
+
+            if (isWikiSource(cleanUrl, prefilledMeta?.siteName, prefilledMeta?.author)) {
                 return;
             }
 
@@ -629,21 +657,27 @@
         }
 
         // -----------------------------------------------------
-        // 3. PARALLEL 2-SENTENCE SOURCE DISCOVERY (CROSSREF + WIKIPEDIA)
+        // 3. PARALLEL 2-SENTENCE SOURCE LOOKUP (NON-WIKI WEB + BOOKS + ARTICLES)
         // -----------------------------------------------------
         async function discoverReferencesForParagraphs() {
-            // Process in parallel batches of 5 to keep requests fast and polite
             const batchSize = 5;
             for (let i = 0; i < unlinkedParagraphQueue.length; i += batchSize) {
                 const batch = unlinkedParagraphQueue.slice(i, i + batchSize);
                 await Promise.all(batch.map(async (item) => {
-                    // Try Crossref scholarly literature first; fall back to Wikipedia for broad design concepts
-                    let foundMeta = await searchCrossrefSource(item.searchQuery, item.heading);
+                    // 1. Try general graphic design websites first (skipping any wiki results)
+                    let foundMeta = await searchWebDesignSource(item.searchQuery, item.heading);
+
+                    // 2. Fallback to Open Library design books (CORS-enabled, no wiki)
                     if (!foundMeta) {
-                        foundMeta = await searchWikipediaSource(item.heading || item.searchQuery);
+                        foundMeta = await searchOpenLibrarySource(item.heading || item.searchQuery);
                     }
 
-                    if (foundMeta && foundMeta.url) {
+                    // 3. Secondary fallback to Crossref articles/books (CORS-enabled, no wiki)
+                    if (!foundMeta) {
+                        foundMeta = await searchCrossrefSource(item.searchQuery, item.heading);
+                    }
+
+                    if (foundMeta && foundMeta.url && !isWikiSource(foundMeta.url, foundMeta.siteName, foundMeta.author)) {
                         const headingPrefix = item.heading ? `<strong>${item.heading}:</strong> ` : '';
                         const highlightedContext = `${headingPrefix}<span class="context-highlight">${item.twoSentences}</span>`;
                         storeReference(foundMeta.url, item.pageName, highlightedContext, 'auto', foundMeta);
@@ -652,10 +686,113 @@
             }
         }
 
-        // Searches Crossref's open scholarly API (CORS-enabled, no API key required)
+        // Searches general web design/graphics websites via DuckDuckGo HTML and strictly skips any wiki domains
+        async function searchWebDesignSource(query, heading) {
+            const topic = heading ? `${heading} graphic design` : `${query} graphic design`;
+            const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(topic + ' -wikipedia -wikimedia -fandom')}`;
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(ddgUrl)}`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3200);
+
+            const blockedWebHosts = [
+                'duckduckgo.com', 'youtube.com', 'pinterest.', 'reddit.com',
+                'facebook.com', 'instagram.com', 'tiktok.com', 'quora.com',
+                'amazon.com', 'ebay.com', 'etsy.com'
+            ];
+
+            try {
+                const res = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!res.ok) return null;
+
+                const data = await res.json();
+                if (!data.contents) return null;
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+                const resultLinks = Array.from(doc.querySelectorAll('a.result__a'));
+
+                for (const anchor of resultLinks) {
+                    let href = anchor.getAttribute('href') || '';
+                    if (href.includes('uddg=')) {
+                        try {
+                            const parsed = new URL(href.startsWith('//') ? 'https:' + href : href, 'https://duckduckgo.com');
+                            href = decodeURIComponent(parsed.searchParams.get('uddg') || '');
+                        } catch (e) {
+                            continue;
+                        }
+                    }
+
+                    if (!/^https?:\/\//i.test(href)) continue;
+                    if (isWikiSource(href, anchor.textContent)) continue;
+                    if (blockedWebHosts.some(h => href.toLowerCase().includes(h))) continue;
+
+                    let hostname = '';
+                    try {
+                        hostname = new URL(href).hostname.replace(/^www\./, '');
+                    } catch (e) {
+                        continue;
+                    }
+
+                    const title = cleanText(anchor.textContent);
+                    if (!title || title.length < 4) continue;
+
+                    return {
+                        title,
+                        siteName: hostname,
+                        author: '',
+                        authorFormatted: false,
+                        year: '',
+                        url: href
+                    };
+                }
+            } catch (e) {
+                clearTimeout(timeoutId);
+            }
+            return null;
+        }
+
+        // Fallback 1: Searches Open Library for graphic design & visual arts books (non-wiki, CORS-enabled)
+        async function searchOpenLibrarySource(query) {
+            const endpoint = `https://openlibrary.org/search.json?q=${encodeURIComponent(query + ' graphic design')}&limit=5&fields=key,title,author_name,first_publish_year,publisher`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3200);
+
+            try {
+                const res = await fetch(endpoint, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!res.ok) return null;
+
+                const json = await res.json();
+                const docs = json?.docs || [];
+                const match = docs.find(d =>
+                    d.title &&
+                    d.key &&
+                    !isWikiSource('', (d.publisher && d.publisher[0]) || '', (d.author_name && d.author_name[0]) || '')
+                );
+                if (!match) return null;
+
+                const rawAuthor = Array.isArray(match.author_name) && match.author_name[0] ? match.author_name[0] : '';
+                const publisher = Array.isArray(match.publisher) && match.publisher[0] ? match.publisher[0] : 'Open Library';
+
+                return {
+                    title: cleanText(match.title),
+                    siteName: cleanText(publisher),
+                    author: cleanText(rawAuthor),
+                    authorFormatted: false,
+                    year: match.first_publish_year ? String(match.first_publish_year) : '',
+                    url: `https://openlibrary.org${match.key}`
+                };
+            } catch (e) {
+                clearTimeout(timeoutId);
+                return null;
+            }
+        }
+
+        // Fallback 2: Searches Crossref's open catalog (strictly filtering out any wiki entries)
         async function searchCrossrefSource(query, heading) {
             const refinedQuery = heading ? `${heading} graphic design ${query}` : `${query} graphic design`;
-            const endpoint = `https://api.crossref.org/works?query=${encodeURIComponent(refinedQuery)}&rows=2&select=DOI,title,author,published-print,published-online,issued,container-title,publisher,URL`;
+            const endpoint = `https://api.crossref.org/works?query=${encodeURIComponent(refinedQuery)}&rows=4&select=DOI,title,author,published-print,published-online,issued,container-title,publisher,URL`;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 3500);
 
@@ -666,10 +803,14 @@
 
                 const json = await res.json();
                 const items = json?.message?.items || [];
-                const match = items.find(w => w.title && w.title[0] && (w.DOI || w.URL));
+                const match = items.find(w =>
+                    w.title &&
+                    w.title[0] &&
+                    (w.DOI || w.URL) &&
+                    !isWikiSource(w.URL || '', w.publisher || '', w.title[0] || '')
+                );
                 if (!match) return null;
 
-                // Format scholarly author(s) cleanly
                 let authorStr = '';
                 if (Array.isArray(match.author) && match.author.length > 0) {
                     const formattedAuthors = match.author.slice(0, 3).map(a => {
@@ -701,6 +842,8 @@
                 const siteName = cleanText((match['container-title'] && match['container-title'][0]) || match.publisher || 'Crossref');
                 const url = match.DOI ? `https://doi.org/${match.DOI}` : match.URL;
 
+                if (isWikiSource(url, siteName, authorStr)) return null;
+
                 return {
                     title,
                     siteName,
@@ -715,47 +858,13 @@
             }
         }
 
-        // Fallback: Searches Wikipedia's open MediaWiki API (CORS-enabled via origin=*)
-        async function searchWikipediaSource(query) {
-            const endpoint = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=1&format=json&origin=*`;
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-            try {
-                const res = await fetch(endpoint, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (!res.ok) return null;
-
-                const json = await res.json();
-                const hit = json?.query?.search?.[0];
-                if (!hit || !hit.title) return null;
-
-                const year = hit.timestamp ? hit.timestamp.slice(0, 4) : '';
-                const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(hit.title.replace(/ /g, '_'))}`;
-
-                return {
-                    title: cleanText(hit.title),
-                    siteName: 'Wikipedia',
-                    author: 'Wikimedia Foundation',
-                    authorFormatted: false,
-                    year,
-                    url
-                };
-            } catch (e) {
-                clearTimeout(timeoutId);
-                return null;
-            }
-        }
-
         // -----------------------------------------------------
         // 4. HIGH-SPEED PARALLEL METADATA SCRAPING (DIRECT LINKS)
         // -----------------------------------------------------
         async function populateMetadataInParallel() {
             const keys = Array.from(referenceDatabase.keys());
 
-            // Fetch all direct-link metadata asynchronously AT THE SAME TIME
             const fetchPromises = keys.map(async (url) => {
-                // Skip entries that already have metadata (from cache or 2-sentence auto-discovery)
                 if (referenceDatabase.get(url).metadata !== null) return;
 
                 const meta = await fetchWithTimeout(url);
@@ -765,7 +874,6 @@
             await Promise.all(fetchPromises);
         }
 
-        // Custom fetch wrapper with a strict 2.5 second timeout to prevent hanging
         async function fetchWithTimeout(url) {
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
             const controller = new AbortController();
@@ -795,7 +903,6 @@
                 clearTimeout(timeoutId);
             }
 
-            // High-Speed Fallback generation directly from the URL string
             let backupSite = '';
             try { backupSite = new URL(url).hostname.replace('www.', ''); } catch (e) {}
             return { title: '', siteName: backupSite, author: '', year: '', url };
@@ -806,7 +913,6 @@
         }
 
         function generateAPACitation(meta) {
-            // Standard APA 7th Edition Formatting for Web & Scholarly Sources
             let citation = "";
             let inText = "";
             const yearStr = meta.year ? meta.year : "n.d.";
@@ -819,7 +925,7 @@
                 inText = `(${primaryLast}, ${yearStr})`;
             } else {
                 let words = authorStr.split(' ');
-                if (meta.author && words.length >= 2 && words.length <= 3 && authorStr !== 'Wikimedia Foundation') {
+                if (meta.author && words.length >= 2 && words.length <= 3) {
                     const last = words.pop();
                     const initials = words.map(w => w.charAt(0).toUpperCase() + '.').join(' ');
                     citation += `<strong>${last}, ${initials}</strong> `;
@@ -845,7 +951,6 @@
             return { html: citation, inText: inText };
         }
 
-        // iFrame-safe clipboard helper for copying in-text citations
         function copyCitationText(text, btnEl) {
             const tempInput = document.createElement('textarea');
             tempInput.value = text;
@@ -865,21 +970,23 @@
         }
 
         // -----------------------------------------------------
-        // 5. RENDERING (ACADEMIC LAYOUT)
+        // 5. RENDERING (COMPACT ACADEMIC LAYOUT)
         // -----------------------------------------------------
         function renderBibliography() {
             const container = document.getElementById('bibliography-container');
             container.innerHTML = '';
 
-            if (referenceDatabase.size === 0) {
+            let refs = Array.from(referenceDatabase.values()).filter(ref =>
+                ref.metadata && !isWikiSource(ref.metadata.url, ref.metadata.siteName, ref.metadata.author)
+            );
+
+            if (refs.length === 0) {
                 container.innerHTML = `
                     <div class="p-8 text-center">
                         <p class="font-display text-lg text-oxford/60">No external references cited at this time.</p>
                     </div>`;
                 return;
             }
-
-            let refs = Array.from(referenceDatabase.values()).filter(ref => ref.metadata);
             
             refs = refs.map(ref => {
                 const apa = generateAPACitation(ref.metadata);
@@ -890,8 +997,6 @@
             refs.sort((a, b) => a.apaHtml.replace(/(<([^>]+)>)/gi, "").localeCompare(b.apaHtml.replace(/(<([^>]+)>)/gi, "")));
 
             refs.forEach((ref, index) => {
-                
-                // If a link was found in multiple paragraphs, we map them all out as buttons
                 let locatorButtons = ref.contexts.map((ctx) => {
                     const encodedHtml = encodeURIComponent(ctx.text);
                     return `
@@ -908,25 +1013,25 @@
                     : `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest border border-red-200">Direct Link Source</span>`;
 
                 const item = document.createElement('div');
-                item.className = 'pb-6 border-b border-oxford/5 last:border-0 cloud-fade is-visible relative';
+                item.className = 'pb-2.5 border-b border-oxford/5 last:border-0 cloud-fade is-visible relative';
                 item.style.transitionDelay = `${index * 30}ms`;
 
                 item.innerHTML = `
                     <!-- Public View: APA Citation -->
                     <div class="public-ui w-full">
-                        <p class="apa-citation font-sans text-base md:text-lg text-oxford/90">${ref.apaHtml}</p>
+                        <p class="apa-citation font-sans text-sm md:text-base text-oxford/90">${ref.apaHtml}</p>
                     </div>
                     
                     <!-- Secret Admin View: The Data Engine -->
-                    <div class="admin-ui flex-col w-full bg-oxford/5 p-4 rounded mt-2">
-                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <div class="admin-ui flex-col w-full bg-oxford/5 p-3.5 rounded mt-1.5">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
                             ${sourceBadge}
                             <span class="text-xs font-mono text-oxford/50 truncate w-48 md:w-auto">Target: ${ref.metadata.url}</span>
                         </div>
                         
-                        <p class="apa-citation font-sans text-base md:text-lg text-oxford/90 mb-4 opacity-70">${ref.apaHtml}</p>
+                        <p class="apa-citation font-sans text-sm md:text-base text-oxford/90 mb-3 opacity-70">${ref.apaHtml}</p>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-oxford/10 pt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-oxford/10 pt-3">
                             <div>
                                 <p class="text-[10px] uppercase font-bold tracking-widest text-oxford/50 mb-1">In-Text Citation (Copy)</p>
                                 <div class="flex items-center gap-2">
@@ -950,9 +1055,7 @@
 
         // Modal Logic
         function openModal(pageName, encodedHtml) {
-            // The HTML passed here is ALREADY perfectly isolated and highlighted by the crawler
             const rawHtml = decodeURIComponent(encodedHtml);
-            
             document.getElementById('modal-page-name').innerText = pageName;
             document.getElementById('modal-context-text').innerHTML = rawHtml;
             document.getElementById('context-modal').classList.add('active');
