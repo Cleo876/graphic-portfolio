@@ -77,6 +77,8 @@
                 <a href="principles.html" class="nav-link">Principles</a>
                 <a href="elements.html" class="nav-link">Elements</a>
                 <a href="theory.html" class="nav-link">Theory</a>
+                <a href="artifacts.html" class="nav-link">Artifacts</a>
+                <a href="author.html" class="nav-link">Author</a>
                 <a href="references.html" class="nav-link text-oxford/50 pointer-events-none">References</a>
             </nav>
 
@@ -250,15 +252,22 @@
     <script>
         // Data Store
         const referenceDatabase = new Map(); // Maps URL to { metadata, contexts: [{pageName, html}] }
-        const CACHE_KEY = 'dim_biblio_cache_v5'; // Bumped cache key to force fresh scrape with new DOM logic
+        const CACHE_KEY = 'dim_biblio_cache_v6'; // Bumped cache key to force fresh scrape with hybrid HTML + JSON logic
         
-        // Define the ecosystem to crawl
+        // Define the full ecosystem to crawl (hardcoded HTML pages + dynamic JSON files)
         const ecosystemMap = [
-            { name: "Home Document", url: "../index.html", type: "html" },
+            { name: "Home Page", url: "../index.html", type: "html" },
+            { name: "Copyright Page", url: "copyright.html", type: "html" },
             { name: "Copyright Layout", url: "../content/copyright-layout.json", type: "json" },
+            { name: "Principles Page", url: "principles.html", type: "html" },
             { name: "Principles Layout", url: "../content/principles-layout.json", type: "json" },
+            { name: "Elements Page", url: "elements.html", type: "html" },
             { name: "Elements Layout", url: "../content/elements-layout.json", type: "json" },
-            { name: "Theory Layout", url: "../content/theory-layout.json", type: "json" },
+            { name: "Color Theory Page", url: "theory.html", type: "html" },
+            { name: "Color Theory Layout", url: "../content/theory-layout.json", type: "json" },
+            { name: "Author Page", url: "author.html", type: "html" },
+            { name: "Author Layout", url: "../content/author-layout.json", type: "json" },
+            { name: "Artifacts Page", url: "artifacts.html", type: "html" },
             { name: "Artifacts Data", url: "../artifacts/artifacts.json", type: "json" }
         ];
 
@@ -353,67 +362,110 @@
         }
 
         function isExternalLink(url) {
-            if (!url) return false;
-            if (url.startsWith('#') || url.startsWith('mailto:') || url.startsWith('javascript:')) return false;
-            if (url.startsWith('/') || url.startsWith('.')) return false;
-            if (url.includes('cleonwilliams.com')) return false; 
-            return true;
+            if (!url || !/^https?:\/\//i.test(url.trim())) return false;
+            const ignoredHosts = [
+                'cleonwilliams.com',
+                'cleo876.github.io/graphic-portfolio',
+                'fonts.googleapis.com',
+                'fonts.gstatic.com',
+                'cdn.tailwindcss.com',
+                'abacus.jasoncameron.dev',
+                'placehold.co',
+                'via.placeholder.com'
+            ];
+            return !ignoredHosts.some(host => url.toLowerCase().includes(host));
         }
 
         function extractFromHtml(htmlString, pageName) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
-            const links = doc.querySelectorAll('a');
-            
+            // Focus on main content so navbars, footers, scripts, and stylesheets are skipped
+            const scope = doc.querySelector('main') || doc.body;
+            if (!scope) return;
+
+            scanContainerForReferences(scope, pageName);
+        }
+
+        function extractFromJson(jsonString, pageName) {
+            try {
+                const data = JSON.parse(jsonString);
+                if (!Array.isArray(data)) return;
+
+                data.forEach(item => {
+                    if (item._comment) return;
+
+                    // 1. Visual Canvas Editor blocks (copyright, principles, elements, theory, author)
+                    if (item.html) {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = item.html;
+                        scanContainerForReferences(tempDiv, pageName);
+                    }
+
+                    // 2. Artifacts JSON records (message HTML + external interactiveUrl)
+                    if (item.message) {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = `<p>${item.message}</p>`;
+                        scanContainerForReferences(tempDiv, pageName);
+                    }
+                    if (item.interactiveUrl && isExternalLink(item.interactiveUrl)) {
+                        const label = item.title ? `<strong>${item.title}:</strong> ` : '';
+                        storeReference(
+                            item.interactiveUrl,
+                            pageName,
+                            `${label}Interactive module linked to <span class="context-highlight">${item.interactiveUrl}</span>.`
+                        );
+                    }
+                });
+            } catch (e) {}
+        }
+
+        // Scans a DOM container for both <a href> hyperlinks and plain-text external URLs
+        function scanContainerForReferences(container, pageName) {
+            // A. Direct <a> hyperlinks
+            const links = container.querySelectorAll('a[href]');
             links.forEach(link => {
                 const url = link.getAttribute('href');
                 if (isExternalLink(url)) {
                     processFoundLink(link, url, pageName);
                 }
             });
-        }
 
-        function extractFromJson(jsonString, pageName) {
-            try {
-                const data = JSON.parse(jsonString);
-                if (Array.isArray(data)) {
-                    data.forEach(block => {
-                        if (block.html) {
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = block.html;
-                            const links = tempDiv.querySelectorAll('a');
-                            
-                            links.forEach(link => {
-                                const url = link.getAttribute('href');
-                                if (isExternalLink(url)) {
-                                    processFoundLink(link, url, pageName);
-                                }
-                            });
+            // B. Plain-text external URLs (e.g., pasted inside a paragraph or <u> tag without an <a> wrapper)
+            const urlRegex = /https?:\/\/[^\s<>"')]+/gi;
+            const blocks = container.querySelectorAll('p, li, blockquote, div.rich-text > div');
+            blocks.forEach(block => {
+                // Skip blocks that already wrap the URL inside an <a> tag
+                const cloneWithoutAnchors = block.cloneNode(true);
+                cloneWithoutAnchors.querySelectorAll('a').forEach(a => a.remove());
+                const matches = (cloneWithoutAnchors.textContent || '').match(urlRegex);
+
+                if (matches) {
+                    matches.forEach(rawUrl => {
+                        const cleanMatch = rawUrl.replace(/[.,;:!?]+$/, '');
+                        if (isExternalLink(cleanMatch)) {
+                            const highlightedHtml = block.innerHTML.replace(
+                                cleanMatch,
+                                `<span class="context-highlight">${cleanMatch}</span>`
+                            );
+                            storeReference(cleanMatch, pageName, highlightedHtml);
                         }
                     });
                 }
-            } catch (e) {}
+            });
         }
 
         // The core extraction logic that isolates the specific paragraph and highlights it
         function processFoundLink(anchorElement, url, pageName) {
-            let cleanUrl;
-            try {
-                cleanUrl = new URL(url).href; // Safely validate URL
-            } catch (e) {
-                return; // Skip malformed URLs without crashing
-            }
-
-            // Find the immediate parent container (Paragraph, Div, or List Item)
-            const parentBlock = anchorElement.closest('p, div.rich-text, li');
-            
+            // Find the immediate parent container (Paragraph, Div, Blockquote, or List Item)
+            const parentBlock = anchorElement.closest('p, div.rich-text, li, blockquote') || anchorElement.parentElement;
             if (!parentBlock) return;
 
             // Clone the block so we can manipulate it safely without breaking the crawler's DOM
             const clonedBlock = parentBlock.cloneNode(true);
             
             // Find the anchor tag *inside* our new clone that matches the target URL
-            const clonedAnchor = clonedBlock.querySelector(`a[href="${url}"]`);
+            const clonedAnchor = clonedBlock.querySelector(`a[href="${CSS.escape ? anchorElement.getAttribute('href') : url}"]`)
+                || Array.from(clonedBlock.querySelectorAll('a')).find(a => a.getAttribute('href') === url);
             
             if (clonedAnchor) {
                 // Apply the highlight styling permanently to the clone
@@ -422,10 +474,17 @@
                 clonedAnchor.removeAttribute('href');
             }
 
-            // Extract the final processed HTML
-            const contextString = clonedBlock.innerHTML;
+            storeReference(url, pageName, clonedBlock.innerHTML);
+        }
 
-            // Store in database
+        function storeReference(url, pageName, contextString) {
+            let cleanUrl;
+            try {
+                cleanUrl = new URL(url.trim()).href; // Safely validate URL
+            } catch (e) {
+                return; // Skip malformed URLs without crashing
+            }
+
             if (!referenceDatabase.has(cleanUrl)) {
                 referenceDatabase.set(cleanUrl, {
                     metadata: null, 
@@ -436,7 +495,7 @@
             const existingContexts = referenceDatabase.get(cleanUrl).contexts;
             
             // Ensure we don't save the exact same paragraph twice if there are two identical links in it
-            if (!existingContexts.some(c => c.text === contextString)) {
+            if (!existingContexts.some(c => c.pageName === pageName && c.text === contextString)) {
                 existingContexts.push({ pageName, text: contextString });
             }
         }
